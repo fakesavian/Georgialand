@@ -73,6 +73,8 @@ Add the following for each environment (Production / Preview / Development):
 | Variable | Required | Description |
 |---|---|---|
 | `VITE_SITE_URL` | ✅ | Your production URL, e.g. `https://georgialandfinder.com` |
+| `VITE_SUPABASE_URL` | ✅ | Supabase project URL |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | ✅ | Browser-safe Supabase publishable key |
 | `VITE_DASHBOARD_STARTER_CHECKOUT_URL` | When selling | Stripe/Gumroad checkout link for $39/mo tier |
 | `VITE_DASHBOARD_PRO_CHECKOUT_URL` | When selling | Stripe/Gumroad checkout link for $79/mo tier |
 | `VITE_DASHBOARD_INVESTOR_CHECKOUT_URL` | When selling | Stripe/Gumroad checkout link for $149/mo tier |
@@ -81,7 +83,9 @@ Add the following for each environment (Production / Preview / Development):
 | `VITE_POSTHOG_KEY` | Optional | PostHog project API key |
 | `VITE_ANALYTICS_PROVIDER` | Optional | `console` \| `plausible` \| `posthog` (default: `console`) |
 
-> **Important:** All Vite environment variables must be prefixed with `VITE_` to be included in the client bundle. Never put secrets here.
+> **Important:** This is a Vite app, not Next.js, so use `VITE_SUPABASE_*` variables instead of Supabase's `NEXT_PUBLIC_*` examples. All Vite environment variables are included in the client bundle. Never put service-role keys, database passwords, Stripe secrets, or other server secrets in `VITE_*` values.
+>
+> See [`PRODUCTION_SETUP.md`](./PRODUCTION_SETUP.md) for the Supabase schema, storage buckets, Vercel env list, and smoke-test checklist.
 
 ### Setting up Stripe Payment Links & Webhooks
 
