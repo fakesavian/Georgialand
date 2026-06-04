@@ -316,8 +316,19 @@ export default function App() {
     const staleCount = properties.filter(p => (p.Source_Freshness || '').toLowerCase() === 'stale').length;
     const verifiedCount = properties.filter(p => (p.Researcher_Notes || '').toLowerCase().includes('needs verification') || (p.Parcel_ID || '').toLowerCase().includes('needs verification')).length;
 
+    const normalizeDate = (value?: string) => {
+      const trimmed = (value || '').trim();
+      const match = trimmed.match(/^\d{4}-\d{2}-\d{2}/);
+      if (!match) return null;
+      const timestamp = Date.parse(match[0]);
+      return Number.isNaN(timestamp) ? null : match[0];
+    };
+
     let latestResDate = 'N/A';
-    const dates = properties.map(p => p.Date_Researched).filter(Boolean);
+    const dates = properties
+      .flatMap(p => [p.Date_Researched, p.Last_Checked_Date, p.Source_Last_Modified_Date])
+      .map(normalizeDate)
+      .filter((date): date is string => Boolean(date));
     if (dates.length) {
       latestResDate = dates.sort().reverse()[0] || 'N/A';
     }
