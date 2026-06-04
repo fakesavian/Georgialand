@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.vercel/
+
+# Local environment / secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Generated/temp local artifacts
+doc.zip
+docx_temp/
+scratch/
+
+# One-off local maintenance/debug scripts
+check_error.cjs
+fix_imports.cjs
+replace_colors.cjs
+
+# Protected/paid datasets - upload these to private Supabase Storage instead
+georgia_low_cost_land_opportunities_enriched.csv
+georgia_low_cost_land_opportunities.csv
+georgia_low_cost_land_report.csv
+georgia_low_cost_land_report.md

@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /account
+Disallow: /admin
+Disallow: /login
+Disallow: /signup
+Disallow: /checkout-success
+Disallow: /checkout-cancel
+Disallow: /report-success
+
+Sitemap: https://georgialandfinder.com/sitemap.xml

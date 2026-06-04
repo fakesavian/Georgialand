@@ -1,0 +1,144 @@
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { MapPin, Download, Heart, User, LogOut, Loader2 } from 'lucide-react';
+import { useAuth } from '../../lib/AuthContext';
+
+interface HeaderProps {
+  totalCount: number;
+  filteredCount: number;
+  favoritesCount: number;
+  onExportAll: () => void;
+  onExportFiltered: () => void;
+  onExportFavorites: () => void;
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+}
+
+export default function Header({
+  totalCount,
+  filteredCount,
+  favoritesCount,
+  onExportAll,
+  onExportFiltered,
+  onExportFavorites,
+  activeTab,
+  onTabChange,
+}: HeaderProps) {
+  const { user, profile, accessLevel, isLoading, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  const tabs = [
+    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'analytics', label: 'Analytics' },
+    { id: 'data-quality', label: 'Data Quality' },
+    { id: 'favorites', label: `Favorites (${favoritesCount})` },
+    { id: 'agency-contacts', label: 'Agency Contacts' },
+  ];
+
+  return (
+    <header className="bg-olive-950 border-b border-surface-border sticky top-0 z-50">
+      <div className="max-w-screen-2xl mx-auto px-4">
+        {/* Top bar */}
+        <div className="flex items-center justify-between py-3 gap-4">
+          {/* Logo — links back to home */}
+          <Link to="/" className="flex items-center gap-3 min-w-0 group">
+            <div className="flex-shrink-0 w-9 h-9 bg-brand-600 group-hover:bg-brand-500 transition-colors rounded-lg flex items-center justify-center">
+              <MapPin size={18} className="text-white" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-base font-bold text-white leading-tight truncate group-hover:text-brand-200 transition-colors">
+                Georgia Low-Cost Land Finder
+              </h1>
+              <p className="text-xs text-olive-500 hidden sm:block">
+                Official land-bank, surplus, tax-sale &amp; low-cost opportunities
+              </p>
+            </div>
+          </Link>
+
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {/* Stats pill */}
+            <div className="hidden md:flex items-center gap-3 bg-olive-900 border border-surface-border rounded-lg px-3 py-1.5 text-xs text-olive-400">
+              <span>
+                <span className="text-brand-400 font-medium font-mono">{filteredCount}</span>
+                <span> / {totalCount} listings</span>
+              </span>
+              {favoritesCount > 0 && (
+                <span className="flex items-center gap-1">
+                  <Heart size={11} className="text-accent-danger fill-red-400" />
+                  <span className="text-accent-danger font-mono">{favoritesCount}</span>
+                </span>
+              )}
+            </div>
+
+            {/* Export dropdown */}
+            <div className="relative group">
+              <button className="btn-ghost text-xs">
+                <Download size={14} />
+                <span className="hidden sm:inline">Export</span>
+              </button>
+              <div className="absolute right-0 top-full mt-1 w-48 bg-olive-900 border border-olive-700 rounded-lg shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+                <button onClick={onExportAll} className="w-full text-left px-3 py-2 text-sm text-olive-200 hover:bg-olive-800 hover:text-white rounded-t-lg">Export All ({totalCount})</button>
+                <button onClick={onExportFiltered} className="w-full text-left px-3 py-2 text-sm text-olive-200 hover:bg-olive-800 hover:text-white">Export Filtered ({filteredCount})</button>
+                <button onClick={onExportFavorites} className="w-full text-left px-3 py-2 text-sm text-olive-200 hover:bg-olive-800 hover:text-white rounded-b-lg">Export Favorites ({favoritesCount})</button>
+              </div>
+            </div>
+
+            {/* Auth section */}
+            <div className="ml-2 pl-4 border-l border-surface-border flex items-center">
+              {isLoading ? (
+                <div className="flex items-center gap-2 text-olive-500">
+                  <Loader2 size={14} className="animate-spin" />
+                </div>
+              ) : user ? (
+                <div className="relative group">
+                  <button className="flex items-center gap-2 btn-ghost text-xs border border-surface-border">
+                    <User size={14} />
+                    <span className="hidden sm:inline max-w-[120px] truncate">{profile?.email || user.email}</span>
+                  </button>
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-olive-900 border border-olive-700 rounded-lg shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+                    <div className="px-3 py-2 text-xs border-b border-olive-800 text-olive-400">
+                      Level: <span className="font-mono text-brand-400 font-bold">{accessLevel}</span>
+                    </div>
+                    <Link to="/account" className="block w-full text-left px-3 py-2 text-sm text-olive-200 hover:bg-olive-800 hover:text-white">
+                      My Account
+                    </Link>
+                    <button onClick={handleSignOut} className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-olive-800 hover:text-red-300 rounded-b-lg flex items-center gap-2">
+                      <LogOut size={14} /> Sign out
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Link to="/login" className="text-xs font-semibold text-olive-300 hover:text-white transition-colors px-2">Log in</Link>
+                  <Link to="/signup" className="text-xs font-semibold btn-primary py-1.5 px-3">Sign up</Link>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex gap-0 border-t border-surface-border -mx-4 px-4 overflow-x-auto">
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => onTabChange(tab.id)}
+              className={`px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+                activeTab === tab.id
+                  ? 'border-brand-500 text-brand-400'
+                  : 'border-transparent text-olive-500 hover:text-olive-200'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </header>
+  );
+}

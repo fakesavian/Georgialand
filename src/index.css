@@ -1,0 +1,218 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    /* New deep olive background */
+    @apply bg-olive-950 text-olive-50 min-h-screen selection:bg-brand-900/50;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-olive-950;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-olive-800 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-olive-600;
+  }
+}
+
+@layer components {
+  /* Cards & Panels */
+  .card {
+    @apply bg-olive-900 border border-surface-border rounded-xl p-5 shadow-sm;
+  }
+  
+  .panel {
+    @apply bg-olive-900/50 backdrop-blur-md border border-surface-border/80 rounded-2xl;
+  }
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-olive-950;
+  }
+
+  .btn-primary {
+    @apply btn bg-brand-600 hover:bg-brand-500 text-white border border-brand-500/50 focus:ring-brand-500 shadow-glow-brand;
+  }
+
+  .btn-secondary {
+    @apply btn bg-olive-800 hover:bg-olive-700 text-olive-50 border border-surface-border focus:ring-olive-600;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent hover:bg-olive-900 text-olive-300 hover:text-white border border-transparent focus:ring-olive-700;
+  }
+
+  .btn-danger {
+    @apply btn bg-accent-danger/20 hover:bg-accent-danger/30 text-accent-danger border border-accent-danger/30 focus:ring-accent-danger shadow-glow-danger;
+  }
+
+  /* Inputs */
+  .input {
+    @apply bg-olive-950 border border-surface-border rounded-lg px-4 py-2 text-sm text-olive-50 placeholder-olive-400 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-colors;
+  }
+
+  .select {
+    @apply input appearance-none cursor-pointer;
+  }
+
+  /* Badges & Pills */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide uppercase;
+  }
+
+  .badge-neutral {
+    @apply bg-olive-800 text-olive-200 border border-olive-700;
+  }
+  
+  .badge-brand {
+    @apply bg-brand-900/40 text-brand-300 border border-brand-800/50;
+  }
+
+  /* Score pills */
+  .fit-score-high {
+    @apply bg-accent-success/10 text-accent-success border border-accent-success/30;
+  }
+
+  .fit-score-med {
+    @apply bg-accent-warning/10 text-accent-warning border border-accent-warning/30;
+  }
+
+  .fit-score-low {
+    @apply bg-olive-800 text-olive-400 border border-surface-border;
+  }
+
+  .risk-score-low {
+    @apply bg-accent-success/10 text-accent-success border border-accent-success/30;
+  }
+
+  .risk-score-med {
+    @apply bg-accent-warning/10 text-accent-warning border border-accent-warning/30;
+  }
+
+  .risk-score-high {
+    @apply bg-accent-danger/10 text-accent-danger border border-accent-danger/30;
+  }
+
+  /* Tables */
+  .table-row-hover {
+    @apply hover:bg-olive-800/40 cursor-pointer transition-colors duration-150;
+  }
+
+  .section-title {
+    @apply text-lg font-display font-bold text-olive-50 flex items-center gap-2;
+  }
+
+  .stat-card {
+    @apply card flex flex-col gap-1.5;
+  }
+
+  .terminal-text {
+    @apply font-mono text-brand-400 text-sm;
+  }
+}
+
+/* Leaflet overrides for dark olive theme */
+.leaflet-container {
+  background: #0A1713 !important; /* olive-950 */
+  font-family: 'Inter', sans-serif;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #151F1C !important; /* olive-900 */
+  border: 1px solid #2A3632 !important; /* surface-border */
+  color: #F5F7F6 !important; /* olive-50 */
+  border-radius: 12px !important;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8) !important;
+}
+
+.leaflet-popup-tip {
+  background: #151F1C !important;
+}
+
+.leaflet-popup-close-button {
+  color: #94A8A1 !important; /* olive-400 */
+}
+
+.leaflet-popup-close-button:hover {
+  color: #F5F7F6 !important;
+}
+
+.leaflet-control-zoom a {
+  background: #151F1C !important;
+  border-color: #2A3632 !important;
+  color: #F5F7F6 !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: #2A3632 !important;
+}
+
+.leaflet-control-layers {
+  background: #151F1C !important;
+  border-color: #2A3632 !important;
+  color: #E6EBE9 !important; /* olive-100 */
+}
+.leaflet-control-layers-toggle {
+  background-color: #151F1C !important;
+}
+
+/* Animation keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Recharts dark theme */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: #2A3632 !important; /* surface-border */
+}
+
+.recharts-text {
+  fill: #94A8A1 !important; /* olive-400 */
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+}
+
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: #151F1C !important;
+  border: 1px solid #2A3632 !important;
+  border-radius: 8px !important;
+}
