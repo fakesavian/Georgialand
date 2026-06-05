@@ -17,31 +17,45 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     let cancelled = false;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
-    async function finishAuth() {
-      const code = searchParams.get('code');
-      const errorDescription = searchParams.get('error_description') || searchParams.get('error');
+    const errorDescription = searchParams.get('error_description') || searchParams.get('error');
+    if (errorDescription) {
+      setError(errorDescription);
+      return undefined;
+    }
 
-      if (errorDescription) {
-        setError(errorDescription);
-        return;
+    const goNext = () => {
+      if (!cancelled) {
+        navigate(next, { replace: true });
       }
+    };
 
+    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        goNext();
+      }
+    });
+
+    async function waitForSession() {
       try {
-        if (code) {
-          const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-          if (exchangeError) throw exchangeError;
-        }
-
-        const { data, error: sessionError } = await supabase.auth.getSession();
-        if (sessionError) throw sessionError;
-
-        if (!data.session) {
-          throw new Error('Auth finished, but no session was created. Please try signing in again.');
+        // createBrowserClient handles OAuth/email-link code detection in the browser.
+        // Do not call exchangeCodeForSession here: Google/Supabase auth codes are
+        // one-time use, and a second exchange can fail with "Unable to exchange external code".
+        for (let attempt = 0; attempt < 20; attempt += 1) {
+          const { data, error: sessionError } = await supabase.auth.getSession();
+          if (sessionError) throw sessionError;
+          if (data.session) {
+            goNext();
+            return;
+          }
+          await new Promise((resolve) => {
+            timeoutId = setTimeout(resolve, 250);
+          });
         }
 
         if (!cancelled) {
-          navigate(next, { replace: true });
+          setError('Sign-in is taking longer than expected. Please go back to login and try once more.');
         }
       } catch (err) {
         if (!cancelled) {
@@ -50,10 +64,12 @@ export default function AuthCallbackPage() {
       }
     }
 
-    finishAuth();
+    waitForSession();
 
     return () => {
       cancelled = true;
+      if (timeoutId) clearTimeout(timeoutId);
+      subscription.subscription.unsubscribe();
     };
   }, [navigate, next, searchParams]);
 
