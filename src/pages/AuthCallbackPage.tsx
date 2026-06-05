@@ -9,11 +9,32 @@ function getSafeNext(next: string | null) {
   return next;
 }
 
+function redactAuthCode(value: string) {
+  return value
+    .replace(/4\/[0-9A-Za-z_\-.]+/g, '4/[redacted-google-code]')
+    .replace(/(code=)[^&#\s]+/gi, '$1[redacted-code]');
+}
+
+function getFriendlyCallbackError(message: string) {
+  const lower = message.toLowerCase();
+
+  if (lower.includes('unable to exchange external code')) {
+    return 'Google sign-in could not be completed. Please try again, or log in with your password. If this keeps happening, the Google/Supabase OAuth settings need to be corrected.';
+  }
+
+  if (lower.includes('access_denied')) {
+    return 'Google sign-in was cancelled. Please try again when you are ready.';
+  }
+
+  return redactAuthCode(message);
+}
+
 export default function AuthCallbackPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const next = useMemo(() => getSafeNext(searchParams.get('next')), [searchParams]);
+  const loginHref = useMemo(() => `/login?next=${encodeURIComponent(next)}`, [next]);
 
   useEffect(() => {
     let cancelled = false;
@@ -21,7 +42,14 @@ export default function AuthCallbackPage() {
 
     const errorDescription = searchParams.get('error_description') || searchParams.get('error');
     if (errorDescription) {
-      setError(errorDescription);
+      console.warn('Auth callback returned an error', {
+        error: searchParams.get('error'),
+        errorCode: searchParams.get('error_code'),
+        errorDescription: redactAuthCode(errorDescription),
+        callbackPath: window.location.pathname,
+        next,
+      });
+      setError(getFriendlyCallbackError(errorDescription));
       return undefined;
     }
 
@@ -96,12 +124,20 @@ export default function AuthCallbackPage() {
               </div>
               <h3 className="text-lg font-bold text-white mb-2">Sign-in could not be completed</h3>
               <p className="text-sm text-olive-300 mb-6">{error}</p>
-              <Link
-                to="/login"
-                className="inline-flex justify-center items-center rounded-lg bg-brand-500 px-4 py-2 text-sm font-bold text-olive-950 hover:bg-brand-400 transition-colors"
-              >
-                Back to login
-              </Link>
+              <div className="flex flex-col sm:flex-row justify-center gap-3">
+                <Link
+                  to={loginHref}
+                  className="inline-flex justify-center items-center rounded-lg bg-brand-500 px-4 py-2 text-sm font-bold text-olive-950 hover:bg-brand-400 transition-colors"
+                >
+                  Back to login
+                </Link>
+                <Link
+                  to="/signup"
+                  className="inline-flex justify-center items-center rounded-lg border border-olive-700 px-4 py-2 text-sm font-bold text-white hover:bg-olive-800 transition-colors"
+                >
+                  Use email sign-up
+                </Link>
+              </div>
             </>
           ) : (
             <>

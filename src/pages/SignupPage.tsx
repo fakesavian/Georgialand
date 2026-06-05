@@ -3,6 +3,12 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { AlertTriangle, ArrowRight, Eye, EyeOff, Loader2, Lock, Mail, MapPin } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
+function getSafeNext(next: string | null) {
+  if (!next || !next.startsWith('/')) return null;
+  if (next.startsWith('//')) return null;
+  return next;
+}
+
 function isInAppBrowser() {
   if (typeof navigator === 'undefined') return false;
   return /FBAN|FBAV|FB_IAB|Instagram|Line|Messenger|Twitter|TikTok/i.test(navigator.userAgent);
@@ -41,6 +47,9 @@ export default function SignupPage() {
   const inAppBrowser = useMemo(isInAppBrowser, []);
 
   const buildDestination = () => {
+    const explicitNext = getSafeNext(searchParams.get('next'));
+    if (explicitNext) return explicitNext;
+
     const plan = searchParams.get('plan');
     const billing = searchParams.get('billing');
     return plan
