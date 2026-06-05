@@ -48,7 +48,7 @@ export default function SignupPage() {
       : '/dashboard';
   };
 
-  const buildRedirectUrl = () => `${window.location.origin}${buildDestination()}`;
+  const buildRedirectUrl = () => `${window.location.origin}/auth/callback?next=${encodeURIComponent(buildDestination())}`;
 
   const loginHref = `/login${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
 

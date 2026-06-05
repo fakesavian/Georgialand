@@ -47,7 +47,7 @@ export default function LoginPage() {
       : '/dashboard';
   };
 
-  const buildRedirectUrl = () => `${window.location.origin}${buildDestination()}`;
+  const buildRedirectUrl = () => `${window.location.origin}/auth/callback?next=${encodeURIComponent(buildDestination())}`;
   const signupHref = `/signup${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
 
   const handlePasswordLogin = async (e: React.FormEvent) => {

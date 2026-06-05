@@ -96,6 +96,7 @@ Add Redirect URLs:
 
 ```text
 https://georgialand.vercel.app/**
+https://georgialand.vercel.app/auth/callback
 https://georgialand.vercel.app/dashboard
 https://georgialand.vercel.app/pricing
 http://localhost:5173/**
