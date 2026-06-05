@@ -1,11 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../lib/AuthContext';
-import { LogOut, ArrowRight, MapPin, CheckCircle2, ShieldCheck, FileText } from 'lucide-react';
+import { LogOut, ArrowRight, MapPin, CheckCircle2, ShieldCheck, FileText, Loader2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { PAID_PLANS, PaidPlanId } from '../lib/stripePlans';
+import { openBillingPortal, startCheckout } from '../lib/stripeClient';
 
 export default function AccountPage() {
   const { user, profile, accessLevel, signOut } = useAuth();
+  const [checkoutPlan, setCheckoutPlan] = useState<PaidPlanId | null>(null);
+  const [billingPortalLoading, setBillingPortalLoading] = useState(false);
+  const [billingError, setBillingError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const handleCheckout = async (planId: PaidPlanId) => {
+    setBillingError(null);
+    setCheckoutPlan(planId);
+    try {
+      await startCheckout(planId, 'monthly');
+    } catch (err: any) {
+      setBillingError(err?.message || 'Unable to start checkout. Please try again.');
+      setCheckoutPlan(null);
+    }
+  };
+
+  const handleBillingPortal = async () => {
+    setBillingError(null);
+    setBillingPortalLoading(true);
+    try {
+      await openBillingPortal();
+    } catch (err: any) {
+      setBillingError(err?.message || 'Unable to open the billing portal. Please try again.');
+      setBillingPortalLoading(false);
+    }
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -24,30 +51,7 @@ export default function AccountPage() {
     }
   };
 
-  const plans = [
-    {
-      level: 'dashboard_starter',
-      name: 'Starter',
-      price: '$39',
-      features: ['Full 10,000+ lead database', 'Advanced filters & map view', 'Updates every 48 hours'],
-      url: import.meta.env.VITE_DASHBOARD_STARTER_CHECKOUT_URL || '',
-    },
-    {
-      level: 'dashboard_pro',
-      name: 'Pro',
-      price: '$79',
-      features: ['Everything in Starter', 'Favorites, Notes & Lead Cards', 'Unlimited CSV Exports'],
-      url: import.meta.env.VITE_DASHBOARD_PRO_CHECKOUT_URL || '',
-      highlight: true,
-    },
-    {
-      level: 'dashboard_investor',
-      name: 'Investor',
-      price: '$149',
-      features: ['Everything in Pro', 'Direct Agency Contacts', 'Priority Deal Workflows', 'Commercial Monetization Matrix'],
-      url: import.meta.env.VITE_DASHBOARD_INVESTOR_CHECKOUT_URL || '',
-    }
-  ];
+  const plans = PAID_PLANS;
 
   return (
     <div className="min-h-screen bg-olive-950 text-olive-50 font-sans">
@@ -102,14 +106,20 @@ export default function AccountPage() {
                 You currently have <strong>{getPlanName()}</strong> access. Upgrade your plan below to unlock full database features, unlimited exports, and agency contact workflows.
               </p>
 
+              {billingError && (
+                <div className="mb-4 rounded-lg border border-accent-danger/40 bg-accent-danger/10 p-3 text-sm text-accent-danger">
+                  {billingError}
+                </div>
+              )}
+
               {accessLevel === 'free_preview' || accessLevel === 'report_buyer' ? (
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {plans.map((plan) => (
                     <div key={plan.name} className={`rounded-xl border p-4 flex flex-col ${
-                      plan.highlight ? 'border-brand-500 bg-brand-950/20' : 'border-surface-border bg-olive-900/50'
+                      plan.id === 'pro' ? 'border-brand-500 bg-brand-950/20' : 'border-surface-border bg-olive-900/50'
                     }`}>
-                      <div className="text-sm font-bold text-white mb-1">{plan.name}</div>
-                      <div className="text-xl font-display font-bold text-brand-400 mb-3">{plan.price}<span className="text-xs text-olive-500 font-sans">/mo</span></div>
+                      <div className="text-sm font-bold text-white mb-1">{plan.name.replace('Dashboard ', '')}</div>
+                      <div className="text-xl font-display font-bold text-brand-400 mb-3">{plan.monthlyPrice}<span className="text-xs text-olive-500 font-sans">/mo</span></div>
                       <ul className="space-y-2 mb-4 flex-1">
                         {plan.features.map((f, i) => (
                           <li key={i} className="text-xs text-olive-300 flex items-start gap-1.5">
@@ -118,26 +128,42 @@ export default function AccountPage() {
                           </li>
                         ))}
                       </ul>
-                      {plan.url ? (
-                        <a href={plan.url} className={`w-full py-2 rounded-lg text-xs font-bold text-center transition-colors ${
-                          plan.highlight ? 'bg-brand-500 text-olive-950 hover:bg-brand-400' : 'bg-olive-800 text-white hover:bg-olive-700'
-                        }`}>
-                          Upgrade to {plan.name}
-                        </a>
-                      ) : (
-                        <button disabled className={`w-full py-2 rounded-lg text-xs font-bold text-center opacity-50 cursor-not-allowed ${
-                          plan.highlight ? 'bg-brand-500 text-olive-950' : 'bg-olive-800 text-white'
-                        }`}>
-                          Coming Soon
-                        </button>
-                      )}
+                      <button
+                        type="button"
+                        disabled={checkoutPlan === plan.id}
+                        onClick={() => handleCheckout(plan.id)}
+                        className={`w-full py-2 rounded-lg text-xs font-bold text-center transition-colors ${
+                          plan.id === 'pro' ? 'bg-brand-500 text-olive-950 hover:bg-brand-400' : 'bg-olive-800 text-white hover:bg-olive-700'
+                        } disabled:opacity-60 disabled:cursor-not-allowed`}
+                      >
+                        {checkoutPlan === plan.id ? (
+                          <span className="inline-flex items-center justify-center gap-1.5">
+                            <Loader2 size={12} className="animate-spin" /> Redirecting...
+                          </span>
+                        ) : (
+                          `Upgrade to ${plan.name.replace('Dashboard ', '')}`
+                        )}
+                      </button>
                     </div>
                   ))}
                 </div>
               ) : (
                 <div className="bg-olive-900/50 rounded-lg p-4 border border-surface-border text-sm text-olive-400 flex items-center justify-between">
                   <span>To change or cancel your subscription, please visit the billing portal.</span>
-                  <a href="#" className="btn-secondary text-xs">Billing Portal</a>
+                  <button
+                    type="button"
+                    onClick={handleBillingPortal}
+                    disabled={billingPortalLoading}
+                    className="btn-secondary text-xs disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {billingPortalLoading ? (
+                      <span className="inline-flex items-center gap-1.5">
+                        <Loader2 size={12} className="animate-spin" /> Opening...
+                      </span>
+                    ) : (
+                      'Billing Portal'
+                    )}
+                  </button>
                 </div>
               )}
             </div>

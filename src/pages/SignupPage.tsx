@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { MapPin, Mail, Loader2, ArrowRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -8,7 +8,16 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const buildRedirectUrl = () => {
+    const plan = searchParams.get('plan');
+    const billing = searchParams.get('billing');
+    const destination = plan
+      ? `/pricing?plan=${encodeURIComponent(plan)}&billing=${encodeURIComponent(billing || 'monthly')}`
+      : '/dashboard';
+    return `${window.location.origin}${destination}`;
+  };
 
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,7 +27,7 @@ export default function SignupPage() {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
+        emailRedirectTo: buildRedirectUrl(),
       },
     });
 
@@ -35,7 +44,7 @@ export default function SignupPage() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/dashboard`,
+        redirectTo: buildRedirectUrl(),
       },
     });
   };

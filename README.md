@@ -72,13 +72,21 @@ Add the following for each environment (Production / Preview / Development):
 
 | Variable | Required | Description |
 |---|---|---|
-| `VITE_SITE_URL` | ✅ | Your production URL, e.g. `https://georgialandfinder.com` |
+| `VITE_SITE_URL` | ✅ | Your production URL, e.g. `https://georgialandfinder.com`; used by the browser for canonical URLs and marketing metadata |
+| `SITE_URL` | ✅ for APIs | Server-side canonical URL used for Stripe Checkout success/cancel and Billing Portal return URLs; set to the same deployed origin |
 | `VITE_SUPABASE_URL` | ✅ | Supabase project URL |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | ✅ | Browser-safe Supabase publishable key |
-| `VITE_DASHBOARD_STARTER_CHECKOUT_URL` | When selling | Stripe/Gumroad checkout link for $39/mo tier |
-| `VITE_DASHBOARD_PRO_CHECKOUT_URL` | When selling | Stripe/Gumroad checkout link for $79/mo tier |
-| `VITE_DASHBOARD_INVESTOR_CHECKOUT_URL` | When selling | Stripe/Gumroad checkout link for $149/mo tier |
-| `VITE_REPORT_CHECKOUT_URL` | When selling | Checkout link for $29 one-time report |
+| `VITE_STRIPE_PUBLISHABLE_KEY` | Optional | Browser-safe Stripe publishable key for Georgia Land test/live mode; current server-created Checkout redirect flow does not require Stripe.js, but keep this available for future embedded/client Stripe UI |
+| `STRIPE_SECRET_KEY` | When selling | Server-only Stripe secret key used by `/api/create-checkout-session`, `/api/create-billing-portal-session`, and webhook processing |
+| `STRIPE_WEBHOOK_SECRET` | When selling | Server-only webhook signing secret for `/api/stripe-webhook` |
+| `SUPABASE_SERVICE_ROLE_KEY` | ✅ for APIs | Server-only Supabase service role key used by Vercel functions; never expose this in `VITE_*` values |
+| `STRIPE_DASHBOARD_STARTER_MONTHLY_PRICE_ID` | When selling | Stripe recurring monthly Price ID for Dashboard Starter ($39/mo) |
+| `STRIPE_DASHBOARD_STARTER_ANNUAL_PRICE_ID` | When selling | Stripe recurring yearly Price ID for Dashboard Starter ($35/mo equivalent; charge $420/year) |
+| `STRIPE_DASHBOARD_PRO_MONTHLY_PRICE_ID` | When selling | Stripe recurring monthly Price ID for Dashboard Pro ($79/mo) |
+| `STRIPE_DASHBOARD_PRO_ANNUAL_PRICE_ID` | When selling | Stripe recurring yearly Price ID for Dashboard Pro ($69/mo equivalent; charge $828/year) |
+| `STRIPE_DASHBOARD_INVESTOR_MONTHLY_PRICE_ID` | When selling | Stripe recurring monthly Price ID for Dashboard Investor ($149/mo) |
+| `STRIPE_DASHBOARD_INVESTOR_ANNUAL_PRICE_ID` | When selling | Stripe recurring yearly Price ID for Dashboard Investor ($129/mo equivalent; charge $1,548/year) |
+| `VITE_REPORT_CHECKOUT_URL` | Optional | Checkout link for the $29 one-time report, if you keep the one-time report on Payment Links |
 | `VITE_PLAUSIBLE_DOMAIN` | Optional | Your domain for Plausible analytics |
 | `VITE_POSTHOG_KEY` | Optional | PostHog project API key |
 | `VITE_ANALYTICS_PROVIDER` | Optional | `console` \| `plausible` \| `posthog` (default: `console`) |
@@ -87,21 +95,28 @@ Add the following for each environment (Production / Preview / Development):
 >
 > See [`PRODUCTION_SETUP.md`](./PRODUCTION_SETUP.md) for the Supabase schema, storage buckets, Vercel env list, and smoke-test checklist.
 
-### Setting up Stripe Payment Links & Webhooks
+### Setting up Stripe Checkout Sessions & Webhooks
 
-To enable checkout for the subscription tiers and the one-time report, and to ensure users automatically receive their access roles, you need to configure Stripe Payment Links and a Webhook.
+The dashboard subscription tiers use authenticated server-side Stripe Checkout Sessions. Pricing buttons call `/api/create-checkout-session`, which creates/reuses a Stripe Customer tied to the signed-in Supabase user and redirects to Stripe Checkout. Webhooks then update `profiles.access_level` and `subscriptions`.
 
-**1. Create Products and Metadata**
-Go to **Stripe Dashboard → Products**. Create the following products and **crucially**, add a metadata key called `access_level` to each product so the webhook knows what to grant:
-   - Dashboard Starter ($39/mo recurring) -> Metadata: `access_level: dashboard_starter`
-   - Dashboard Pro ($79/mo recurring) -> Metadata: `access_level: dashboard_pro`
-   - Dashboard Investor ($149/mo recurring) -> Metadata: `access_level: dashboard_investor`
-   - Georgia Land Report ($29 one-time) -> Metadata: `access_level: report_buyer`
+**1. Create Products and Prices**
 
-**2. Create Payment Links**
-For each product, generate a Stripe Payment Link and paste the URL into your `.env` file under the corresponding `VITE_*_CHECKOUT_URL` variables.
+Go to **Stripe Dashboard → Product catalog** and create these recurring Prices:
+
+| Plan | Monthly Price | Annual Price | Product metadata |
+|---|---:|---:|---|
+| Dashboard Starter | `$39/mo` | `$420/year` | `access_level=dashboard_starter` |
+| Dashboard Pro | `$79/mo` | `$828/year` | `access_level=dashboard_pro` |
+| Dashboard Investor | `$149/mo` | `$1548/year` | `access_level=dashboard_investor` |
+
+Copy each Price ID into the corresponding `STRIPE_DASHBOARD_*_PRICE_ID` environment variable above.
+
+**2. Configure server environment variables**
+
+In Vercel, set `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`, all six `STRIPE_DASHBOARD_*_PRICE_ID` values, plus the existing browser-safe `VITE_SUPABASE_*` variables.
 
 **3. Configure Webhook**
+
 Go to **Stripe Dashboard → Developers → Webhooks**. Add a new endpoint pointing to `https://your-production-url.com/api/stripe-webhook`.
 Listen for the following events:
    - `checkout.session.completed`
@@ -111,7 +126,7 @@ Listen for the following events:
    - `invoice.payment_succeeded`
    - `invoice.payment_failed`
 
-Copy the **Signing Secret** and place it in your `.env` as `STRIPE_WEBHOOK_SECRET`. Also add your `STRIPE_SECRET_KEY`.
+Copy the **Signing Secret** and place it in Vercel as `STRIPE_WEBHOOK_SECRET`.
 
 ## SEO Maintenance
 The application includes a robust SEO architecture using `react-helmet-async`, `public/robots.txt`, and `public/sitemap.xml`.

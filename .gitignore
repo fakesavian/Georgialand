@@ -6,9 +6,6 @@ dist/
 .vercel/
 
 # Local environment / secrets
-.env
-.env.*
-!.env.example
 
 # Logs
 *.log
@@ -38,3 +35,17 @@ georgia_low_cost_land_opportunities_enriched.csv
 georgia_low_cost_land_opportunities.csv
 georgia_low_cost_land_report.csv
 georgia_low_cost_land_report.md
+
+# Stripe Projects CLI local/generated metadata
+.projects/
+
+# Generated AI/agent tool metadata
+.agents/
+.claude/
+.cursor/
+AGENTS.md
+CLAUDE.md
+
+.env
+.env.*
+!.env.example

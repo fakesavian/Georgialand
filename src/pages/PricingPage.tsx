@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Layers, CheckCircle2, Star, Zap, Crown, ArrowRight } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Layers, CheckCircle2, Star, Zap, Crown, ArrowRight, Loader2 } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
 import SEO from '../components/SEO';
+import { useAuth } from '../lib/AuthContext';
+import { startCheckout } from '../lib/stripeClient';
+import { PAID_PLANS, PaidPlanId, BillingCycle } from '../lib/stripePlans';
 
 const PLANS = [
   {
@@ -30,86 +33,70 @@ const PLANS = [
     annualEnvKey: null,
   },
   {
-    id: 'starter',
-    name: 'Dashboard Starter',
-    monthlyPrice: '$39',
-    annualMonthlyPrice: '$35',
-    monthlyPeriod: '/ mo',
-    annualPeriod: '/ mo',
-    desc: 'Full searchable database access for active researchers.',
-    annualDesc: 'Full searchable database access with a lower effective monthly rate when prepaid annually.',
-    features: [
-      'Full database — all listings, all counties',
-      'Unified search + 15+ advanced filters',
-      'Risk score, fit score, data confidence',
-      'Aerial map and GIS source links',
-    ],
-    cta: 'Get Started',
-    annualCta: 'Start Annual Plan',
+    ...PAID_PLANS[0],
     ctaLink: null,
     variant: 'secondary' as const,
     icon: <Zap size={20} className="text-brand-400" />,
     popular: false,
-    monthlyEnvKey: 'VITE_DASHBOARD_STARTER_CHECKOUT_URL',
-    annualEnvKey: 'VITE_DASHBOARD_STARTER_ANNUAL_CHECKOUT_URL',
   },
   {
-    id: 'pro',
-    name: 'Dashboard Pro',
-    monthlyPrice: '$79',
-    annualMonthlyPrice: '$69',
-    monthlyPeriod: '/ mo',
-    annualPeriod: '/ mo',
-    desc: 'Full workflow tools for serious investors and builders.',
-    annualDesc: 'Full workflow tools with annual upfront billing and a lower monthly-equivalent rate.',
-    features: [
-      'Everything in Starter',
-      'CSV exports and lead card exports',
-      'Saved leads and personal notes',
-      'Lead card builder (MD / HTML / CSV)',
-      'Data quality audit panel',
-    ],
-    cta: 'Get Pro',
-    annualCta: 'Get Pro Annual',
+    ...PAID_PLANS[1],
     ctaLink: null,
     variant: 'primary' as const,
     icon: <Crown size={20} className="text-brand-300" />,
     popular: true,
-    monthlyEnvKey: 'VITE_DASHBOARD_PRO_CHECKOUT_URL',
-    annualEnvKey: 'VITE_DASHBOARD_PRO_ANNUAL_CHECKOUT_URL',
   },
   {
-    id: 'investor',
-    name: 'Dashboard Investor',
-    monthlyPrice: '$149',
-    annualMonthlyPrice: '$129',
-    monthlyPeriod: '/ mo',
-    annualPeriod: '/ mo',
-    desc: 'Agency-grade tools for high-volume deal sourcing.',
-    annualDesc: 'Agency-grade tools with annual upfront billing and a lower monthly-equivalent rate.',
-    features: [
-      'Everything in Pro',
-      'Priority and high-fit property alerts',
-      'Agency contacts and deal pipeline view',
-      'Investor-grade property scoring view',
-      'Multi-county watchlists',
-    ],
-    cta: 'Get Investor',
-    annualCta: 'Get Investor Annual',
+    ...PAID_PLANS[2],
     ctaLink: null,
     variant: 'secondary' as const,
     icon: <Crown size={20} className="text-amber-400" />,
     popular: false,
-    monthlyEnvKey: 'VITE_DASHBOARD_INVESTOR_CHECKOUT_URL',
-    annualEnvKey: 'VITE_DASHBOARD_INVESTOR_ANNUAL_CHECKOUT_URL',
   },
 ];
 
-type BillingCycle = 'monthly' | 'annual';
-
 export default function PricingPage() {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
+  const [checkoutPlan, setCheckoutPlan] = useState<PaidPlanId | null>(null);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [autoCheckoutStarted, setAutoCheckoutStarted] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const isAnnual = billingCycle === 'annual';
+
+  const handleCheckout = async (planId: PaidPlanId, planName: string, selectedCycle: BillingCycle = billingCycle) => {
+    setCheckoutError(null);
+
+    if (!user) {
+      trackEvent('Sales', 'checkout sign-in required', `${planName} ${selectedCycle}`);
+      navigate(`/signup?plan=${planId}&billing=${selectedCycle}`);
+      return;
+    }
+
+    setCheckoutPlan(planId);
+    try {
+      trackEvent('Sales', 'checkout clicks', `${planName} ${selectedCycle}`);
+      await startCheckout(planId, selectedCycle);
+    } catch (err: any) {
+      setCheckoutError(err?.message || 'Unable to start checkout. Please try again.');
+      setCheckoutPlan(null);
+    }
+  };
+
+  useEffect(() => {
+    const planId = searchParams.get('plan') as PaidPlanId | null;
+    const billing = searchParams.get('billing') as BillingCycle | null;
+    const selectedPlan = planId ? PAID_PLANS.find((plan) => plan.id === planId) : null;
+
+    if (!user || autoCheckoutStarted || !selectedPlan) return;
+
+    const selectedCycle = billing === 'annual' || billing === 'monthly' ? billing : 'monthly';
+    setBillingCycle(selectedCycle);
+
+    setAutoCheckoutStarted(true);
+    void handleCheckout(selectedPlan.id, selectedPlan.name, selectedCycle);
+  }, [autoCheckoutStarted, searchParams, user]);
 
   return (
     <div className="min-h-screen bg-olive-950 text-olive-50 font-sans">
@@ -173,6 +160,11 @@ export default function PricingPage() {
             <p className="text-xs text-olive-500 text-center">
               Annual plans show the monthly-equivalent discount and are charged upfront once per year through Stripe.
             </p>
+            {checkoutError && (
+              <p className="max-w-xl rounded-lg border border-accent-danger/40 bg-accent-danger/10 px-4 py-2 text-center text-sm text-accent-danger">
+                {checkoutError}
+              </p>
+            )}
           </div>
 
           <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6 items-start">
@@ -180,9 +172,9 @@ export default function PricingPage() {
               const price = isAnnual ? plan.annualMonthlyPrice : plan.monthlyPrice;
               const period = isAnnual ? plan.annualPeriod : plan.monthlyPeriod;
               const description = isAnnual ? plan.annualDesc : plan.desc;
-              const checkoutEnvKey = isAnnual ? plan.annualEnvKey : plan.monthlyEnvKey;
-              const checkoutUrl = checkoutEnvKey ? (import.meta.env as Record<string, string>)[checkoutEnvKey] : null;
               const ctaLabel = isAnnual ? plan.annualCta : plan.cta;
+              const isPaidPlan = plan.id !== 'free';
+              const isCheckingOut = checkoutPlan === plan.id;
 
               return (
               <div
@@ -243,28 +235,26 @@ export default function PricingPage() {
                     {ctaLabel} <ArrowRight size={14} />
                   </Link>
                 ) : (
-                  checkoutUrl ? (
-                    <a
-                      href={checkoutUrl}
-                      onClick={() => trackEvent('Sales', 'checkout clicks', `${plan.name} ${billingCycle}`)}
-                      className={`w-full text-center justify-center inline-flex items-center gap-2 ${
-                        plan.variant === 'primary' ? 'btn-primary' :
-                        'btn-secondary bg-olive-800'
-                      }`}
-                    >
-                      {ctaLabel} <ArrowRight size={14} />
-                    </a>
-                  ) : (
-                    <button
-                      disabled
-                      className={`w-full text-center justify-center inline-flex items-center gap-2 opacity-50 cursor-not-allowed ${
-                        plan.variant === 'primary' ? 'btn-primary' :
-                        'btn-secondary bg-olive-800'
-                      }`}
-                    >
-                      {isAnnual ? 'Annual Coming Soon' : 'Coming Soon'}
-                    </button>
-                  )
+                  <button
+                    type="button"
+                    disabled={!isPaidPlan || isCheckingOut}
+                    onClick={() => handleCheckout(plan.id as PaidPlanId, plan.name)}
+                    className={`w-full text-center justify-center inline-flex items-center gap-2 ${
+                      plan.variant === 'primary' ? 'btn-primary' :
+                      'btn-secondary bg-olive-800'
+                    } disabled:opacity-60 disabled:cursor-not-allowed`}
+                  >
+                    {isCheckingOut ? (
+                      <>
+                        <Loader2 size={14} className="animate-spin" />
+                        Redirecting...
+                      </>
+                    ) : (
+                      <>
+                        {ctaLabel} <ArrowRight size={14} />
+                      </>
+                    )}
+                  </button>
                 )}
               </div>
               );
