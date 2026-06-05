@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Layers, CheckCircle2, Star, Zap, Crown, ArrowRight } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
@@ -8,9 +8,13 @@ const PLANS = [
   {
     id: 'free',
     name: 'Free Sample',
-    price: '$0',
-    period: null,
+    monthlyPrice: '$0',
+    annualMonthlyPrice: '$0',
+    annualTotal: null,
+    monthlyPeriod: null,
+    annualPeriod: null,
     desc: 'Proof of value — no credit card required.',
+    annualDesc: 'Proof of value — no credit card required.',
     features: [
       '10 hand-curated land leads',
       'Basic risk notes on each property',
@@ -18,19 +22,24 @@ const PLANS = [
       'Due-diligence checklist included',
     ],
     cta: 'Get Sample',
+    annualCta: 'Get Sample',
     ctaLink: '/free-sample',
-    ctaHref: null,
     variant: 'ghost' as const,
     icon: <Star size={20} className="text-olive-400" />,
     popular: false,
-    envKey: null,
+    monthlyEnvKey: null,
+    annualEnvKey: null,
   },
   {
     id: 'starter',
     name: 'Dashboard Starter',
-    price: '$39',
-    period: '/ mo',
+    monthlyPrice: '$39',
+    annualMonthlyPrice: '$35',
+    annualTotal: '$420 billed today',
+    monthlyPeriod: '/ mo',
+    annualPeriod: '/ mo',
     desc: 'Full searchable database access for active researchers.',
+    annualDesc: 'Full searchable database access with a lower effective monthly rate when prepaid annually.',
     features: [
       'Full database — all listings, all counties',
       'Unified search + 15+ advanced filters',
@@ -38,19 +47,24 @@ const PLANS = [
       'Aerial map and GIS source links',
     ],
     cta: 'Get Started',
+    annualCta: 'Start Annual Plan',
     ctaLink: null,
-    ctaHref: 'VITE_DASHBOARD_STARTER_CHECKOUT_URL',
     variant: 'secondary' as const,
     icon: <Zap size={20} className="text-brand-400" />,
     popular: false,
-    envKey: 'VITE_DASHBOARD_STARTER_CHECKOUT_URL',
+    monthlyEnvKey: 'VITE_DASHBOARD_STARTER_CHECKOUT_URL',
+    annualEnvKey: 'VITE_DASHBOARD_STARTER_ANNUAL_CHECKOUT_URL',
   },
   {
     id: 'pro',
     name: 'Dashboard Pro',
-    price: '$79',
-    period: '/ mo',
+    monthlyPrice: '$79',
+    annualMonthlyPrice: '$69',
+    annualTotal: '$828 billed today',
+    monthlyPeriod: '/ mo',
+    annualPeriod: '/ mo',
     desc: 'Full workflow tools for serious investors and builders.',
+    annualDesc: 'Full workflow tools with annual upfront billing and a lower monthly-equivalent rate.',
     features: [
       'Everything in Starter',
       'CSV exports and lead card exports',
@@ -59,19 +73,24 @@ const PLANS = [
       'Data quality audit panel',
     ],
     cta: 'Get Pro',
+    annualCta: 'Get Pro Annual',
     ctaLink: null,
-    ctaHref: 'VITE_DASHBOARD_PRO_CHECKOUT_URL',
     variant: 'primary' as const,
     icon: <Crown size={20} className="text-brand-300" />,
     popular: true,
-    envKey: 'VITE_DASHBOARD_PRO_CHECKOUT_URL',
+    monthlyEnvKey: 'VITE_DASHBOARD_PRO_CHECKOUT_URL',
+    annualEnvKey: 'VITE_DASHBOARD_PRO_ANNUAL_CHECKOUT_URL',
   },
   {
     id: 'investor',
     name: 'Dashboard Investor',
-    price: '$149',
-    period: '/ mo',
+    monthlyPrice: '$149',
+    annualMonthlyPrice: '$129',
+    annualTotal: '$1,548 billed today',
+    monthlyPeriod: '/ mo',
+    annualPeriod: '/ mo',
     desc: 'Agency-grade tools for high-volume deal sourcing.',
+    annualDesc: 'Agency-grade tools with annual upfront billing and a lower monthly-equivalent rate.',
     features: [
       'Everything in Pro',
       'Priority and high-fit property alerts',
@@ -80,16 +99,22 @@ const PLANS = [
       'Multi-county watchlists',
     ],
     cta: 'Get Investor',
+    annualCta: 'Get Investor Annual',
     ctaLink: null,
-    ctaHref: 'VITE_DASHBOARD_INVESTOR_CHECKOUT_URL',
     variant: 'secondary' as const,
     icon: <Crown size={20} className="text-amber-400" />,
     popular: false,
-    envKey: 'VITE_DASHBOARD_INVESTOR_CHECKOUT_URL',
+    monthlyEnvKey: 'VITE_DASHBOARD_INVESTOR_CHECKOUT_URL',
+    annualEnvKey: 'VITE_DASHBOARD_INVESTOR_ANNUAL_CHECKOUT_URL',
   },
 ];
 
+type BillingCycle = 'monthly' | 'annual';
+
 export default function PricingPage() {
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
+  const isAnnual = billingCycle === 'annual';
+
   return (
     <div className="min-h-screen bg-olive-950 text-olive-50 font-sans">
       <SEO 
@@ -128,8 +153,42 @@ export default function PricingPage() {
       {/* Pricing Cards */}
       <section className="py-12 px-6">
         <div className="max-w-7xl mx-auto">
+          <div className="mb-10 flex flex-col items-center gap-3">
+            <div className="inline-flex items-center gap-1 rounded-full border border-surface-border bg-olive-900/80 p-1 shadow-[0_0_25px_rgba(34,197,94,0.08)]">
+              {(['monthly', 'annual'] as BillingCycle[]).map((cycle) => (
+                <button
+                  key={cycle}
+                  type="button"
+                  onClick={() => {
+                    setBillingCycle(cycle);
+                    trackEvent('Sales', 'billing_toggle', cycle);
+                  }}
+                  aria-pressed={billingCycle === cycle}
+                  className={`rounded-full px-5 py-2 text-xs font-bold uppercase tracking-wider transition-all ${
+                    billingCycle === cycle
+                      ? 'bg-brand-500 text-olive-950 shadow-md'
+                      : 'text-olive-400 hover:text-white'
+                  }`}
+                >
+                  {cycle === 'monthly' ? 'Monthly' : 'Annual'}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-olive-500 text-center">
+              Annual plans show the monthly-equivalent discount and are charged upfront once per year through Stripe.
+            </p>
+          </div>
+
           <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6 items-start">
-            {PLANS.map((plan) => (
+            {PLANS.map((plan) => {
+              const price = isAnnual ? plan.annualMonthlyPrice : plan.monthlyPrice;
+              const period = isAnnual ? plan.annualPeriod : plan.monthlyPeriod;
+              const description = isAnnual ? plan.annualDesc : plan.desc;
+              const checkoutEnvKey = isAnnual ? plan.annualEnvKey : plan.monthlyEnvKey;
+              const checkoutUrl = checkoutEnvKey ? (import.meta.env as Record<string, string>)[checkoutEnvKey] : null;
+              const ctaLabel = isAnnual ? plan.annualCta : plan.cta;
+
+              return (
               <div
                 key={plan.id}
                 className={`card flex flex-col relative transition-all duration-200 ${
@@ -154,12 +213,17 @@ export default function PricingPage() {
                     <h3 className="text-lg font-display font-bold text-white">{plan.name}</h3>
                   </div>
                   <div className="flex items-baseline gap-1 mb-2">
-                    <span className="text-4xl font-display font-bold text-white">{plan.price}</span>
-                    {plan.period && (
-                      <span className="text-sm font-sans text-olive-400 font-normal">{plan.period}</span>
+                    <span className="text-4xl font-display font-bold text-white">{price}</span>
+                    {period && (
+                      <span className="text-sm font-sans text-olive-400 font-normal">{period}</span>
                     )}
                   </div>
-                  <p className="text-sm text-olive-400 leading-relaxed">{plan.desc}</p>
+                  {isAnnual && plan.annualTotal && (
+                    <p className="text-[11px] font-mono text-brand-400 mb-2">
+                      {plan.annualTotal}
+                    </p>
+                  )}
+                  <p className="text-sm text-olive-400 leading-relaxed">{description}</p>
                 </div>
 
                 {/* Feature list */}
@@ -185,19 +249,19 @@ export default function PricingPage() {
                       'btn-secondary'
                     }`}
                   >
-                    {plan.cta} <ArrowRight size={14} />
+                    {ctaLabel} <ArrowRight size={14} />
                   </Link>
                 ) : (
-                  (import.meta.env as Record<string, string>)[plan.envKey!] ? (
+                  checkoutUrl ? (
                     <a
-                      href={(import.meta.env as Record<string, string>)[plan.envKey!]}
-                      onClick={() => trackEvent('Sales', 'checkout clicks', plan.name)}
+                      href={checkoutUrl}
+                      onClick={() => trackEvent('Sales', 'checkout clicks', `${plan.name} ${billingCycle}`)}
                       className={`w-full text-center justify-center inline-flex items-center gap-2 ${
                         plan.variant === 'primary' ? 'btn-primary' :
                         'btn-secondary bg-olive-800'
                       }`}
                     >
-                      {plan.cta} <ArrowRight size={14} />
+                      {ctaLabel} <ArrowRight size={14} />
                     </a>
                   ) : (
                     <button
@@ -207,12 +271,13 @@ export default function PricingPage() {
                         'btn-secondary bg-olive-800'
                       }`}
                     >
-                      Coming Soon
+                      {isAnnual ? 'Annual Coming Soon' : 'Coming Soon'}
                     </button>
                   )
                 )}
               </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* One-time report upsell (separate from subscription tiers) */}
@@ -249,7 +314,7 @@ export default function PricingPage() {
         <div className="max-w-4xl mx-auto px-6 grid sm:grid-cols-3 gap-8 text-center text-sm">
           <div>
             <p className="font-bold text-white mb-1">Cancel any time</p>
-            <p className="text-olive-500">All subscriptions are month-to-month with no lock-in.</p>
+            <p className="text-olive-500">Monthly plans stay month-to-month; annual plans are prepaid once per year through Stripe.</p>
           </div>
           <div>
             <p className="font-bold text-white mb-1">No hidden fees</p>
