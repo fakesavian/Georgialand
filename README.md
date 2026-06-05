@@ -95,6 +95,20 @@ Add the following for each environment (Production / Preview / Development):
 >
 > See [`PRODUCTION_SETUP.md`](./PRODUCTION_SETUP.md) for the Supabase schema, storage buckets, Vercel env list, and smoke-test checklist.
 
+### Setting up Supabase Auth + Google OAuth
+
+The app supports password login/signup and Google OAuth through Supabase. Password auth works from the browser bundle, but Supabase's built-in email sender can rate-limit confirmation emails during beta testing. Google OAuth avoids confirmation-email bottlenecks once the provider is enabled.
+
+Google OAuth requires dashboard configuration, not frontend secrets. Follow [`docs/GOOGLE_OAUTH_SETUP.md`](./docs/GOOGLE_OAUTH_SETUP.md) to create the Google OAuth client, enable the Google provider in Supabase, and add the redirect allow-list.
+
+For the current Supabase project, the Google OAuth redirect URI to add in Google Cloud is:
+
+```text
+https://mzrfwrgvjmodiozpllpu.supabase.co/auth/v1/callback
+```
+
+If clicking Google returns `Unsupported provider: provider is not enabled`, finish enabling **Authentication → Sign In / Providers → Google** in Supabase.
+
 ### Setting up Stripe Checkout Sessions & Webhooks
 
 The dashboard subscription tiers use authenticated server-side Stripe Checkout Sessions. Pricing buttons call `/api/create-checkout-session`, which creates/reuses a Stripe Customer tied to the signed-in Supabase user and redirects to Stripe Checkout. Webhooks then update `profiles.access_level` and `subscriptions`.
