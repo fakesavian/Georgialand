@@ -10,7 +10,6 @@ const PLANS = [
     name: 'Free Sample',
     monthlyPrice: '$0',
     annualMonthlyPrice: '$0',
-    annualTotal: null,
     monthlyPeriod: null,
     annualPeriod: null,
     desc: 'Proof of value — no credit card required.',
@@ -35,7 +34,6 @@ const PLANS = [
     name: 'Dashboard Starter',
     monthlyPrice: '$39',
     annualMonthlyPrice: '$35',
-    annualTotal: '$420 billed today',
     monthlyPeriod: '/ mo',
     annualPeriod: '/ mo',
     desc: 'Full searchable database access for active researchers.',
@@ -60,7 +58,6 @@ const PLANS = [
     name: 'Dashboard Pro',
     monthlyPrice: '$79',
     annualMonthlyPrice: '$69',
-    annualTotal: '$828 billed today',
     monthlyPeriod: '/ mo',
     annualPeriod: '/ mo',
     desc: 'Full workflow tools for serious investors and builders.',
@@ -86,7 +83,6 @@ const PLANS = [
     name: 'Dashboard Investor',
     monthlyPrice: '$149',
     annualMonthlyPrice: '$129',
-    annualTotal: '$1,548 billed today',
     monthlyPeriod: '/ mo',
     annualPeriod: '/ mo',
     desc: 'Agency-grade tools for high-volume deal sourcing.',
@@ -218,11 +214,6 @@ export default function PricingPage() {
                       <span className="text-sm font-sans text-olive-400 font-normal">{period}</span>
                     )}
                   </div>
-                  {isAnnual && plan.annualTotal && (
-                    <p className="text-[11px] font-mono text-brand-400 mb-2">
-                      {plan.annualTotal}
-                    </p>
-                  )}
                   <p className="text-sm text-olive-400 leading-relaxed">{description}</p>
                 </div>
 
