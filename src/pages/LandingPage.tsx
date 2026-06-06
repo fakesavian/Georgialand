@@ -36,9 +36,11 @@ export default function LandingPage() {
           </div>
           <div className="flex items-center gap-6 text-sm font-semibold">
             <Link to="/pricing" className="text-olive-300 hover:text-white transition-colors">Pricing</Link>
-            <Link to="/free-sample" className="text-olive-300 hover:text-white transition-colors">Free Sample</Link>
-            <Link to="/dashboard" className="btn-primary">
-              Access Dashboard
+            <Link to="/docs" className="text-olive-300 hover:text-white transition-colors">Docs</Link>
+            <Link to="/faq" className="text-olive-300 hover:text-white transition-colors">FAQ</Link>
+            <Link to="/free-tier" className="text-olive-300 hover:text-white transition-colors">Free Tier</Link>
+            <Link to="/free-tier" className="btn-primary">
+              Start Free
             </Link>
           </div>
         </div>
@@ -107,10 +109,10 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             
             <div className="card flex flex-col">
-              <h3 className="text-lg font-display font-bold text-white mb-2">Free Sample</h3>
+              <h3 className="text-lg font-display font-bold text-white mb-2">Free Tier</h3>
               <p className="text-3xl font-display font-bold text-white mb-4">$0</p>
               <p className="text-sm text-olive-400 mb-6 flex-grow">10-lead sample for email capture.</p>
-              <Link to="/free-sample" onClick={() => trackEvent('Marketing', 'pricing views', 'Free Sample')} className="w-full btn-ghost border-surface-border mt-auto">Get Sample</Link>
+              <Link to="/free-tier" onClick={() => trackEvent('Marketing', 'pricing views', 'Free Tier')} className="w-full btn-ghost border-surface-border mt-auto">Start Free Tier</Link>
             </div>
 
             <div className="card flex flex-col bg-olive-800/30 border-olive-700">
@@ -135,6 +137,37 @@ export default function LandingPage() {
               <Link to="/pricing" onClick={() => trackEvent('Marketing', 'pricing views', 'Dashboard Investor')} className="w-full btn-secondary border-surface-border bg-olive-800 mt-auto">View Plans</Link>
             </div>
 
+          </div>
+        </div>
+      </section>
+
+      {/* Documentation + FAQ Funnel */}
+      <section className="py-20 bg-olive-900/30 border-t border-surface-border">
+        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-[1fr_1fr] gap-8 items-stretch">
+          <div className="panel p-8">
+            <p className="text-xs font-bold uppercase tracking-wider text-brand-400 mb-3">How it works</p>
+            <h2 className="text-3xl font-display font-bold text-white mb-4">Read the full product docs before you subscribe.</h2>
+            <p className="text-olive-300 leading-relaxed mb-6">
+              The Docs page explains every major function: Free Tier, dashboard, search, filters, map, GIS layers, source links, risk notes, exports, alerts, billing, and one-time reports.
+            </p>
+            <Link to="/docs" className="btn-secondary bg-olive-800 inline-flex items-center gap-2">
+              Open Docs <ArrowRight size={16} />
+            </Link>
+          </div>
+          <div className="panel p-8 border-brand-500/40 bg-brand-500/5">
+            <p className="text-xs font-bold uppercase tracking-wider text-brand-400 mb-3">New buyer questions</p>
+            <h2 className="text-3xl font-display font-bold text-white mb-4">Still comparing us to county sites and marketplaces?</h2>
+            <p className="text-olive-300 leading-relaxed mb-6">
+              The FAQ answers beginner questions about data accuracy, land research, GIS, MLS limits, Free Tier access, plan differences, and what to verify before buying.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link to="/faq" className="btn-ghost border-surface-border inline-flex items-center gap-2">
+                Read FAQ
+              </Link>
+              <Link to="/free-tier" className="btn-primary inline-flex items-center gap-2">
+                Start Free Tier <ArrowRight size={16} />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -171,6 +204,8 @@ export default function LandingPage() {
             <span className="font-display font-bold text-olive-500 text-sm">Georgia Land Finder</span>
           </div>
           <div className="flex gap-6 text-sm font-medium text-olive-500">
+            <Link to="/docs" className="hover:text-olive-300 transition-colors">Docs</Link>
+            <Link to="/faq" className="hover:text-olive-300 transition-colors">FAQ</Link>
             <Link to="/disclaimer" className="hover:text-olive-300 transition-colors">Disclaimer</Link>
             <Link to="/terms" className="hover:text-olive-300 transition-colors">Terms</Link>
             <Link to="/privacy" className="hover:text-olive-300 transition-colors">Privacy</Link>

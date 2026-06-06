@@ -40,6 +40,87 @@
 }
 
 @layer components {
+  /* Global day/night theme bridge for existing Tailwind pages.
+     Night remains the original dark green theme. Day maps the same hardcoded dark utilities to the light funnel palette. */
+  [data-theme='day'] body,
+  body[data-theme='day'] {
+    background: #f6f8f3;
+    color: #0a1713;
+  }
+
+  [data-theme='day'] .day-toggle-shell {
+    background: rgba(255, 255, 255, 0.92) !important;
+    border-color: rgba(148, 163, 120, 0.35) !important;
+    color: #0a1713 !important;
+  }
+
+  [data-theme='day'] .bg-olive-950,
+  [data-theme='day'] .bg-olive-950\/95,
+  [data-theme='day'] .bg-olive-950\/90,
+  [data-theme='day'] .bg-olive-950\/80 {
+    background-color: #f6f8f3 !important;
+  }
+
+  [data-theme='day'] .bg-olive-900,
+  [data-theme='day'] .bg-olive-900\/85,
+  [data-theme='day'] .bg-olive-900\/80,
+  [data-theme='day'] .bg-olive-900\/70,
+  [data-theme='day'] .bg-olive-900\/60,
+  [data-theme='day'] .bg-olive-900\/50,
+  [data-theme='day'] .bg-olive-900\/30 {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  [data-theme='day'] .bg-olive-800,
+  [data-theme='day'] .bg-olive-800\/40,
+  [data-theme='day'] .bg-olive-800\/30 {
+    background-color: rgba(229, 235, 216, 0.85) !important;
+  }
+
+  [data-theme='day'] .text-white,
+  [data-theme='day'] .text-olive-50,
+  [data-theme='day'] .text-olive-100,
+  [data-theme='day'] .text-olive-200,
+  [data-theme='day'] .text-olive-300 {
+    color: #0a1713 !important;
+  }
+
+  [data-theme='day'] .text-olive-400,
+  [data-theme='day'] .text-olive-500,
+  [data-theme='day'] .text-olive-600 {
+    color: #4b5f55 !important;
+  }
+
+  [data-theme='day'] .border-surface-border,
+  [data-theme='day'] .border-surface-border\/80,
+  [data-theme='day'] .border-olive-700,
+  [data-theme='day'] .border-olive-800 {
+    border-color: rgba(107, 124, 108, 0.28) !important;
+  }
+
+  [data-theme='day'] .card,
+  [data-theme='day'] .panel {
+    background: rgba(255, 255, 255, 0.92) !important;
+    border-color: rgba(107, 124, 108, 0.28) !important;
+    color: #0a1713 !important;
+  }
+
+  [data-theme='day'] .btn-ghost {
+    color: #4b5f55 !important;
+  }
+
+  [data-theme='day'] .btn-ghost:hover {
+    background: rgba(229, 235, 216, 0.85) !important;
+    color: #0a1713 !important;
+  }
+
+  [data-theme='day'] .input,
+  [data-theme='day'] .select {
+    background: #ffffff !important;
+    border-color: rgba(107, 124, 108, 0.28) !important;
+    color: #0a1713 !important;
+  }
+
   /* Cards & Panels */
   .card {
     @apply bg-olive-900 border border-surface-border rounded-xl p-5 shadow-sm;

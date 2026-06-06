@@ -88,34 +88,41 @@ export default function Header({
               </div>
             </div>
 
-            {/* Auth section */}
+            {/* Auth / plan controls */}
             <div className="ml-2 pl-4 border-l border-surface-border flex items-center">
               {isLoading ? (
                 <div className="flex items-center gap-2 text-olive-500">
                   <Loader2 size={14} className="animate-spin" />
                 </div>
-              ) : user ? (
-                <div className="relative group">
-                  <button className="flex items-center gap-2 btn-ghost text-xs border border-surface-border">
-                    <User size={14} />
-                    <span className="hidden sm:inline max-w-[120px] truncate">{profile?.email || user.email}</span>
-                  </button>
-                  <div className="absolute right-0 top-full mt-1 w-48 bg-olive-900 border border-olive-700 rounded-lg shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
-                    <div className="px-3 py-2 text-xs border-b border-olive-800 text-olive-400">
-                      Level: <span className="font-mono text-brand-400 font-bold">{accessLevel}</span>
-                    </div>
-                    <Link to="/account" className="block w-full text-left px-3 py-2 text-sm text-olive-200 hover:bg-olive-800 hover:text-white">
-                      My Account
-                    </Link>
-                    <button onClick={handleSignOut} className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-olive-800 hover:text-red-300 rounded-b-lg flex items-center gap-2">
-                      <LogOut size={14} /> Sign out
-                    </button>
-                  </div>
-                </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <Link to="/login" className="text-xs font-semibold text-olive-300 hover:text-white transition-colors px-2">Log in</Link>
-                  <Link to="/signup" className="text-xs font-semibold btn-primary py-1.5 px-3">Sign up</Link>
+                  <div className="hidden sm:flex items-center gap-2 rounded-lg border border-brand-500/30 bg-brand-500/10 px-3 py-1.5 text-xs font-bold text-brand-300">
+                    <User size={13} />
+                    <span className="uppercase tracking-wide">{accessLevel.replace(/_/g, ' ')}</span>
+                  </div>
+                  <Link to="/pricing" className="text-xs font-semibold btn-primary py-1.5 px-3">
+                    Upgrade
+                  </Link>
+
+                  {user ? (
+                    <div className="relative group">
+                      <button className="flex items-center gap-2 btn-ghost text-xs border border-surface-border">
+                        <User size={14} />
+                        <span className="hidden lg:inline max-w-[120px] truncate">{profile?.email || user.email}</span>
+                      </button>
+                      <div className="absolute right-0 top-full mt-1 w-48 bg-olive-900 border border-olive-700 rounded-lg shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+                        <div className="px-3 py-2 text-xs border-b border-olive-800 text-olive-400">
+                          Level: <span className="font-mono text-brand-400 font-bold">{accessLevel}</span>
+                        </div>
+                        <Link to="/account" className="block w-full text-left px-3 py-2 text-sm text-olive-200 hover:bg-olive-800 hover:text-white">
+                          My Account
+                        </Link>
+                        <button onClick={handleSignOut} className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-olive-800 hover:text-red-300 rounded-b-lg flex items-center gap-2">
+                          <LogOut size={14} /> Sign out
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               )}
             </div>

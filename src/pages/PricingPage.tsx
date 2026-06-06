@@ -10,7 +10,7 @@ import { PAID_PLANS, PaidPlanId, BillingCycle } from '../lib/stripePlans';
 const PLANS = [
   {
     id: 'free',
-    name: 'Free Sample',
+    name: 'Free Tier',
     monthlyPrice: '$0',
     annualMonthlyPrice: '$0',
     monthlyPeriod: null,
@@ -23,9 +23,9 @@ const PLANS = [
       'Direct source links to county sites',
       'Due-diligence checklist included',
     ],
-    cta: 'Get Sample',
-    annualCta: 'Get Sample',
-    ctaLink: '/free-sample',
+    cta: 'Start Free Tier',
+    annualCta: 'Start Free Tier',
+    ctaLink: '/free-tier',
     variant: 'ghost' as const,
     icon: <Star size={20} className="text-olive-400" />,
     popular: false,
@@ -115,9 +115,11 @@ export default function PricingPage() {
           </Link>
           <div className="flex items-center gap-6 text-sm font-semibold">
             <Link to="/pricing" className="text-white">Pricing</Link>
-            <Link to="/free-sample" className="text-olive-300 hover:text-white transition-colors">Free Sample</Link>
-            <Link to="/dashboard" className="btn-primary">
-              Access Dashboard
+            <Link to="/docs" className="text-olive-300 hover:text-white transition-colors">Docs</Link>
+            <Link to="/faq" className="text-olive-300 hover:text-white transition-colors">FAQ</Link>
+            <Link to="/free-tier" className="text-olive-300 hover:text-white transition-colors">Free Tier</Link>
+            <Link to="/free-tier" className="btn-primary">
+              Start Free
             </Link>
           </div>
         </div>

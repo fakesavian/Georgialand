@@ -456,13 +456,9 @@ export function getSatelliteImageUrl(lat: string | number, lon: string | number,
   const longitude = parseFloat(lon as string);
   if (isNaN(latitude) || isNaN(longitude)) return null;
 
-  // Convert lat/lon to slippy map tile coordinates
-  const x = Math.floor(((longitude + 180) / 360) * Math.pow(2, zoom));
-  const latRad = (latitude * Math.PI) / 180;
-  const y = Math.floor(
-    ((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2) * Math.pow(2, zoom)
-  );
+  const delta = zoom >= 18 ? 0.0012 : zoom >= 17 ? 0.002 : 0.004;
+  const bbox = [longitude - delta, latitude - delta, longitude + delta, latitude + delta].join(',');
 
-  return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${zoom}/${y}/${x}`;
+  return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox=${bbox}&bboxSR=4326&imageSR=4326&size=640,360&format=jpg&f=image`;
 }
 

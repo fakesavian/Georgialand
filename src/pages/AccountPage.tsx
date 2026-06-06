@@ -1,15 +1,24 @@
 import React, { useState } from 'react';
 import { useAuth } from '../lib/AuthContext';
-import { LogOut, ArrowRight, MapPin, CheckCircle2, ShieldCheck, FileText, Loader2 } from 'lucide-react';
+import { LogOut, ArrowRight, MapPin, CheckCircle2, ShieldCheck, FileText, Loader2, Settings } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PAID_PLANS, PaidPlanId } from '../lib/stripePlans';
 import { openBillingPortal, startCheckout } from '../lib/stripeClient';
+
+const MAP_PREVIEW_MODE_KEY = 'glf_map_hover_preview_mode';
+type MapPreviewMode = 'auto_hide' | 'persistent';
+
+function getStoredMapPreviewMode(): MapPreviewMode {
+  if (typeof window === 'undefined') return 'auto_hide';
+  return window.localStorage.getItem(MAP_PREVIEW_MODE_KEY) === 'persistent' ? 'persistent' : 'auto_hide';
+}
 
 export default function AccountPage() {
   const { user, profile, accessLevel, signOut } = useAuth();
   const [checkoutPlan, setCheckoutPlan] = useState<PaidPlanId | null>(null);
   const [billingPortalLoading, setBillingPortalLoading] = useState(false);
   const [billingError, setBillingError] = useState<string | null>(null);
+  const [mapPreviewMode, setMapPreviewMode] = useState<MapPreviewMode>(() => getStoredMapPreviewMode());
   const navigate = useNavigate();
 
   const handleCheckout = async (planId: PaidPlanId) => {
@@ -32,6 +41,12 @@ export default function AccountPage() {
       setBillingError(err?.message || 'Unable to open the billing portal. Please try again.');
       setBillingPortalLoading(false);
     }
+  };
+
+  const handleMapPreviewModeChange = (mode: MapPreviewMode) => {
+    setMapPreviewMode(mode);
+    localStorage.setItem(MAP_PREVIEW_MODE_KEY, mode);
+    window.dispatchEvent(new Event('glf-map-preview-mode-change'));
   };
 
   const handleSignOut = async () => {
@@ -87,6 +102,47 @@ export default function AccountPage() {
                 <div>
                   <span className="text-olive-400 block mb-1">Account ID</span>
                   <div className="font-mono text-xs text-olive-500 break-all">{user?.id}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="card p-6">
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div>
+                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                    <Settings size={20} className="text-brand-500" />
+                    User Settings
+                  </h2>
+                  <p className="mt-1 text-sm text-olive-400">
+                    Control how dashboard map interactions behave for your account.
+                  </p>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-surface-border bg-olive-900/50 p-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <div className="text-sm font-bold text-white">Map property preview cards</div>
+                    <p className="mt-1 text-xs leading-relaxed text-olive-400">
+                      Default: preview cards disappear when your mouse moves off a property pin.
+                    </p>
+                  </div>
+                  <div className="inline-flex rounded-lg border border-olive-800 bg-olive-950 p-1 text-xs font-bold">
+                    <button
+                      type="button"
+                      onClick={() => handleMapPreviewModeChange('auto_hide')}
+                      className={`rounded-md px-3 py-2 transition-colors ${mapPreviewMode === 'auto_hide' ? 'bg-brand-600 text-white' : 'text-olive-400 hover:text-white'}`}
+                    >
+                      Auto-hide
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleMapPreviewModeChange('persistent')}
+                      className={`rounded-md px-3 py-2 transition-colors ${mapPreviewMode === 'persistent' ? 'bg-brand-600 text-white' : 'text-olive-400 hover:text-white'}`}
+                    >
+                      Keep open
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

@@ -67,7 +67,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'Priority_Rank', direction: 'asc' });
-  const [viewMode, setViewMode] = useState<ViewMode>('table');
+  const [viewMode, setViewMode] = useState<ViewMode>('map');
   const [activeTab, setActiveTab] = useState('dashboard');
   const [currentSubTab, setCurrentSubTab] = useState('all');
   const [selectedProperty, setSelectedProperty] = useState<LandProperty | null>(null);
@@ -762,6 +762,7 @@ export default function App() {
                           }}
                           favoriteIds={favoriteIds}
                           onToggleFavorite={handleToggleFavorite}
+                          accessLevel={accessLevel}
                         />
                       </React.Suspense>
                     )}

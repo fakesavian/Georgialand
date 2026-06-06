@@ -5,6 +5,8 @@ import LandingPage from './pages/LandingPage';
 import DashboardPage from './pages/DashboardPage';
 import PricingPage from './pages/PricingPage';
 import FreeSamplePage from './pages/FreeSamplePage';
+import DocsPage from './pages/DocsPage';
+import FAQPage from './pages/FAQPage';
 import ReportPage from './pages/ReportPage';
 import AlertsPage from './pages/AlertsPage';
 import AdminPage from './pages/AdminPage';
@@ -24,6 +26,8 @@ import CheckoutCancelPage from './pages/CheckoutCancelPage';
 import AuthCallbackPage from './pages/AuthCallbackPage';
 
 import { AuthProvider } from './lib/AuthContext';
+import { ThemeProvider } from './lib/ThemeContext';
+import ThemeToggle from './components/ThemeToggle';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { initAnalytics, trackEvent } from './lib/analytics';
 import posthog from 'posthog-js';
@@ -46,6 +50,8 @@ function AnalyticsTracker() {
     if (path === '/') trackEvent('Pageview', 'landing_view', 'Landing Page');
     else if (path === '/pricing') trackEvent('Pageview', 'pricing_view', 'Pricing Page');
     else if (path === '/dashboard') trackEvent('Pageview', 'dashboard_view', 'Dashboard');
+    else if (path === '/docs') trackEvent('Pageview', 'docs_view', 'Docs Page');
+    else if (path === '/faq') trackEvent('Pageview', 'faq_view', 'FAQ Page');
   }, [location]);
 
   return null;
@@ -54,10 +60,12 @@ function AnalyticsTracker() {
 export default function App() {
   return (
     <HelmetProvider>
-      <AuthProvider>
-      <Router>
-        <AnalyticsTracker />
-        <Routes>
+      <ThemeProvider>
+        <AuthProvider>
+        <Router>
+          <AnalyticsTracker />
+          <ThemeToggle />
+          <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
@@ -70,7 +78,10 @@ export default function App() {
 
           {/* Public Routes */}
           <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/docs" element={<DocsPage />} />
+          <Route path="/faq" element={<FAQPage />} />
           <Route path="/free-sample" element={<FreeSamplePage />} />
+          <Route path="/free-tier" element={<FreeSamplePage />} />
           <Route path="/report" element={<ReportPage />} />
           <Route path="/report-success" element={<ReportSuccessPage />} />
           <Route path="/checkout-success" element={<CheckoutSuccessPage />} />
@@ -85,9 +96,10 @@ export default function App() {
 
         {/* Dynamic SEO Landing Pages — unknown slugs render 404 */}
         <Route path="/:slug" element={<SeoLandingPage />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
+          </Routes>
+        </Router>
+      </AuthProvider>
+    </ThemeProvider>
     </HelmetProvider>
   );
 }
