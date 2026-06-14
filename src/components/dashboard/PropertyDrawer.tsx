@@ -2,7 +2,7 @@ import React from 'react';
 import { ExternalLink, MapPin, AlertCircle, Lock, AlertTriangle } from 'lucide-react';
 import { LandProperty } from '../../types';
 import { trackEvent } from '../../lib/analytics';
-import { isValidUrl, displayValue, getFitScoreClass, getRiskScoreClass, parseScore, getProList, getConsList, getPropertyWarnings } from '../../utils';
+import { isValidUrl, displayValue, getFitScoreClass, getRiskScoreClass, parseScore, getProList, getConsList, getPropertyWarnings, getSatelliteImageUrl, getStreetContextImageUrl, getGoogleStreetViewEmbedUrl, getGoogleMapsEmbedUrl } from '../../utils';
 
 interface PropertyDrawerProps {
   property: LandProperty | null;
@@ -12,6 +12,16 @@ interface PropertyDrawerProps {
   note: string;
   onNoteChange: (parcelId: string, note: string) => void;
 }
+
+type PropertyMediaItem = {
+  id: 'sky' | 'close' | 'street';
+  label: string;
+  title: string;
+  thumbnailKind: 'image' | 'frame';
+  thumbnailSrc: string | null;
+  fullKind: 'image' | 'frame';
+  fullSrc: string | null;
+};
 
 function UrlButton({ url, label, icon, onClick }: { url: string; label: string; icon?: React.ReactNode; onClick?: () => void }) {
   const valid = isValidUrl(url);
@@ -47,9 +57,173 @@ function FieldRow({ label, value }: { label: string; value: string }) {
   );
 }
 
+function MediaFallback({ label }: { label: string }) {
+  return (
+    <div className="flex h-full min-h-[118px] flex-col items-center justify-center bg-gradient-to-br from-olive-900 to-olive-950 text-center text-olive-600">
+      <MapPin size={20} className="mb-2 opacity-40" />
+      <span className="text-xs">{label}</span>
+    </div>
+  );
+}
+
+function MapMediaFrame({ src, title }: { src: string | null; title: string }) {
+  if (!src) return <MediaFallback label="Location unavailable" />;
+  return (
+    <iframe
+      src={src}
+      title={title}
+      className="h-full w-full border-0"
+      loading="lazy"
+      referrerPolicy="no-referrer-when-downgrade"
+    />
+  );
+}
+
+function PropertyMediaTile({ item, onSelect }: { item: PropertyMediaItem; onSelect: (item: PropertyMediaItem) => void }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(item)}
+      className="group overflow-hidden rounded-xl border border-olive-800 bg-olive-900 text-left shadow-inner transition hover:border-brand-500 hover:shadow-[0_0_18px_rgba(34,197,94,0.22)]"
+      aria-label={`Enlarge ${item.label}`}
+    >
+      <div className="relative h-32">
+        {item.thumbnailSrc ? (
+          item.thumbnailKind === 'image' ? (
+            <img src={item.thumbnailSrc} alt={item.title} className="h-full w-full object-cover transition duration-200 group-hover:scale-105" loading="lazy" />
+          ) : (
+            <iframe
+              src={item.thumbnailSrc}
+              title={`${item.title} preview`}
+              className="pointer-events-none h-full w-full border-0"
+              loading="lazy"
+              tabIndex={-1}
+              aria-hidden="true"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          )
+        ) : (
+          <MediaFallback label="Location unavailable" />
+        )}
+        <figcaption className="absolute bottom-0 left-0 right-0 bg-black/55 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-white backdrop-blur">{item.label}</figcaption>
+      </div>
+    </button>
+  );
+}
+
+function buildPropertyMediaItems(property: LandProperty): PropertyMediaItem[] {
+  const locationQuery = [property.Property_Name_or_Address, property.City, property.County, 'GA'].filter(Boolean).join(', ');
+  const skyView = getSatelliteImageUrl(property.Latitude, property.Longitude, 16);
+  const closeUpView = getSatelliteImageUrl(property.Latitude, property.Longitude, 19);
+  const streetContext = getStreetContextImageUrl(property.Latitude, property.Longitude, 18);
+  const streetView = getGoogleStreetViewEmbedUrl(property.Latitude, property.Longitude) || getGoogleMapsEmbedUrl(locationQuery, 'street', 18);
+  const skyEmbed = getGoogleMapsEmbedUrl(locationQuery, 'satellite', 16);
+  const closeUpEmbed = getGoogleMapsEmbedUrl(locationQuery, 'satellite', 20);
+  return [
+    {
+      id: 'sky',
+      label: 'Sky View',
+      title: `Sky view of ${displayValue(property.Property_Name_or_Address)}`,
+      thumbnailKind: skyView ? 'image' : 'frame',
+      thumbnailSrc: skyView || skyEmbed,
+      fullKind: skyView ? 'image' : 'frame',
+      fullSrc: skyView || skyEmbed,
+    },
+    {
+      id: 'close',
+      label: 'Close-Up',
+      title: `Close-up view of ${displayValue(property.Property_Name_or_Address)}`,
+      thumbnailKind: closeUpView ? 'image' : 'frame',
+      thumbnailSrc: closeUpView || closeUpEmbed,
+      fullKind: closeUpView ? 'image' : 'frame',
+      fullSrc: closeUpView || closeUpEmbed,
+    },
+    {
+      id: 'street',
+      label: 'Street View',
+      title: `Street view near ${displayValue(property.Property_Name_or_Address)}`,
+      thumbnailKind: streetContext ? 'image' : 'frame',
+      thumbnailSrc: streetContext || streetView,
+      fullKind: 'frame',
+      fullSrc: streetView || streetContext,
+    },
+  ];
+}
+
+function PropertyMediaGallery({ property, onSelect }: { property: LandProperty; onSelect: (item: PropertyMediaItem) => void }) {
+  const mediaItems = buildPropertyMediaItems(property);
+
+  return (
+    <div className="border-b border-surface-border bg-olive-950/70 px-4 py-3">
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <p className="text-xs font-bold uppercase tracking-wider text-olive-400">Property Images</p>
+        <p className="text-[10px] text-olive-600">Click to enlarge • Street works enlarged</p>
+      </div>
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+        {mediaItems.map((item) => <PropertyMediaTile key={item.id} item={item} onSelect={onSelect} />)}
+      </div>
+    </div>
+  );
+}
+
+function getSourceEvidence(property: LandProperty) {
+  const hasCoordinates = Boolean(property.Latitude && property.Longitude && !Number.isNaN(Number(property.Latitude)) && !Number.isNaN(Number(property.Longitude)));
+  const checks = [
+    { label: 'Official/source listing', ok: isValidUrl(property.Source_URL), detail: property.Source_Agency || property.Source_Name || property.Source_URL || 'Missing source URL' },
+    { label: 'Property page', ok: isValidUrl(property.Property_Page_URL), detail: property.Property_Page_URL || 'Missing property page URL' },
+    { label: 'GIS / assessor cross-check', ok: isValidUrl(property.GIS_URL), detail: property.GIS_URL || 'Missing GIS or assessor link' },
+    { label: 'Map / geocode check', ok: isValidUrl(property.Map_URL) || hasCoordinates, detail: hasCoordinates ? `${property.Latitude}, ${property.Longitude}` : property.Map_URL || 'Missing coordinates and map URL' },
+    { label: 'Parcel identifier', ok: Boolean(property.Parcel_ID), detail: property.Parcel_ID || 'Parcel ID missing' },
+    { label: 'Data confidence score', ok: Number(property.Data_Confidence_0_to_100 || 0) >= 70, detail: property.Data_Confidence_0_to_100 ? `${property.Data_Confidence_0_to_100}/100` : 'No confidence score' },
+  ];
+  const verifiedCount = checks.filter((check) => check.ok).length;
+  const blackSpots = checks.filter((check) => !check.ok).map((check) => check.label);
+  return { checks, verifiedCount, blackSpots };
+}
+
+function SourceVerificationPanel({ property }: { property: LandProperty }) {
+  const evidence = getSourceEvidence(property);
+  return (
+    <div className="rounded-lg border border-surface-border bg-olive-950/70 p-3">
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <p className="text-xs font-bold uppercase tracking-wider text-olive-400">Source Verification</p>
+        <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${evidence.blackSpots.length === 0 ? 'bg-brand-900/60 text-brand-300' : 'bg-amber-950/70 text-amber-300'}`}>
+          {evidence.verifiedCount}/{evidence.checks.length} backed
+        </span>
+      </div>
+      <div className="grid gap-1.5">
+        {evidence.checks.map((check) => (
+          <div key={check.label} className="flex items-start gap-2 rounded-md border border-olive-900 bg-olive-900/35 px-2 py-1.5">
+            <span className={`mt-0.5 h-2 w-2 shrink-0 rounded-full ${check.ok ? 'bg-brand-400' : 'bg-amber-400'}`} />
+            <div className="min-w-0">
+              <p className="text-xs font-medium text-olive-100">{check.label}</p>
+              <p className="truncate text-[11px] text-olive-500" title={check.detail}>{check.detail}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      {evidence.blackSpots.length > 0 && (
+        <p className="mt-2 text-xs text-amber-300">
+          Black spots to verify: {evidence.blackSpots.join(', ')}.
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function PropertyDrawer({
   property, onClose, isFavorite, onToggleFavorite, note, onNoteChange,
 }: PropertyDrawerProps) {
+  const [selectedMedia, setSelectedMedia] = React.useState<PropertyMediaItem | null>(null);
+
+  React.useEffect(() => {
+    if (!property) {
+      setSelectedMedia(null);
+      return;
+    }
+    setSelectedMedia(buildPropertyMediaItems(property).find((item) => item.id === 'close') || null);
+  }, [property?.Listing_ID, property?.Parcel_ID, property?.Property_Name_or_Address]);
+
   if (!property) return null;
 
   const fit = parseScore(property.Fit_Score_0_to_100);
@@ -61,12 +235,43 @@ export default function PropertyDrawer({
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[990]"
         onClick={onClose}
       />
 
+      {selectedMedia && (
+        <section data-property-media-viewer="true" className="fixed left-0 top-0 z-[1010] hidden h-full items-center justify-center p-8 lg:flex lg:right-[32rem] xl:right-[32rem]" onClick={(event) => event.stopPropagation()}>
+          <div className="flex h-[72vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-surface-border bg-olive-950/95 shadow-2xl backdrop-blur">
+            <div className="flex items-center justify-between border-b border-surface-border px-4 py-3">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-brand-300">{selectedMedia.label}</p>
+                <p className="text-sm text-olive-200">{selectedMedia.title}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedMedia(null)}
+                className="rounded-lg border border-olive-700 bg-olive-900 px-3 py-1.5 text-xs font-bold text-olive-300 hover:text-white"
+              >
+                Close
+              </button>
+            </div>
+            <div className="min-h-0 flex-1 bg-black">
+              {selectedMedia.fullSrc ? (
+                selectedMedia.fullKind === 'image' ? (
+                  <img src={selectedMedia.fullSrc} alt={selectedMedia.title} className="h-full w-full object-contain" />
+                ) : (
+                  <MapMediaFrame src={selectedMedia.fullSrc} title={selectedMedia.title} />
+                )
+              ) : (
+                <MediaFallback label="Location unavailable" />
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Drawer */}
-      <aside className="fixed right-0 top-0 h-full w-full max-w-lg bg-olive-950 border-l border-surface-border z-50 flex flex-col animate-slide-in-right overflow-hidden">
+      <aside className="fixed right-0 top-0 h-full w-full max-w-lg bg-olive-950 border-l border-surface-border z-[1000] flex flex-col animate-slide-in-right overflow-hidden">
         {/* Drawer header */}
         <div className="flex items-start justify-between p-4 border-b border-surface-border gap-3">
           <div className="min-w-0">
@@ -127,8 +332,12 @@ export default function PropertyDrawer({
           <UrlButton url={property.GIS_URL} label="GIS" />
         </div>
 
+        <PropertyMediaGallery property={property} onSelect={setSelectedMedia} />
+
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto p-4 space-y-5">
+          <SourceVerificationPanel property={property} />
+
           {/* Data Quality Warnings */}
           {getPropertyWarnings(property).length > 0 && (
             <div className="bg-orange-950/20 border border-orange-850 rounded-lg p-3">

@@ -1,0 +1,194 @@
+{
+  "checked_at_utc": "2026-06-06T23:02:59.256101+00:00",
+  "scope": "targeted parcel-specific verification pass",
+  "checks": [
+    {
+      "listing_id": "GA-003",
+      "field": "Source_URL",
+      "url": "https://metroatlantalandbank.org/service/side-lot-disposition/",
+      "check": {
+        "status": "ok",
+        "http_status": 200,
+        "final_url": "https://metroatlantalandbank.org/service/side-lot-disposition/",
+        "content_type": "text/html; charset=UTF-8"
+      }
+    },
+    {
+      "listing_id": "GA-003",
+      "field": "Property_Page_URL",
+      "url": "https://metroatlantalandbank.epropertyplus.com/landmgmtpub/app/base/landing",
+      "check": {
+        "status": "error",
+        "error": "<urlopen error [Errno 11001] getaddrinfo failed>"
+      }
+    },
+    {
+      "listing_id": "GA-003",
+      "field": "GIS_URL",
+      "url": "https://services1.arcgis.com/AQDHTHDrZzfsFsB5/arcgis/rest/services/Tax_Parcels/FeatureServer/0",
+      "check": {
+        "status": "ok",
+        "http_status": 200,
+        "final_url": "https://services1.arcgis.com/AQDHTHDrZzfsFsB5/arcgis/rest/services/Tax_Parcels/FeatureServer/0",
+        "content_type": "text/html; charset=utf-8"
+      }
+    },
+    {
+      "listing_id": "GA-006",
+      "field": "Source_URL",
+      "url": "https://www.fultoncountyga.gov/Inside-Fulton-County/Fulton-County-Departments/Sheriff/Tax-Sales",
+      "check": {
+        "status": "ok",
+        "http_status": 200,
+        "final_url": "https://www.fultoncountyga.gov/Inside-Fulton-County/Fulton-County-Departments/Sheriff/Tax-Sales",
+        "content_type": "text/html; charset=utf-8"
+      }
+    },
+    {
+      "listing_id": "GA-006",
+      "field": "Property_Page_URL",
+      "url": "",
+      "check": {
+        "status": "missing"
+      }
+    },
+    {
+      "listing_id": "GA-006",
+      "field": "GIS_URL",
+      "url": "https://fultonassessor.org",
+      "check": {
+        "status": "ok",
+        "http_status": 200,
+        "final_url": "https://fultonassessor.org",
+        "content_type": "text/html; charset=UTF-8"
+      }
+    },
+    {
+      "listing_id": "GA-007",
+      "field": "Source_URL",
+      "url": "https://dekalbtax.org/property-tax/tax-sales/",
+      "check": {
+        "status": "ok",
+        "http_status": 200,
+        "final_url": "https://dekalbtax.org/property-tax/tax-sales/",
+        "content_type": "text/html; charset=UTF-8"
+      }
+    },
+    {
+      "listing_id": "GA-007",
+      "field": "Property_Page_URL",
+      "url": "https://publicaccess.dekalbtax.org/forms/htmlframe.aspx?mode=content/search/tax_sale_listing.html",
+      "check": {
+        "status": "ok",
+        "http_status": 200,
+        "final_url": "https://publicaccess.dekalbtax.org/forms/htmlframe.aspx?mode=content/search/tax_sale_listing.html",
+        "content_type": "text/html; charset=utf-8"
+      }
+    },
+    {
+      "listing_id": "GA-007",
+      "field": "GIS_URL",
+      "url": "https://qpublic.schneidercorp.com/Application.aspx?AppID=983",
+      "check": {
+        "status": "http_403",
+        "http_status": 403,
+        "final_url": "https://qpublic.schneidercorp.com/Application.aspx?AppID=983"
+      }
+    },
+    {
+      "listing_id": "GA-012",
+      "field": "Source_URL",
+      "url": "https://www.fultoncountyga.gov/Inside-Fulton-County/Fulton-County-Departments/Real-Estate-and-Asset-Management/Land-Division/Surplus-Real-Estate-for-Sale",
+      "check": {
+        "status": "ok",
+        "http_status": 200,
+        "final_url": "https://www.fultoncountyga.gov/Inside-Fulton-County/Fulton-County-Departments/Real-Estate-and-Asset-Management/Land-Division/Surplus-Real-Estate-for-Sale",
+        "content_type": "text/html; charset=utf-8"
+      }
+    },
+    {
+      "listing_id": "GA-012",
+      "field": "Property_Page_URL",
+      "url": "https://www.fultoncountyga.gov/Inside-Fulton-County/Fulton-County-Departments/Real-Estate-and-Asset-Management/Land-Division/Surplus-Real-Estate-for-Sale",
+      "check": {
+        "status": "ok",
+        "http_status": 200,
+        "final_url": "https://www.fultoncountyga.gov/Inside-Fulton-County/Fulton-County-Departments/Real-Estate-and-Asset-Management/Land-Division/Surplus-Real-Estate-for-Sale",
+        "content_type": "text/html; charset=utf-8"
+      }
+    },
+    {
+      "listing_id": "GA-012",
+      "field": "GIS_URL",
+      "url": "https://services1.arcgis.com/AQDHTHDrZzfsFsB5/arcgis/rest/services/Tax_Parcels/FeatureServer/0",
+      "check": {
+        "status": "ok",
+        "http_status": 200,
+        "final_url": "https://services1.arcgis.com/AQDHTHDrZzfsFsB5/arcgis/rest/services/Tax_Parcels/FeatureServer/0",
+        "content_type": "text/html; charset=utf-8"
+      }
+    },
+    {
+      "listing_id": "GA-027",
+      "field": "Source_URL",
+      "url": "https://www.govdeals.com/search?category=Land",
+      "check": {
+        "status": "http_403",
+        "http_status": 403,
+        "final_url": "https://www.govdeals.com/search?category=Land"
+      }
+    },
+    {
+      "listing_id": "GA-027",
+      "field": "Property_Page_URL",
+      "url": "",
+      "check": {
+        "status": "missing"
+      }
+    },
+    {
+      "listing_id": "GA-027",
+      "field": "GIS_URL",
+      "url": "https://fultonassessor.org/",
+      "check": {
+        "status": "ok",
+        "http_status": 200,
+        "final_url": "https://fultonassessor.org/",
+        "content_type": "text/html; charset=UTF-8"
+      }
+    },
+    {
+      "listing_id": "GA-053",
+      "field": "Source_URL",
+      "url": "https://www.waycrossga.gov/191/WaycrossWare-County-Land-Bank-Authority",
+      "check": {
+        "status": "ok",
+        "http_status": 200,
+        "final_url": "https://www.waycrossga.gov/191/WaycrossWare-County-Land-Bank-Authority",
+        "content_type": "text/html; charset=utf-8"
+      }
+    },
+    {
+      "listing_id": "GA-053",
+      "field": "Property_Page_URL",
+      "url": "https://www.waycrossga.gov/191/WaycrossWare-County-Land-Bank-Authority",
+      "check": {
+        "status": "ok",
+        "http_status": 200,
+        "final_url": "https://www.waycrossga.gov/191/WaycrossWare-County-Land-Bank-Authority",
+        "content_type": "text/html; charset=utf-8"
+      }
+    },
+    {
+      "listing_id": "GA-053",
+      "field": "GIS_URL",
+      "url": "https://services9.arcgis.com/XAyIBOsw3fLfDjTY/arcgis/rest/services/WareCounty_Base_gdb/FeatureServer",
+      "check": {
+        "status": "ok",
+        "http_status": 200,
+        "final_url": "https://services9.arcgis.com/XAyIBOsw3fLfDjTY/arcgis/rest/services/WareCounty_Base_gdb/FeatureServer",
+        "content_type": "text/html; charset=utf-8"
+      }
+    }
+  ]
+}

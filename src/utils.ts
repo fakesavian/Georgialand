@@ -456,9 +456,38 @@ export function getSatelliteImageUrl(lat: string | number, lon: string | number,
   const longitude = parseFloat(lon as string);
   if (isNaN(latitude) || isNaN(longitude)) return null;
 
-  const delta = zoom >= 18 ? 0.0012 : zoom >= 17 ? 0.002 : 0.004;
+  const delta = zoom >= 19 ? 0.0007 : zoom >= 18 ? 0.0012 : zoom >= 17 ? 0.002 : 0.004;
   const bbox = [longitude - delta, latitude - delta, longitude + delta, latitude + delta].join(',');
 
   return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox=${bbox}&bboxSR=4326&imageSR=4326&size=640,360&format=jpg&f=image`;
+}
+
+export function getStreetContextImageUrl(lat: string | number, lon: string | number, zoom: number = 18): string | null {
+  const latitude = parseFloat(lat as string);
+  const longitude = parseFloat(lon as string);
+  if (isNaN(latitude) || isNaN(longitude)) return null;
+
+  const delta = zoom >= 18 ? 0.0011 : 0.0025;
+  const bbox = [longitude - delta, latitude - delta, longitude + delta, latitude + delta].join(',');
+
+  return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/export?bbox=${bbox}&bboxSR=4326&imageSR=4326&size=640,360&format=jpg&f=image`;
+}
+
+export function getGoogleStreetViewEmbedUrl(lat: string | number, lon: string | number): string | null {
+  const latitude = parseFloat(lat as string);
+  const longitude = parseFloat(lon as string);
+  if (isNaN(latitude) || isNaN(longitude)) return null;
+
+  return `https://www.google.com/maps?layer=c&cbll=${latitude},${longitude}&cbp=11,0,0,0,0&output=svembed`;
+}
+
+export function getGoogleMapsEmbedUrl(query: string, mode: 'satellite' | 'street' = 'satellite', zoom: number = 18): string | null {
+  const cleanQuery = String(query || '').trim();
+  if (!cleanQuery) return null;
+
+  const encodedQuery = encodeURIComponent(cleanQuery);
+  const mapType = mode === 'satellite' ? '&t=k' : '';
+  const streetLayer = mode === 'street' ? '&layer=c' : '';
+  return `https://www.google.com/maps?q=${encodedQuery}${mapType}${streetLayer}&z=${zoom}&output=embed`;
 }
 

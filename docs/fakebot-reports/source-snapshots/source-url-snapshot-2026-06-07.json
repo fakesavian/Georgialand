@@ -1,0 +1,459 @@
+{
+  "generated_at": "2026-06-06T22:27:21.214403+00:00",
+  "total_unique_urls": 71,
+  "checks": {
+    "https://metroatlantalandbank.org": {
+      "status": 200,
+      "final_url": "https://metroatlantalandbank.org",
+      "content_type": "text/html; charset=UTF-8",
+      "ok": true,
+      "sample": "    <!DOCTYPE html>\n<html lang=\"en-US\">\n\n    <head>\n        <meta charset=\"UTF-8\">\n        <meta name=\"viewport\" content"
+    },
+    "https://malb.epropertyplus.com/landmgmtpub/app/propertySearch": {
+      "status": null,
+      "ok": false,
+      "error": "URLError(gaierror(11001, 'getaddrinfo failed'))"
+    },
+    "https://fultonassessor.org": {
+      "status": 200,
+      "final_url": "https://fultonassessor.org",
+      "content_type": "text/html; charset=UTF-8",
+      "ok": true,
+      "sample": "<!DOCTYPE html>\n<html lang=\"en-US\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, ini"
+    },
+    "https://metroatlantalandbank.org/side-lot-disposition": {
+      "status": 200,
+      "final_url": "https://metroatlantalandbank.org/service/side-lot-disposition/",
+      "content_type": "text/html; charset=UTF-8",
+      "ok": true,
+      "sample": "    <!DOCTYPE html>\n<html lang=\"en-US\">\n\n    <head>\n        <meta charset=\"UTF-8\">\n        <meta name=\"viewport\" content"
+    },
+    "https://drlb.org": {
+      "status": 200,
+      "final_url": "https://drlb.org",
+      "content_type": "text/html; charset=UTF-8",
+      "ok": true,
+      "sample": "<!doctype html>\n<html lang=\"en-US\">\n<head>\n\t<meta charset=\"UTF-8\">\n\t<meta name=\"viewport\" content=\"width=device-width, i"
+    },
+    "https://dekalb-county-land-bank-ga-publicity.tolemi.com/": {
+      "status": 200,
+      "final_url": "https://dekalb-county-land-bank-ga-publicity.tolemi.com/",
+      "content_type": "text/html",
+      "ok": true,
+      "sample": "<!doctype html>\n<html lang=\"en\" dir=\"ltr\">\n\n<head>\n  <meta charset=\"UTF-8\" />\n  <title>Tolemi</title>\n  <meta name=\"view"
+    },
+    "https://qpublic.schneidercorp.com/Application.aspx?AppID=983": {
+      "status": 403,
+      "final_url": "https://qpublic.schneidercorp.com/Application.aspx?AppID=983",
+      "ok": false,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    "https://fultoncountyga.gov": {
+      "status": 200,
+      "final_url": "https://fultoncountyga.gov",
+      "content_type": "text/html; charset=utf-8",
+      "ok": true,
+      "sample": "\r\n\r\n<!DOCTYPE html>\r\n<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">\r\n<head>\r\n    \r\n<!-- Global site tag (gtag.js)"
+    },
+    "https://fultoncountyga.gov/services/sheriff-s-office/tax-sales": {
+      "status": 404,
+      "final_url": "https://fultoncountyga.gov/404?item=%2fservices%2fsheriff-s-office%2ftax-sales&user=extranet%5cAnonymous&site=FultonCountyGa",
+      "ok": false,
+      "error": "HTTP Error 404: Not Found"
+    },
+    "https://dekalbtax.org": {
+      "status": 200,
+      "final_url": "https://dekalbtax.org",
+      "content_type": "text/html; charset=UTF-8",
+      "ok": true,
+      "sample": "<!-- Built by Biscuit Studios https://biscuitstudios.com \ud83d\udc4b --><!doctype html>\n<html lang=\"en-US\">\n<head>\n\t<meta http-equ"
+    },
+    "https://dekalbtax.org/tax-sale-information": {
+      "status": 404,
+      "final_url": "https://dekalbtax.org/tax-sale-information",
+      "ok": false,
+      "error": "HTTP Error 404: Not Found"
+    },
+    "https://www.claytoncountyga.gov/government/tax-commissioner/": {
+      "status": 307,
+      "final_url": "https://www.claytoncountyga.gov/government/tax-commissioner/",
+      "ok": false,
+      "error": "HTTP Error 307: Temporary Redirect"
+    },
+    "https://www.claytoncountyga.gov": {
+      "status": 307,
+      "final_url": "https://www.claytoncountyga.gov",
+      "ok": false,
+      "error": "HTTP Error 307: Temporary Redirect"
+    },
+    "https://qpublic.schneidercorp.com/Application.aspx?AppID=1016&LayerID=21458&PageTypeID=1&PageID=9187": {
+      "status": 403,
+      "final_url": "https://qpublic.schneidercorp.com/Application.aspx?AppID=1016&LayerID=21458&PageTypeID=1&PageID=9187",
+      "ok": false,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    "https://www.claytoncountyga.gov/government/land-bank": {
+      "status": 307,
+      "final_url": "https://www.claytoncountyga.gov/government/land-bank",
+      "ok": false,
+      "error": "HTTP Error 307: Temporary Redirect"
+    },
+    "https://www.claytoncountyga.gov/government/gis-mapping": {
+      "status": 307,
+      "final_url": "https://www.claytoncountyga.gov/government/gis-mapping",
+      "ok": false,
+      "error": "HTTP Error 307: Temporary Redirect"
+    },
+    "https://www.cobbtax.org/tax-sale/": {
+      "status": 403,
+      "final_url": "https://www.cobbtax.org/tax-sale/",
+      "ok": false,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    "https://cobbtax.org": {
+      "status": 403,
+      "final_url": "https://cobbtax.org",
+      "ok": false,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    "https://cobbcountyga.maps.arcgis.com/apps/webappviewer/index.html?id=37d096faec2e4d9fb7035fc3d189de5d": {
+      "status": 200,
+      "final_url": "https://cobbcountyga.maps.arcgis.com/apps/webappviewer/index.html?id=37d096faec2e4d9fb7035fc3d189de5d",
+      "content_type": "text/html",
+      "ok": true,
+      "sample": "<!DOCTYPE HTML>\r\n<html>\r\n<head>\r\n  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n  <meta name=\"vi"
+    },
+    "https://www.gwinnettcounty.com/government/departments/financialservices/taxcommissioner": {
+      "status": 404,
+      "final_url": "https://www.gwinnettcounty.com/government/departments/financialservices/taxcommissioner",
+      "ok": false,
+      "error": "HTTP Error 404: Not Found"
+    },
+    "https://gwinnetttaxcommissioner.com": {
+      "status": 200,
+      "final_url": "https://www.gwinnetttaxcommissioner.com/home",
+      "content_type": "text/html;charset=UTF-8",
+      "ok": true,
+      "sample": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\t\n\t\t\n\t\t\t<!DOCTYPE html>\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r"
+    },
+    "https://gis.gwinnettcounty.com/GISDataBrowser/WebMap/": {
+      "status": 200,
+      "final_url": "https://www.gwinnettcounty.com/government/departments/information-technology-services/geographic-systems/gis-browser",
+      "content_type": "text/html;charset=UTF-8",
+      "ok": true,
+      "sample": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\t\n\t\t\n\t\t\t<!DOCTYPE html>\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n<ht"
+    },
+    "https://fultoncountyga.gov/services/real-estate-and-asset-management": {
+      "status": 404,
+      "final_url": "https://fultoncountyga.gov/404?item=%2fservices%2freal-estate-and-asset-management&user=extranet%5cAnonymous&site=FultonCountyGa",
+      "ok": false,
+      "error": "HTTP Error 404: Not Found"
+    },
+    "https://gis.fultoncountyga.gov": {
+      "status": null,
+      "ok": false,
+      "error": "URLError(TimeoutError('timed out'))"
+    },
+    "https://maconlandbank.org": {
+      "status": 200,
+      "final_url": "https://maconlandbank.org",
+      "content_type": "text/html; charset=UTF-8",
+      "ok": true,
+      "sample": "<!DOCTYPE html>\n<html lang=\"en-US\">\n<head>\n \n    <meta charset=\"UTF-8\"> \n    <meta name=\"viewport\" content=\"width=device"
+    },
+    "https://qpublic.schneidercorp.com/Application.aspx?AppID=702&LayerID=11372&PageTypeID=1&PageID=4717": {
+      "status": 403,
+      "final_url": "https://qpublic.schneidercorp.com/Application.aspx?AppID=702&LayerID=11372&PageTypeID=1&PageID=4717",
+      "ok": false,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    "https://aglba.org": {
+      "status": 200,
+      "final_url": "https://aglba.org",
+      "content_type": "text/html; charset=UTF-8",
+      "ok": true,
+      "sample": "<!DOCTYPE html>\n<html lang=\"en-US\">\n<head>\n\t<meta charset=\"UTF-8\" />\n\t<meta name=\"viewport\" content=\"width=device-width,"
+    },
+    "https://aglba.org/properties": {
+      "status": 200,
+      "final_url": "https://aglba.org/properties/",
+      "content_type": "text/html; charset=UTF-8",
+      "ok": true,
+      "sample": "<!DOCTYPE html>\n<html lang=\"en-US\">\n<head>\n\t<meta charset=\"UTF-8\" />\n\t<meta name=\"viewport\" content=\"width=device-width,"
+    },
+    "https://www.savannahga.gov": {
+      "status": null,
+      "ok": false,
+      "error": "URLError(TimeoutError('timed out'))"
+    },
+    "https://www.savannahga.gov/2258/Land-Bank-Authority": {
+      "status": null,
+      "ok": false,
+      "error": "URLError(TimeoutError('timed out'))"
+    },
+    "https://savannahga.gov/GIS": {
+      "status": null,
+      "ok": false,
+      "error": "URLError(TimeoutError('timed out'))"
+    },
+    "https://www.columbusga.gov": {
+      "status": 200,
+      "final_url": "https://columbusga.gov/",
+      "content_type": "text/html; charset=utf-8",
+      "ok": true,
+      "sample": "<!DOCTYPE html>\r\n<html  lang=\"en-US\">\r\n<head id=\"Head\">     \r\n          <!-- Google tag (gtag.js) -->\r\n          <script"
+    },
+    "https://www.columbusga.gov/community-reinvestment": {
+      "status": 404,
+      "final_url": "https://columbusga.gov/community-reinvestment",
+      "ok": false,
+      "error": "HTTP Error 404: Not Found"
+    },
+    "https://qpublic.schneidercorp.com/Application.aspx?AppID=988": {
+      "status": 403,
+      "final_url": "https://qpublic.schneidercorp.com/Application.aspx?AppID=988",
+      "ok": false,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    "https://fultonassessor.org/": {
+      "status": 200,
+      "final_url": "https://fultonassessor.org/",
+      "content_type": "text/html; charset=UTF-8",
+      "ok": true,
+      "sample": "<!DOCTYPE html>\n<html lang=\"en-US\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, ini"
+    },
+    "https://drlb.org/our-programs": {
+      "status": 200,
+      "final_url": "https://drlb.org/our-programs",
+      "content_type": "text/html; charset=UTF-8",
+      "ok": true,
+      "sample": "<!doctype html>\n<html lang=\"en-US\">\n<head>\n\t<meta charset=\"UTF-8\">\n\t<meta name=\"viewport\" content=\"width=device-width, i"
+    },
+    "https://www.govdeals.com": {
+      "status": 200,
+      "final_url": "https://www.govdeals.com",
+      "content_type": "text/html",
+      "ok": true,
+      "sample": "<!doctype html>\r\n<html lang=\"en\" data-beasties-container>\r\n\r\n<head>\r\n  <meta charset=\"utf-8\">\r\n  <title>Home</title>\r\n  "
+    },
+    "https://www.govdeals.com/georgia": {
+      "status": 200,
+      "final_url": "https://www.govdeals.com/georgia",
+      "content_type": "text/html",
+      "ok": true,
+      "sample": "<!doctype html>\r\n<html lang=\"en\" data-beasties-container>\r\n\r\n<head>\r\n  <meta charset=\"utf-8\">\r\n  <title>Home</title>\r\n  "
+    },
+    "https://www.albanyga.gov/about-us/boards-commissions/land-bank-authority": {
+      "status": 403,
+      "final_url": "https://www.albanyga.gov/about-us/boards-commissions/land-bank-authority",
+      "ok": false,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    "https://www.dougherty.ga.us/grants-gis/gis": {
+      "status": 403,
+      "final_url": "https://www.dougherty.ga.us/grants-gis/gis",
+      "ok": false,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    "https://www.sagis.org": {
+      "status": 200,
+      "final_url": "https://www.sagis.org",
+      "content_type": "text/html",
+      "ok": true,
+      "sample": "<!doctype html><html lang=\"en-us\"><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><meta name=\"v"
+    },
+    "https://www.augustaga.gov/585/Geographic-Information-Systems-GIS": {
+      "status": 404,
+      "final_url": "https://www.augustaga.gov/585/Geographic-Information-Systems-GIS",
+      "ok": false,
+      "error": "HTTP Error 404: Not Found"
+    },
+    "https://www.maconbibb.us/gis": {
+      "status": 200,
+      "final_url": "https://www.maconbibb.us/information-technology/gis-division/",
+      "content_type": "text/html; charset=UTF-8",
+      "ok": true,
+      "sample": "<!doctype html>\n<html lang=\"en\">\n\t<head>\n\t\t<meta charset=\"utf-8\">\n\t\t<meta name=\"viewport\" content=\"width=device-width, i"
+    },
+    "https://www.accgov.com/10549/Land-Bank": {
+      "status": 404,
+      "final_url": "https://www.accgov.com/10549/Land-Bank",
+      "ok": false,
+      "error": "HTTP Error 404: Not Found"
+    },
+    "https://www.accgov.com/gis": {
+      "status": 200,
+      "final_url": "https://www.accgov.com/gis",
+      "content_type": "text/html; charset=utf-8",
+      "ok": true,
+      "sample": "\r\n<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n\r\n\t<meta http-equiv=\"Content-type\" content=\"text/html; charset=UTF-8\" />\r\n<"
+    },
+    "https://www.valdostacity.com/comm-reinvestment/land-bank-authority": {
+      "status": 404,
+      "final_url": "https://www.valdostacity.com/comm-reinvestment/land-bank-authority",
+      "ok": false,
+      "error": "HTTP Error 404: Not Found"
+    },
+    "https://www.lowndescounty.com/gis": {
+      "status": 404,
+      "final_url": "https://www.lowndescounty.com/gis",
+      "ok": false,
+      "error": "HTTP Error 404: Not Found"
+    },
+    "https://www.cartersvillega.gov": {
+      "status": 200,
+      "final_url": "https://www.cartersvillega.gov",
+      "content_type": "text/html; charset=utf-8",
+      "ok": true,
+      "sample": "\r\n<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n\r\n\t<meta http-equiv=\"Content-type\" content=\"text/html; charset=UTF-8\" />\r\n<"
+    },
+    "https://qpublic.schneidercorp.com/Application.aspx?AppID=1049": {
+      "status": 403,
+      "final_url": "https://qpublic.schneidercorp.com/Application.aspx?AppID=1049",
+      "ok": false,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    "https://www.cityofgriffin.com/government/boards-and-commissions/land-bank-authority": {
+      "status": 403,
+      "final_url": "https://www.cityofgriffin.com/government/boards-and-commissions/land-bank-authority",
+      "ok": false,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    "https://qpublic.schneidercorp.com/Application.aspx?AppID=972": {
+      "status": 403,
+      "final_url": "https://qpublic.schneidercorp.com/Application.aspx?AppID=972",
+      "ok": false,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    "https://www.houstoncountyga.org": {
+      "status": 200,
+      "final_url": "https://www.houstoncountyga.gov/",
+      "content_type": "text/html;charset=UTF-8",
+      "ok": true,
+      "sample": "\r\n<!doctype html>\r\n<!--[if lt IE 7]><html class=\"lt-ie10 lt-ie9 lt-ie8 lt-ie7\" lang=\"en\"> <![endif]-->\r\n<!--[if IE 7]><h"
+    },
+    "https://qpublic.schneidercorp.com/Application.aspx?AppID=981": {
+      "status": 403,
+      "final_url": "https://qpublic.schneidercorp.com/Application.aspx?AppID=981",
+      "ok": false,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    "https://www.brunswickga.org": {
+      "status": 403,
+      "final_url": "https://www.brunswickga.org",
+      "ok": false,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    "https://www.glynncounty.org/gis": {
+      "status": 200,
+      "final_url": "https://www.glynncounty.org/government/departments/geographic-information-systems-gis",
+      "content_type": "text/html; charset=utf-8",
+      "ok": true,
+      "sample": "<!DOCTYPE html><html lang=\"en\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width\"/><link re"
+    },
+    "https://www.sumtercountyga.us": {
+      "status": 200,
+      "final_url": "https://www.sumtercountyga.us",
+      "content_type": "text/html; charset=utf-8",
+      "ok": true,
+      "sample": "\r\n<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n\r\n\t<meta http-equiv=\"Content-type\" content=\"text/html; charset=UTF-8\" />\r\n<"
+    },
+    "https://qpublic.schneidercorp.com/Application.aspx?AppID=978": {
+      "status": 403,
+      "final_url": "https://qpublic.schneidercorp.com/Application.aspx?AppID=978&LayerID=19646&PageTypeID=401&PageID=0&Q=819250015&ReturnUrl=https%3a%2f%2fqpublic.schneidercorp.com%2fApplication.aspx%3fAppID%3d978",
+      "ok": false,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    "https://www.accgov.com/tax": {
+      "status": 404,
+      "final_url": "https://www.accgov.com/tax",
+      "ok": false,
+      "error": "HTTP Error 404: Not Found"
+    },
+    "https://www.accgov.com/186/Tax-Sales": {
+      "status": 200,
+      "final_url": "https://www.accgov.com/179/Keep-Athens-Clarke-County-Beautiful-KACC",
+      "content_type": "text/html; charset=utf-8",
+      "ok": true,
+      "sample": "\r\n<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n\r\n\t<meta http-equiv=\"Content-type\" content=\"text/html; charset=UTF-8\" />\r\n<"
+    },
+    "https://tax.chathamcountyga.gov": {
+      "status": 200,
+      "final_url": "https://tax.chathamcountyga.gov",
+      "content_type": "text/html; charset=utf-8",
+      "ok": true,
+      "sample": "<!DOCTYPE html>\n<html lang=\"en\">\n\n<head>\n    <!-- Global Site Tag (gtag.js) - Google Analytics -->\n    <script src=\"/js/"
+    },
+    "https://tax.chathamcountyga.gov/Delinquent-Taxes/Tax-Sales": {
+      "status": 404,
+      "final_url": "https://tax.chathamcountyga.gov/Delinquent-Taxes/Tax-Sales",
+      "ok": false,
+      "error": "HTTP Error 404: Not Found"
+    },
+    "https://fultoncountyga.gov/services/tax-commissioner/repository-sales": {
+      "status": 404,
+      "final_url": "https://fultoncountyga.gov/404?item=%2fservices%2ftax-commissioner%2frepository-sales&user=extranet%5cAnonymous&site=FultonCountyGa",
+      "ok": false,
+      "error": "HTTP Error 404: Not Found"
+    },
+    "https://www.govdeals.com/index.cfm?fa=Main.Item&itemid=412&acctid=5122": {
+      "status": 200,
+      "final_url": "https://www.govdeals.com/asset/412/5122",
+      "content_type": "text/html",
+      "ok": true,
+      "sample": "<!doctype html>\r\n<html lang=\"en\" data-beasties-container>\r\n\r\n<head>\r\n  <meta charset=\"utf-8\">\r\n  <title>Home</title>\r\n  "
+    },
+    "https://www.romefloyd.com": {
+      "status": 403,
+      "final_url": "https://www.romefloyd.com",
+      "ok": false,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    "https://www.romefloyd.com/departments/gis": {
+      "status": 403,
+      "final_url": "https://www.romefloyd.com/departments/gis",
+      "ok": false,
+      "error": "HTTP Error 403: Forbidden"
+    },
+    "https://aglba.org/properties/": {
+      "status": 200,
+      "final_url": "https://aglba.org/properties/",
+      "content_type": "text/html; charset=UTF-8",
+      "ok": true,
+      "sample": "<!DOCTYPE html>\n<html lang=\"en-US\">\n<head>\n\t<meta charset=\"UTF-8\" />\n\t<meta name=\"viewport\" content=\"width=device-width,"
+    },
+    "https://aglba.org/listing/058-4-416-00-0/": {
+      "status": 200,
+      "final_url": "https://aglba.org/listing/058-4-416-00-0/",
+      "content_type": "text/html; charset=UTF-8",
+      "ok": true,
+      "sample": "<!DOCTYPE html>\n<html lang=\"en-US\">\n<head>\n\t<meta charset=\"UTF-8\" />\n\t<meta name=\"viewport\" content=\"width=device-width,"
+    },
+    "https://gismap.augustaga.gov": {
+      "status": null,
+      "ok": false,
+      "error": "URLError(TimeoutError('timed out'))"
+    },
+    "https://aglba.org/listing/086-4-147-01-0/": {
+      "status": 200,
+      "final_url": "https://aglba.org/listing/086-4-147-01-0/",
+      "content_type": "text/html; charset=UTF-8",
+      "ok": true,
+      "sample": "<!DOCTYPE html>\n<html lang=\"en-US\">\n<head>\n\t<meta charset=\"UTF-8\" />\n\t<meta name=\"viewport\" content=\"width=device-width,"
+    },
+    "https://www.waycrossga.gov/191/WaycrossWare-County-Land-Bank-Authority": {
+      "status": 200,
+      "final_url": "https://www.waycrossga.gov/191/WaycrossWare-County-Land-Bank-Authority",
+      "content_type": "text/html; charset=utf-8",
+      "ok": true,
+      "sample": "\r\n<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n\r\n\t<meta http-equiv=\"Content-type\" content=\"text/html; charset=UTF-8\" />\r\n<"
+    },
+    "https://services6.arcgis.com/1xjfsA1fM2yP42RW/arcgis/rest/services/Ware_County_Parcel_Data/FeatureServer/0": {
+      "status": 200,
+      "final_url": "https://services6.arcgis.com/1xjfsA1fM2yP42RW/arcgis/rest/services/Ware_County_Parcel_Data/FeatureServer/0",
+      "content_type": "text/html; charset=utf-8",
+      "ok": true,
+      "sample": "<html lang=\"en\">\r\n<head>\r\n  <title>Home</title>\r\n  <link href='/ESRI.ArcGIS.SDS.REST.css' rel='stylesheet' type='text/cs"
+    }
+  }
+}

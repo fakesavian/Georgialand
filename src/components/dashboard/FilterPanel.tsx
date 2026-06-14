@@ -46,7 +46,11 @@ export default function FilterPanel({ filters, onChange, properties }: FilterPan
     filters.dataConfidenceMin > 0 || filters.dataConfidenceMax < 100 ||
     filters.monetizationValueMin > 0 || filters.monetizationValueMax < 100 ||
     filters.under50k || filters.atlantaOnly || filters.metroAtlantaOnly ||
-    filters.lowRiskOnly || filters.needsVerification;
+    filters.lowRiskOnly || filters.needsVerification ||
+    filters.priceMin > 0 || filters.priceMax > 0 ||
+    filters.pricePerAcreMin > 0 || filters.pricePerAcreMax > 0 ||
+    filters.sourceType || filters.listingStatus ||
+    filters.valueScoreMin > 0;
 
   const resetFilters = () => onChange({
     search: '',
@@ -63,6 +67,10 @@ export default function FilterPanel({ filters, onChange, properties }: FilterPan
     affordableHousingReq: '', redemptionRisk: '', floodRiskStatus: '', titleStatus: '',
     under50k: false, atlantaOnly: false, metroAtlantaOnly: false,
     lowRiskOnly: false, needsVerification: false,
+    priceMin: 0, priceMax: 0,
+    pricePerAcreMin: 0, pricePerAcreMax: 0,
+    sourceType: '', listingStatus: '',
+    valueScoreMin: 0,
   });
 
   return (
@@ -443,6 +451,143 @@ export default function FilterPanel({ filters, onChange, properties }: FilterPan
                   className="flex-1 accent-purple-500"
                 />
               </div>
+            </div>
+          </div>
+
+          {/* New Search & Source Filters */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 border-t border-surface-border pt-3">
+            {/* Price Presets */}
+            <div className="col-span-2">
+              <label className="block text-xs text-olive-500 mb-1">Price Presets</label>
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  onClick={() => update({ priceMin: 0, priceMax: 10000 })}
+                  className="px-3 py-1 bg-olive-800 hover:bg-olive-700 text-olive-200 text-xs rounded-full border border-olive-700 transition-colors"
+                >
+                  Under $10k
+                </button>
+                <button
+                  onClick={() => update({ priceMin: 10000, priceMax: 50000 })}
+                  className="px-3 py-1 bg-olive-800 hover:bg-olive-700 text-olive-200 text-xs rounded-full border border-olive-700 transition-colors"
+                >
+                  $10k - $50k
+                </button>
+                <button
+                  onClick={() => update({ priceMin: 50000, priceMax: 100000 })}
+                  className="px-3 py-1 bg-olive-800 hover:bg-olive-700 text-olive-200 text-xs rounded-full border border-olive-700 transition-colors"
+                >
+                  $50k - $100k
+                </button>
+                <button
+                  onClick={() => update({ priceMin: 100000, priceMax: 0 })}
+                  className="px-3 py-1 bg-olive-800 hover:bg-olive-700 text-olive-200 text-xs rounded-full border border-olive-700 transition-colors"
+                >
+                  $100k+
+                </button>
+                <button
+                  onClick={() => update({ priceMin: 0, priceMax: 0 })}
+                  className="px-3 py-1 bg-olive-800 hover:bg-olive-700 text-olive-200 text-xs rounded-full border border-olive-700 transition-colors"
+                >
+                  Any Price
+                </button>
+              </div>
+            </div>
+
+            {/* Custom Price Range */}
+            <div className="col-span-2 grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-xs text-olive-500 mb-1">Custom Price Min ($)</label>
+                <input
+                  type="number"
+                  min={0}
+                  placeholder="0"
+                  value={filters.priceMin || ''}
+                  onChange={e => update({ priceMin: +e.target.value })}
+                  className="input w-full text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-olive-500 mb-1">Custom Price Max ($)</label>
+                <input
+                  type="number"
+                  min={0}
+                  placeholder="Any"
+                  value={filters.priceMax || ''}
+                  onChange={e => update({ priceMax: +e.target.value })}
+                  className="input w-full text-sm"
+                />
+              </div>
+            </div>
+
+            {/* Price Per Acre Range */}
+            <div>
+              <label className="block text-xs text-olive-500 mb-1">Price/Acre Min ($/ac)</label>
+              <input
+                type="number"
+                min={0}
+                placeholder="0"
+                value={filters.pricePerAcreMin || ''}
+                onChange={e => update({ pricePerAcreMin: +e.target.value })}
+                className="input w-full text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-olive-500 mb-1">Price/Acre Max ($/ac)</label>
+              <input
+                type="number"
+                min={0}
+                placeholder="Any"
+                value={filters.pricePerAcreMax || ''}
+                onChange={e => update({ pricePerAcreMax: +e.target.value })}
+                className="input w-full text-sm"
+              />
+            </div>
+
+            {/* Source Type */}
+            <div>
+              <label className="block text-xs text-olive-500 mb-1">Source Type</label>
+              <select
+                value={filters.sourceType}
+                onChange={e => update({ sourceType: e.target.value })}
+                className="select w-full text-sm"
+              >
+                <option value="">All</option>
+                <option value="Land-Bank">Land-Bank</option>
+                <option value="Tax-Sale">Tax-Sale</option>
+                <option value="Surplus">Surplus</option>
+                <option value="MLS-Style">MLS-Style</option>
+                <option value="GIS-Parcel">GIS-Parcel</option>
+                <option value="Off-Market">Off-Market</option>
+              </select>
+            </div>
+
+            {/* Listing Status */}
+            <div>
+              <label className="block text-xs text-olive-500 mb-1">Listing Status</label>
+              <select
+                value={filters.listingStatus}
+                onChange={e => update({ listingStatus: e.target.value })}
+                className="select w-full text-sm"
+              >
+                <option value="">All</option>
+                <option value="Active">Active</option>
+                <option value="Pending">Pending</option>
+                <option value="Sold">Sold</option>
+                <option value="Unknown">Unknown</option>
+              </select>
+            </div>
+
+            {/* Value Score Min slider */}
+            <div className="col-span-2">
+              <label className="block text-xs text-olive-500 mb-1">
+                Value Score Min: <span className="text-brand-400 font-mono font-bold">{filters.valueScoreMin}</span>
+              </label>
+              <input
+                type="range" min={0} max={100}
+                value={filters.valueScoreMin}
+                onChange={e => update({ valueScoreMin: +e.target.value })}
+                className="w-full accent-green-500"
+              />
             </div>
           </div>
         </div>

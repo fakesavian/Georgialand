@@ -26,7 +26,7 @@ export const GIS_LAYER_CONFIGS: GisLayerConfig[] = [
     minAccessLevel: 'dashboard_starter',
     enabledByDefault: false,
     lockedDescription: 'County boundaries unlock on Starter.',
-    attribution: 'US Census TIGER/Line or county GIS - Needs verification',
+    attribution: 'US Census TIGERweb official county boundaries',
     color: '#60a5fa',
     opacity: 0.55,
   },
@@ -38,7 +38,7 @@ export const GIS_LAYER_CONFIGS: GisLayerConfig[] = [
     minAccessLevel: 'dashboard_starter',
     enabledByDefault: false,
     lockedDescription: 'City boundaries unlock on Starter.',
-    attribution: 'US Census TIGER/Line or local GIS - Needs verification',
+    attribution: 'US Census TIGERweb incorporated/consolidated place boundaries',
     color: '#a78bfa',
     opacity: 0.45,
   },
@@ -50,9 +50,9 @@ export const GIS_LAYER_CONFIGS: GisLayerConfig[] = [
     minAccessLevel: 'dashboard_pro',
     enabledByDefault: false,
     lockedDescription: 'Parcel boundaries unlock on Pro.',
-    attribution: 'County GIS / Regrid / ATTOM - Needs verification',
-    color: '#f59e0b',
-    opacity: 0.65,
+    attribution: 'Verified source required: Ware County ArcGIS prototype / county GIS / paid parcel vendor',
+    color: '#ef4444',
+    opacity: 0.9,
   },
   {
     id: 'fema-flood',
@@ -75,7 +75,7 @@ export const GIS_LAYER_CONFIGS: GisLayerConfig[] = [
     minAccessLevel: 'dashboard_pro',
     enabledByDefault: false,
     lockedDescription: 'Zoning overlays unlock on Pro.',
-    attribution: 'County/city GIS - Needs verification by jurisdiction',
+    attribution: 'Verified jurisdiction GIS required: Ware County ArcGIS prototype / city-county zoning / paid zoning vendor',
     color: '#ec4899',
     opacity: 0.35,
   },
@@ -90,6 +90,40 @@ export const GIS_LAYER_CONFIGS: GisLayerConfig[] = [
     attribution: 'Generated from parcel/tax/source signals',
     color: '#f97316',
   },
+  {
+    id: 'opportunity-zones',
+    name: 'Opportunity Zones',
+    type: 'opportunity_zone',
+    endpointType: 'geojson',
+    minAccessLevel: 'dashboard_investor',
+    enabledByDefault: false,
+    lockedDescription: 'Opportunity Zone overlays unlock on Investor.',
+    attribution: 'CDFI Fund / US Treasury Opportunity Zones',
+    color: '#eab308',
+    opacity: 0.35,
+  },
+  {
+    id: 'land-bank-properties',
+    name: 'Land Bank Properties',
+    type: 'land_bank',
+    endpointType: 'static',
+    minAccessLevel: 'dashboard_starter',
+    enabledByDefault: false,
+    lockedDescription: 'Land bank layer unlocks on Starter.',
+    attribution: 'Georgia land bank sources',
+    color: '#8b5cf6',
+  },
+  {
+    id: 'tax-sale-properties',
+    name: 'Tax Sale Properties',
+    type: 'tax_sale',
+    endpointType: 'static',
+    minAccessLevel: 'dashboard_starter',
+    enabledByDefault: false,
+    lockedDescription: 'Tax sale layer unlocks on Starter.',
+    attribution: 'Georgia county tax commissioner sources',
+    color: '#f59e0b',
+  },
 ];
 
 export function canAccessGisLayer(layer: GisLayerConfig, level: AccessLevel): boolean {
@@ -101,11 +135,14 @@ export function canAccessGisLayer(layer: GisLayerConfig, level: AccessLevel): bo
       return canViewCountyCityBoundaries(level);
     case 'parcels':
       return canViewParcelBoundaries(level);
+    case 'land_bank':
+    case 'tax_sale':
+      return canViewCountyCityBoundaries(level); // unlocks at dashboard_starter
     case 'flood':
     case 'zoning':
-    case 'opportunity_zone':
     case 'environmental':
       return canViewAdvancedGisLayers(level);
+    case 'opportunity_zone':
     case 'off_market':
       return canViewOffMarketLeads(level);
     default:

@@ -17,9 +17,10 @@ const buyerTypes = [
 ];
 
 const freeTierBenefits = [
-  'Open the dashboard map immediately',
-  'Preview hand-curated Georgia land opportunities',
-  'See source links, risk notes, and next-step checklists'
+  'Open the dashboard map immediately — no credit card required',
+  'Preview 10 curated Georgia land listings, parcels, and off-market opportunities',
+  'See source links, risk notes, and data confidence on each lead',
+  'Explore the full search and county filter before upgrading'
 ];
 
 const themeClasses: Record<FunnelTheme, {
@@ -133,7 +134,7 @@ export default function FreeSamplePage() {
     <div className={`min-h-screen font-sans transition-colors duration-300 ${t.page}`} data-theme={theme}>
       <SEO
         title="Start Free | Georgia Land Finder"
-        description="Create a free Georgia Land Finder preview account and open the dashboard map with hand-curated low-cost land opportunities."
+        description="Explore Georgia land intelligence free. Preview listings, parcels, and off-market opportunities on the Georgia Land Finder dashboard."
         canonicalUrl="https://georgialandfinder.com/free-tier"
       />
 
@@ -160,27 +161,27 @@ export default function FreeSamplePage() {
               <Sparkles size={16} /> Free dashboard preview
             </div>
             <h1 className={`text-4xl md:text-6xl font-display font-bold tracking-tight mb-6 ${t.heading}`}>
-              Create your free account, then open the land dashboard.
+              Explore Georgia Land Intelligence — Free Preview
             </h1>
             <p className={`text-lg md:text-xl leading-relaxed max-w-2xl mb-8 ${t.body}`}>
-              A quick signup gate before the dashboard. No credit card. Use the free tier to preview the map, compare sample parcels, and see how the workflow works before upgrading.
+              A quick signup gate before the dashboard. No credit card. Use the free tier to preview the map, explore land listings, parcels, and off-market opportunities, and see how the workflow works before upgrading.
             </p>
 
             <div className="grid sm:grid-cols-3 gap-4 mb-8">
               <div className={`rounded-2xl border p-4 ${t.featureCard}`}>
                 <Map className={`${t.icon} mb-3`} size={22} />
-                <p className={`text-sm font-bold ${t.featureTitle}`}>Map-first preview</p>
-                <p className={`text-xs mt-1 ${t.featureBody}`}>Land opportunities open visually.</p>
+                <p className={`text-sm font-bold ${t.featureTitle}`}>Map-first intelligence</p>
+                <p className={`text-xs mt-1 ${t.featureBody}`}>Land listings and parcels open visually on the map.</p>
               </div>
               <div className={`rounded-2xl border p-4 ${t.featureCard}`}>
                 <ShieldCheck className={`${t.icon} mb-3`} size={22} />
-                <p className={`text-sm font-bold ${t.featureTitle}`}>Risk notes</p>
-                <p className={`text-xs mt-1 ${t.featureBody}`}>Know what to verify next.</p>
+                <p className={`text-sm font-bold ${t.featureTitle}`}>Risk & data notes</p>
+                <p className={`text-xs mt-1 ${t.featureBody}`}>Know what to verify before you act.</p>
               </div>
               <div className={`rounded-2xl border p-4 ${t.featureCard}`}>
                 <CheckCircle2 className={`${t.icon} mb-3`} size={22} />
                 <p className={`text-sm font-bold ${t.featureTitle}`}>Upgrade path</p>
-                <p className={`text-xs mt-1 ${t.featureBody}`}>Tier up when ready.</p>
+                <p className={`text-xs mt-1 ${t.featureBody}`}>Unlock off-market layers and full filters when ready.</p>
               </div>
             </div>
 

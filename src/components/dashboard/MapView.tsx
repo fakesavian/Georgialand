@@ -1,18 +1,37 @@
 import React, { useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap, LayersControl, ZoomControl, Polygon, Rectangle, Circle, LayerGroup } from 'react-leaflet';
-import L, { LatLngBoundsExpression } from 'leaflet';
-import { Maximize2, Minimize2, MapPin } from 'lucide-react';
+import { MapContainer, TileLayer, Marker, Popup, useMap, ZoomControl, Polygon, Polyline, Circle, GeoJSON as LeafletGeoJSON } from 'react-leaflet';
+import L from 'leaflet';
+import { AlertTriangle, BarChart3, Box, CheckCircle2, ChevronLeft, ChevronRight, Layers, ListFilter, LocateFixed, Maximize2, Minimize2, MapPin, MousePointer2, Orbit, Search, SlidersHorizontal, Sparkles } from 'lucide-react';
 import { LandProperty } from '../../types';
-import PropertyCard from './PropertyCard';
-import { parseScore, getFitScoreClass, getRiskScoreClass, displayValue, getSatelliteImageUrl } from '../../utils';
+import { parseScore, parsePrice, getFitScoreClass, getRiskScoreClass, displayValue, getSatelliteImageUrl } from '../../utils';
 import { AccessLevel } from '../../lib/authTypes';
 import { GIS_LAYER_CONFIGS, canAccessGisLayer } from '../../lib/gisLayers';
 import MapLayerControl from './MapLayerControl';
 import GisLayerLegend from './GisLayerLegend';
+import {
+  buildGisSourceStatuses,
+  GisSourceStatus,
+  VerifiedGisFeature,
+} from '../../lib/wareCountyGisConnector';
+import {
+  fetchCityBoundaryGeoJson,
+  fetchCountyBoundaryGeoJson,
+  BoundaryFeatureCollection,
+} from '../../lib/censusBoundaryConnector';
 
-const { BaseLayer } = LayersControl;
 const MAP_PREVIEW_MODE_KEY = 'glf_map_hover_preview_mode';
+const GEORGIA_STATE_BOUNDS: L.LatLngBoundsExpression = [
+  [30.35, -85.65],
+  [35.15, -80.75],
+];
+const GEORGIA_STATE_CENTER: L.LatLngExpression = [32.95, -83.45];
+const DEFAULT_STATE_ZOOM = 7;
+const PIN_CLICK_AUTO_ZOOM_BELOW = 9;
+const PIN_CLICK_TARGET_ZOOM = 14;
+const PARCEL_FOCUS_MAX_ZOOM = 16;
 type MapPreviewMode = 'auto_hide' | 'persistent';
+type MapExperienceMode = '2d' | '3d';
+type BaseMapId = 'satellite' | 'light' | 'dark' | 'topographic';
 
 function getStoredMapPreviewMode(): MapPreviewMode {
   if (typeof window === 'undefined') return 'auto_hide';
@@ -27,24 +46,93 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 });
 
-function createCustomIcon(fit: number, isHovered: boolean = false, propertyId?: string) {
-  const color = fit >= 70 ? '#22c55e' : fit >= 40 ? '#eab308' : '#6b7280';
-  const scale = isHovered ? 'scale(1.2)' : 'scale(1)';
-  const zIndex = isHovered ? 1000 : 0;
-  
+function getPropertyPinId(property: LandProperty, index: number): string {
+  const baseId = property.Listing_ID || property.Parcel_ID || property.Property_Name_or_Address || `${property.Latitude},${property.Longitude}`;
+  return `${index}-${String(baseId).replace(/[^a-zA-Z0-9_-]+/g, '-').slice(0, 80)}`;
+}
+
+function hasScore(value?: string) {
+  const raw = String(value || '').trim();
+  if (!raw) return false;
+  const parsed = Number.parseFloat(raw.replace(/[^0-9.-]/g, ''));
+  return Number.isFinite(parsed) && parsed > 0;
+}
+
+function compactPinPrice(value: number | null) {
+  if (value === null || Number.isNaN(value)) return '';
+  if (value >= 1_000_000) return `${Math.round(value / 100_000) / 10}M`;
+  if (value >= 1_000) return `${Math.round(value / 1_000)}K`;
+  return `${value}`;
+}
+
+function getMapPinLabel(property: LandProperty) {
+  if (hasScore(property.Fit_Score_0_to_100)) return String(Math.round(parseScore(property.Fit_Score_0_to_100)));
+  const priceLabel = compactPinPrice(parsePrice(property.Estimated_Price_or_Min_Bid));
+  if (priceLabel) return priceLabel;
+  if (property.Priority_Rank) return `#${property.Priority_Rank}`;
+  const parcelKey = normalizeParcelKey(property.Parcel_ID);
+  if (parcelKey) return parcelKey.slice(-3);
+  return (property.County || property.City || 'GA').slice(0, 2).toUpperCase();
+}
+
+function getMapPinTone(property: LandProperty) {
+  if (hasScore(property.Fit_Score_0_to_100)) {
+    const fit = parseScore(property.Fit_Score_0_to_100);
+    return fit >= 70 ? '#22c55e' : fit >= 40 ? '#eab308' : '#64748b';
+  }
+  const price = parsePrice(property.Estimated_Price_or_Min_Bid);
+  if (price !== null) {
+    if (price < 50_000) return '#06b6d4';
+    if (price < 150_000) return '#3b82f6';
+    return '#8b5cf6';
+  }
+  return '#475569';
+}
+
+function createCustomIcon(property: LandProperty, isHovered: boolean = false, propertyId?: string) {
+  const label = getMapPinLabel(property);
+  const color = getMapPinTone(property);
+  const isCompact = label.length <= 3;
+  const width = isCompact ? 30 : 42;
+  const height = 28;
+  const scale = isHovered ? 'scale(1.16)' : 'scale(1)';
+  const fontSize = label.length >= 4 ? 9 : 10;
+  const safeLabel = label.replace(/[<>&"]/g, (char) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[char] || char));
+
   return L.divIcon({
-    html: `<div data-property-pin="${propertyId || ''}" style="
-      width:28px;height:28px;border-radius:50% 50% 50% 0;
-      background:${color};border:2px solid ${isHovered ? '#fff' : 'rgba(0,0,0,0.5)'};
+    html: `<div data-property-pin="${propertyId || ''}" data-pin-hovered="${isHovered ? 'true' : 'false'}" data-pin-label="${safeLabel}" style="
+      min-width:${width}px;height:${height}px;border-radius:999px 999px 999px 4px;
+      background:${color};border:2px solid ${isHovered ? '#fff' : 'rgba(15,23,42,0.74)'};
       transform:rotate(-45deg) ${scale};display:flex;align-items:center;
-      justify-content:center;box-shadow:${isHovered ? '0 0 12px rgba(34,197,94,0.8)' : '0 2px 8px rgba(0,0,0,0.6)'};
-      transition: all 0.2s;
-    "><span style="transform:rotate(45deg);font-size:10px;font-weight:700;color:white;display:block;text-align:center;line-height:24px;">${Math.round(fit)||'?'}</span></div>`,
-    iconSize: [28, 28],
-    iconAnchor: [14, 28],
+      justify-content:center;box-shadow:${isHovered ? '0 0 14px rgba(34,197,94,0.9)' : '0 3px 10px rgba(0,0,0,0.55)'};
+      transition: all 0.18s ease;padding:0 5px;
+    "><span style="transform:rotate(45deg);font-size:${fontSize}px;font-weight:900;color:white;display:block;text-align:center;line-height:${height - 4}px;text-shadow:0 1px 2px rgba(0,0,0,0.55);white-space:nowrap;">${safeLabel}</span></div>`,
+    iconSize: [width, height],
+    iconAnchor: [width / 2, height],
     popupAnchor: [0, -30],
     className: isHovered ? 'leaflet-interactive !z-[1000]' : '',
   });
+}
+
+function formatMoneyShort(value: number | null) {
+  if (value === null || Number.isNaN(value)) return 'N/A';
+  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1_000) return `$${Math.round(value / 1_000)}K`;
+  return `$${value}`;
+}
+
+function MiniTrendChart({ values, color = '#2563eb' }: { values: number[]; color?: string }) {
+  const max = Math.max(...values, 1);
+  const min = Math.min(...values, 0);
+  const span = Math.max(max - min, 1);
+  const points = values.map((value, index) => `${(index / Math.max(values.length - 1, 1)) * 180},${54 - ((value - min) / span) * 46}`).join(' ');
+  return (
+    <svg viewBox="0 0 180 62" className="h-20 w-full overflow-visible">
+      <defs><linearGradient id="trendFill" x1="0" x2="0" y1="0" y2="1"><stop stopColor={color} stopOpacity="0.28"/><stop offset="1" stopColor={color} stopOpacity="0"/></linearGradient></defs>
+      <polyline points={`0,60 ${points} 180,60`} fill="url(#trendFill)" stroke="none" />
+      <polyline points={points} fill="none" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
 }
 
 interface MapViewProps {
@@ -55,16 +143,16 @@ interface MapViewProps {
   accessLevel: AccessLevel;
 }
 
-function MapBoundsUpdater({ coords, boundsKey }: { coords: [number, number][]; boundsKey: string }) {
+function MapInitialStateView() {
   const map = useMap();
-  const lastBoundsKey = React.useRef<string | null>(null);
+  const hasInitialized = React.useRef(false);
 
   useEffect(() => {
-    if (coords.length > 0 && lastBoundsKey.current !== boundsKey) {
-      map.fitBounds(coords, { padding: [40, 40], maxZoom: 13 });
-      lastBoundsKey.current = boundsKey;
-    }
-  }, [boundsKey, coords, map]);
+    if (hasInitialized.current) return;
+    hasInitialized.current = true;
+    map.fitBounds(GEORGIA_STATE_BOUNDS, { padding: [28, 28], animate: false, maxZoom: DEFAULT_STATE_ZOOM });
+  }, [map]);
+
   return null;
 }
 
@@ -88,13 +176,6 @@ function MapInteractionHandler({ onInspect }: { onInspect: () => void }) {
   return null;
 }
 
-function parcelBounds(lat: number, lon: number, size = 0.0012): LatLngBoundsExpression {
-  return [
-    [lat - size, lon - size],
-    [lat + size, lon + size],
-  ];
-}
-
 function getDatasetBounds(coords: [number, number][], pad = 0.045): [number, number][] {
   if (coords.length === 0) return [];
   const lats = coords.map(([lat]) => lat);
@@ -106,35 +187,135 @@ function getDatasetBounds(coords: [number, number][], pad = 0.045): [number, num
   return [[minLat, minLon], [minLat, maxLon], [maxLat, maxLon], [maxLat, minLon]];
 }
 
-function getGroupedBounds(properties: LandProperty[], groupKey: keyof LandProperty, pad = 0.025) {
-  const groups = new Map<string, [number, number][]>()
-  properties.forEach((property) => {
-    const lat = Number(property.Latitude);
-    const lon = Number(property.Longitude);
-    const key = String(property[groupKey] || 'Unknown');
-    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
-    const group = groups.get(key) || [];
-    group.push([lat, lon]);
-    groups.set(key, group);
-  });
-  return [...groups.entries()].map(([key, coords]) => ({ key, coords: getDatasetBounds(coords, pad) })).filter((group) => group.coords.length > 0);
+function GisSourceStatusPanel({ statuses }: { statuses: GisSourceStatus[] }) {
+  const [isMinimized, setIsMinimized] = React.useState(true);
+
+  if (!statuses.length) return null;
+
+  return (
+    <div className={`absolute right-5 z-[900] max-w-[calc(100%-2rem)] rounded-2xl border border-surface-border bg-olive-950/95 text-xs text-olive-200 shadow-[0_25px_80px_rgba(0,0,0,0.5)] backdrop-blur-xl ${isMinimized ? 'bottom-20 w-auto' : 'bottom-24 w-96 p-3'}`}>
+      <button
+        type="button"
+        onClick={() => setIsMinimized((value) => !value)}
+        className="sticky top-0 z-[2] flex w-full items-center justify-between gap-3 rounded-xl bg-olive-950/95 px-3 py-2 text-left font-bold uppercase tracking-wider text-olive-200 transition-colors hover:text-white"
+        aria-expanded={!isMinimized}
+      >
+        <span>Source Status</span>
+        <span className="rounded-full border border-olive-700 bg-olive-900 px-2 py-0.5 text-[10px] text-olive-300">
+          {isMinimized ? 'Show' : 'Hide'}
+        </span>
+      </button>
+      {!isMinimized && (
+        <div className="mt-2 max-h-[min(58vh,34rem)] space-y-2 overflow-y-auto pr-1">
+          {statuses.map((source) => (
+            <div key={source.id} className="rounded-xl border border-olive-800 bg-olive-900/75 p-3">
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-semibold text-white">{source.label}</span>
+                <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${source.status === 'verified_query' ? 'bg-brand-900/70 text-brand-300' : source.status === 'error' ? 'bg-red-950/70 text-red-300' : 'bg-amber-950/70 text-amber-300'}`}>
+                  {source.status === 'verified_query' ? 'Verified' : source.status === 'error' ? 'Error' : 'Pending'}
+                </span>
+              </div>
+              <p className="mt-1 leading-snug text-olive-300">{source.message}</p>
+              {typeof source.featureCount === 'number' && (
+                <p className="mt-2 text-[10px] uppercase tracking-wide text-olive-500">Features loaded: {source.featureCount}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function getFeatureBounds(feature: VerifiedGisFeature): L.LatLngBounds | null {
+  const groups = feature.rings || feature.paths || [];
+  const points = groups.flat();
+  if (!points.length) return null;
+  return L.latLngBounds(points.map(([lat, lon]) => L.latLng(lat, lon)));
+}
+
+function normalizeParcelKey(value?: string) {
+  return String(value || '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+}
+
+function hasUsableParcelId(value?: string) {
+  const raw = String(value || '').trim();
+  const normalized = normalizeParcelKey(raw);
+  if (normalized.length < 6) return false;
+  return !/(NEEDS|UNKNOWN|PENDING|VERIFY|VERIFICATION|PUBLISHED|PROGRAM|PRIOR|AUCTION|SALELIST)/i.test(raw);
+}
+
+function getPropertyBoundaryKey(property: LandProperty | null) {
+  if (!property) return '';
+  return [property.Listing_ID, property.County, property.Parcel_ID, property.Latitude, property.Longitude].map((value) => String(value || '').trim()).join('::');
+}
+
+function SelectedParcelAutoFocus({ features, boundaryKey }: { features: VerifiedGisFeature[]; boundaryKey: string }) {
+  const map = useMap();
+  const lastFocusedKey = React.useRef<string>('');
+
+  React.useEffect(() => {
+    if (!boundaryKey || lastFocusedKey.current === boundaryKey || !features.length) return;
+    const bounds = features.map(getFeatureBounds).find((candidate) => candidate?.isValid());
+    if (!bounds?.isValid()) return;
+
+    // Red parcel lines are often much more precise than the available satellite tiles.
+    // Do not keep forcing tiny parcel bounds to zoom 19/20; that scales native imagery
+    // and is the main source of the blurry click-zoom experience.
+    if (map.getZoom() < PIN_CLICK_AUTO_ZOOM_BELOW) {
+      map.fitBounds(bounds, { padding: [120, 120], maxZoom: PARCEL_FOCUS_MAX_ZOOM, animate: true, duration: 0.65 });
+    }
+    lastFocusedKey.current = boundaryKey;
+  }, [boundaryKey, features, map]);
+
+  return null;
+}
+
+function MapBaseTiles({ baseMapId }: { baseMapId: BaseMapId }) {
+  if (baseMapId === 'topographic') {
+    return <TileLayer data-base-map="topographic" url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png" attribution='Map data: &copy; <a href="https://opentopomap.org">OpenTopoMap</a>' maxZoom={18} maxNativeZoom={17} />;
+  }
+  if (baseMapId === 'light') {
+    return <TileLayer data-base-map="light" url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" attribution='&copy; <a href="https://carto.com/">CARTO</a>' maxZoom={18} maxNativeZoom={18} />;
+  }
+  if (baseMapId === 'dark') {
+    return <TileLayer data-base-map="dark" url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" attribution='&copy; <a href="https://carto.com/">CARTO</a>' maxZoom={18} maxNativeZoom={18} />;
+  }
+  return (
+    <>
+      <TileLayer data-base-map="satellite" url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" attribution="Tiles &copy; Esri" maxZoom={18} maxNativeZoom={18} updateWhenZooming={false} keepBuffer={3} />
+      <TileLayer data-base-map="satellite-labels" url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}" attribution="Labels &copy; Esri" maxZoom={18} maxNativeZoom={18} updateWhenZooming={false} keepBuffer={3} />
+    </>
+  );
 }
 
 export default function MapView({ properties, onPropertyClick, favoriteIds, onToggleFavorite, accessLevel }: MapViewProps) {
   const [hoveredId, setHoveredId] = React.useState<string | null>(null);
   const [previewProperty, setPreviewProperty] = React.useState<LandProperty | null>(null);
+  const [selectedBoundaryProperty, setSelectedBoundaryProperty] = React.useState<LandProperty | null>(null);
+  const [mapPitch, setMapPitch] = React.useState(42);
   const [previewMode, setPreviewMode] = React.useState<MapPreviewMode>(() => getStoredMapPreviewMode());
+  const [experienceMode, setExperienceMode] = React.useState<MapExperienceMode>('2d');
+  const [baseMapId, setBaseMapId] = React.useState<BaseMapId>('satellite');
+  const [rightPanelMode, setRightPanelMode] = React.useState<'layers' | 'insights'>('insights');
+  const [isLeftPanelCollapsed, setIsLeftPanelCollapsed] = React.useState(false);
+  const [isRightPanelCollapsed, setIsRightPanelCollapsed] = React.useState(false);
   const shouldAutoHidePreview = previewMode !== 'persistent';
-  const [isMapExpanded, setIsMapExpanded] = React.useState(false);
+  const [isMapExpanded, setIsMapExpanded] = React.useState(true);
   const [activeLayerIds, setActiveLayerIds] = React.useState<Set<string>>(
-    () => new Set(GIS_LAYER_CONFIGS.filter((layer) => layer.enabledByDefault).map((layer) => layer.id))
+    () => new Set(['parcel-boundaries'])
   );
+  const [verifiedGisFeatures, setVerifiedGisFeatures] = React.useState<VerifiedGisFeature[]>([]);
+  const [gisSourceError, setGisSourceError] = React.useState<string | undefined>();
+  const [countyBoundaryData, setCountyBoundaryData] = React.useState<BoundaryFeatureCollection | null>(null);
+  const [cityBoundaryData, setCityBoundaryData] = React.useState<BoundaryFeatureCollection | null>(null);
+  const [boundarySourceError, setBoundarySourceError] = React.useState<string | undefined>();
   const initializedLayersForAccess = React.useRef<AccessLevel | null>(null);
 
   React.useEffect(() => {
     if (initializedLayersForAccess.current === accessLevel) return;
     initializedLayersForAccess.current = accessLevel;
-    setActiveLayerIds(new Set(GIS_LAYER_CONFIGS.filter((layer) => canAccessGisLayer(layer, accessLevel)).map((layer) => layer.id)));
+    setActiveLayerIds(new Set(['parcel-boundaries'].filter((layerId) => GIS_LAYER_CONFIGS.some((layer) => layer.id === layerId && canAccessGisLayer(layer, accessLevel)))));
   }, [accessLevel]);
 
   React.useEffect(() => {
@@ -147,6 +328,13 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
     };
   }, []);
 
+  React.useEffect(() => {
+    if (experienceMode === '3d') {
+      setIsLeftPanelCollapsed(true);
+      setIsRightPanelCollapsed(true);
+    }
+  }, [experienceMode]);
+
   const withCoords = React.useMemo(() => properties.filter(
     p => p.Latitude && p.Longitude && !isNaN(+p.Latitude) && !isNaN(+p.Longitude)
   ), [properties]);
@@ -155,58 +343,152 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
     () => withCoords.map(p => [+p.Latitude, +p.Longitude]),
     [withCoords]
   );
-  const boundsKey = React.useMemo(
-    () => withCoords.map((p) => p.Listing_ID || p.Parcel_ID || `${p.Latitude},${p.Longitude}`).join('|'),
-    [withCoords]
-  );
   const activeUnlockedLayerIds = React.useMemo(
     () => new Set(GIS_LAYER_CONFIGS.filter((layer) => activeLayerIds.has(layer.id) && canAccessGisLayer(layer, accessLevel)).map((layer) => layer.id)),
     [activeLayerIds, accessLevel]
   );
-  const datasetBounds = React.useMemo(() => getDatasetBounds(coords), [coords]);
-  const countyBounds = React.useMemo(() => getGroupedBounds(withCoords, 'County', 0.035), [withCoords]);
-  const cityBounds = React.useMemo(() => getGroupedBounds(withCoords, 'City', 0.018), [withCoords]);
-  const propertyByPinId = React.useMemo(() => {
-    const map = new Map<string, LandProperty>();
-    withCoords.forEach((property) => {
-      const id = property.Parcel_ID || property.Property_Name_or_Address.replace(/\s+/g, '-');
-      map.set(id, property);
-    });
-    return map;
-  }, [withCoords]);
+  const shouldLoadVerifiedGis = activeUnlockedLayerIds.has('parcel-boundaries') || activeUnlockedLayerIds.has('zoning');
+  const shouldLoadCountyBoundaries = activeUnlockedLayerIds.has('county-boundaries');
+  const shouldLoadCityBoundaries = activeUnlockedLayerIds.has('city-boundaries');
+  const boundaryTargetProperty = selectedBoundaryProperty;
+  const selectedForInsight = previewProperty;
+  const selectedBoundaryKey = React.useMemo(() => getPropertyBoundaryKey(boundaryTargetProperty), [boundaryTargetProperty]);
 
   React.useEffect(() => {
-    const handlePointerOver = (event: PointerEvent) => {
-      const target = event.target as HTMLElement | null;
-      const pin = target?.closest?.('[data-property-pin]') as HTMLElement | null;
-      const pinId = pin?.dataset.propertyPin;
-      if (!pinId) return;
-      const property = propertyByPinId.get(pinId);
-      if (!property) return;
-      setHoveredId(pinId);
-      setPreviewProperty(property);
-    };
-    const handlePointerOut = (event: PointerEvent) => {
-      if (!shouldAutoHidePreview) return;
-      const target = event.target as HTMLElement | null;
-      const pin = target?.closest?.('[data-property-pin]') as HTMLElement | null;
-      if (!pin) return;
-      setHoveredId(null);
-      setPreviewProperty(null);
-    };
-    document.addEventListener('pointerover', handlePointerOver);
-    document.addEventListener('pointerout', handlePointerOut);
-    return () => {
-      document.removeEventListener('pointerover', handlePointerOver);
-      document.removeEventListener('pointerout', handlePointerOut);
-    };
-  }, [propertyByPinId, shouldAutoHidePreview]);
+    let cancelled = false;
+    if (!shouldLoadCountyBoundaries) {
+      setCountyBoundaryData(null);
+      return;
+    }
+    fetchCountyBoundaryGeoJson(properties)
+      .then((data) => { if (!cancelled) setCountyBoundaryData(data); })
+      .catch((error) => {
+        if (!cancelled) {
+          setCountyBoundaryData(null);
+          setBoundarySourceError(error instanceof Error ? error.message : String(error));
+        }
+      });
+    return () => { cancelled = true; };
+  }, [properties, shouldLoadCountyBoundaries]);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    if (!shouldLoadCityBoundaries) {
+      setCityBoundaryData(null);
+      return;
+    }
+    fetchCityBoundaryGeoJson(properties)
+      .then((data) => { if (!cancelled) setCityBoundaryData(data); })
+      .catch((error) => {
+        if (!cancelled) {
+          setCityBoundaryData(null);
+          setBoundarySourceError(error instanceof Error ? error.message : String(error));
+        }
+      });
+    return () => { cancelled = true; };
+  }, [properties, shouldLoadCityBoundaries]);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    if (!shouldLoadVerifiedGis) {
+      setVerifiedGisFeatures([]);
+      setGisSourceError(undefined);
+      return;
+    }
+
+    const selected = boundaryTargetProperty;
+    if (!selected) {
+      setVerifiedGisFeatures([]);
+      setGisSourceError(undefined);
+      return;
+    }
+
+    const county = String(selected.County || '').trim();
+    const parcelId = String(selected.Parcel_ID || '').trim();
+    const lat = Number(selected.Latitude);
+    const lon = Number(selected.Longitude);
+    const canLookupByParcelId = county && hasUsableParcelId(parcelId);
+    const canLookupByPoint = county && Number.isFinite(lat) && Number.isFinite(lon);
+    if (!canLookupByParcelId && !canLookupByPoint) {
+      setVerifiedGisFeatures([]);
+      setGisSourceError('Parcel boundary unavailable: this listing needs a verified parcel ID or usable coordinates before a real red property line can be drawn.');
+      return;
+    }
+
+    setVerifiedGisFeatures([]);
+    setGisSourceError(canLookupByParcelId ? 'Loading selected property boundary…' : 'Loading official parcel boundary from selected coordinates…');
+    import('../../lib/dataSources/connectors/countyGisConnector').then(({ fetchParcelById, fetchParcelByPoint }) => {
+      const lookup = canLookupByParcelId
+        ? fetchParcelById(county, parcelId)
+        : fetchParcelByPoint(county, lat, lon);
+      lookup
+        .then((res) => {
+          if (cancelled) return;
+          const features: VerifiedGisFeature[] = res.properties.map((p) => ({
+            id: `${selected.Listing_ID || parcelId}-${p.parcelId || p.rawParcelId}`,
+            kind: p.rings ? 'polygon' : p.paths ? 'polyline' : 'polygon',
+            layerId: 0,
+            layerName: 'Parcels',
+            sourceId: p.sourceId,
+            sourceName: p.sourceName,
+            sourceUrl: p.sourceUrl,
+            status: 'verified_query',
+            attribution: p.attribution,
+            rings: p.rings,
+            paths: p.paths,
+            attributes: {
+              ...p.rawAttributes,
+              listingId: selected.Listing_ID,
+              requestedParcelId: parcelId,
+              normalizedRequestedParcelId: normalizeParcelKey(parcelId),
+              county,
+              propertyName: selected.Property_Name_or_Address,
+            },
+          }));
+          setVerifiedGisFeatures(features);
+          if (features.length) {
+            setGisSourceError(undefined);
+          } else {
+            const errors = res.errors?.filter(Boolean).join('; ');
+            setGisSourceError(errors || (canLookupByParcelId ? `No verified parcel boundary matched ${parcelId} in ${county} County GIS.` : `No official parcel boundary contained the selected coordinates in ${county} County GIS.`));
+          }
+        })
+        .catch((error) => {
+          if (!cancelled) {
+            setVerifiedGisFeatures([]);
+            setGisSourceError(error instanceof Error ? error.message : String(error));
+          }
+        });
+    });
+    return () => { cancelled = true; };
+  }, [boundaryTargetProperty, selectedBoundaryKey, shouldLoadVerifiedGis]);
+
+  const gisSourceStatuses = React.useMemo(
+    () => buildGisSourceStatuses(properties, verifiedGisFeatures.length, gisSourceError),
+    [properties, verifiedGisFeatures.length, gisSourceError]
+  );
+  const verifiedParcelFeatures = React.useMemo(
+    () => verifiedGisFeatures.filter((feature) => feature.layerName === 'Parcels' || feature.layerName === 'LotLines'),
+    [verifiedGisFeatures]
+  );
+  const verifiedZoningFeatures = React.useMemo(
+    () => verifiedGisFeatures.filter((feature) => feature.layerName === 'County_Zoning'),
+    [verifiedGisFeatures]
+  );
+  const datasetBounds = React.useMemo(() => getDatasetBounds(coords), [coords]);
+
+  const insightMetrics = React.useMemo(() => {
+    const prices = properties.map((p) => parsePrice(p.Estimated_Price_or_Min_Bid)).filter((v): v is number => v !== null);
+    const avgPrice = prices.length ? Math.round(prices.reduce((sum, value) => sum + value, 0) / prices.length) : null;
+    const avgFit = properties.length ? Math.round(properties.reduce((sum, p) => sum + parseScore(p.Fit_Score_0_to_100), 0) / properties.length) : 0;
+    const avgRisk = properties.length ? Math.round(properties.reduce((sum, p) => sum + parseScore(p.Risk_Score_0_to_100), 0) / properties.length) : 0;
+    const trend = [avgFit * 0.82, avgFit * 0.9, avgFit * 0.86 + 7, avgFit * 0.97, avgFit + 4, avgFit + 9].map((v) => Math.max(8, Math.round(v)));
+    return { avgPrice, avgFit, avgRisk, trend };
+  }, [properties]);
 
   const handleMarkerClick = (id: string) => {
     const el = document.getElementById(`card-${id}`);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
   const handleToggleLayer = (layerId: string) => {
@@ -219,252 +501,125 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
   };
 
   const clearMapPreview = React.useCallback(() => {
-    setPreviewProperty(null);
-    setHoveredId(null);
-  }, []);
+    if (shouldAutoHidePreview) {
+      setPreviewProperty(null);
+      setHoveredId(null);
+    }
+  }, [shouldAutoHidePreview]);
 
   return (
-    <div className={`flex flex-col gap-4 ${isMapExpanded ? 'min-h-[900px]' : 'lg:flex-row h-[calc(100vh-180px)] min-h-[600px]'}`}>
-      {/* Map Column */}
-      <div className={`${isMapExpanded ? 'h-[78vh] min-h-[720px] w-full' : 'flex-1 lg:w-[55%] xl:w-[60%]'} rounded-xl overflow-hidden border border-surface-border relative z-10 shrink-0 transition-all duration-300`}>
-        <button
-          type="button"
-          onClick={() => setIsMapExpanded((value) => !value)}
-          className="absolute right-3 top-16 z-[550] inline-flex items-center gap-2 rounded-lg border border-surface-border bg-olive-950/90 px-3 py-2 text-xs font-bold text-olive-100 shadow-xl backdrop-blur transition-colors hover:border-brand-500/60 hover:text-white"
-          aria-pressed={isMapExpanded}
-        >
-          {isMapExpanded ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
-          {isMapExpanded ? 'Shrink map' : 'Enlarge map'}
-        </button>
-        <MapLayerControl
-          layers={GIS_LAYER_CONFIGS}
-          activeLayerIds={activeLayerIds}
-          accessLevel={accessLevel}
-          onToggleLayer={handleToggleLayer}
-        />
-        <GisLayerLegend layers={GIS_LAYER_CONFIGS} activeLayerIds={activeLayerIds} />
-        {previewProperty && (() => {
-          const previewFit = parseScore(previewProperty.Fit_Score_0_to_100);
-          const previewRisk = parseScore(previewProperty.Risk_Score_0_to_100);
-          const previewImage = getSatelliteImageUrl(previewProperty.Latitude, previewProperty.Longitude, 18);
-          return (
-            <div className="property-hover-preview absolute right-3 top-28 z-[560] w-72 max-w-[calc(100%-1.5rem)] overflow-hidden rounded-2xl border border-surface-border bg-olive-950/95 text-white shadow-2xl backdrop-blur">
-              {previewImage && (
-                <img
-                  src={previewImage}
-                  alt={`Satellite view of ${displayValue(previewProperty.Property_Name_or_Address)}`}
-                  className="h-28 w-full object-cover"
-                  loading="lazy"
-                />
-              )}
-              <div className="space-y-2 p-3">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <h3 className="text-sm font-bold leading-snug text-white">
-                      {displayValue(previewProperty.Property_Name_or_Address)}
-                    </h3>
-                    <p className="mt-1 flex items-center gap-1 text-xs text-olive-400">
-                      <MapPin size={11} /> {[previewProperty.City, previewProperty.County, 'GA'].filter(Boolean).join(', ')}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setPreviewProperty(null)}
-                    className="rounded-full bg-olive-900 px-2 py-1 text-[10px] text-olive-400 hover:text-white"
-                  >
-                    Close
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <span className={`badge ${getFitScoreClass(previewFit)} text-xs`}>Fit: {previewFit || '–'}</span>
-                  <span className={`badge ${getRiskScoreClass(previewRisk)} text-xs`}>Risk: {previewRisk || '–'}</span>
-                  {previewProperty.Lot_Size_Acres && <span className="badge bg-olive-800 border-olive-700 text-olive-200 text-xs">{previewProperty.Lot_Size_Acres} ac</span>}
-                </div>
-                <div className="grid grid-cols-2 gap-2 text-xs text-olive-300">
-                  <span><span className="text-olive-600">Price:</span> {previewProperty.Estimated_Price_or_Min_Bid || previewProperty.Price_Category || 'N/A'}</span>
-                  <span><span className="text-olive-600">Zoning:</span> {previewProperty.Zoning || 'N/A'}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => onPropertyClick(previewProperty)}
-                  className="w-full rounded-lg bg-brand-600 py-2 text-xs font-bold text-white transition-colors hover:bg-brand-500"
-                >
-                  View Details
-                </button>
-              </div>
-            </div>
-          );
-        })()}
-        <MapContainer
-          center={[33.749, -84.388]}
-          zoom={9}
-          maxZoom={22}
-          zoomControl={false}
-          style={{ height: '100%', width: '100%' }}
-        >
+    <section className={`dashboard-map-workspace relative overflow-hidden border border-white/10 bg-slate-950 shadow-[0_30px_90px_rgba(0,0,0,0.45)] ${isMapExpanded ? 'h-full min-h-full' : 'h-[720px]'}`} data-map-mode={experienceMode} style={{ '--glf-map-pitch': `${mapPitch}deg` } as React.CSSProperties}>
+      <div className="absolute inset-0 z-0">
+        <MapContainer center={GEORGIA_STATE_CENTER} zoom={DEFAULT_STATE_ZOOM} minZoom={6} maxZoom={18} zoomControl={false} style={{ height: '100%', width: '100%' }} className={experienceMode === '3d' ? 'glf-tilt-map glf-3d-map' : ''}>
           <ZoomControl position="bottomright" />
           <MapResizeHandler isExpanded={isMapExpanded} />
           <MapInteractionHandler onInspect={clearMapPreview} />
-          <LayersControl position="topright">
-            <BaseLayer checked name="Dark Road">
-              <TileLayer
-                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-                maxZoom={22}
-                maxNativeZoom={20}
-              />
-            </BaseLayer>
-            <BaseLayer name="Light Road">
-              <TileLayer
-                url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-                attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-                maxZoom={22}
-                maxNativeZoom={20}
-              />
-            </BaseLayer>
-            <BaseLayer name="Satellite">
-              <LayerGroup>
-                <TileLayer
-                  url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                  attribution="Tiles &copy; Esri"
-                  maxZoom={22}
-                  maxNativeZoom={17}
-                />
-                <TileLayer
-                  url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
-                  attribution="Labels &copy; Esri"
-                  maxZoom={22}
-                  maxNativeZoom={17}
-                />
-              </LayerGroup>
-            </BaseLayer>
-            <BaseLayer name="Topographic">
-              <TileLayer
-                url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
-                attribution='Map data: &copy; <a href="https://opentopomap.org">OpenTopoMap</a>'
-                maxZoom={22}
-                maxNativeZoom={17}
-              />
-            </BaseLayer>
-          </LayersControl>
-
-          {activeUnlockedLayerIds.has('county-boundaries') && countyBounds.map((group) => (
-            <Polygon
-              key={`county-${group.key}`}
-              positions={group.coords}
-              pathOptions={{ color: '#60a5fa', weight: 2, opacity: 0.55, fillOpacity: 0.015, dashArray: '8 8' }}
-            />
+          <MapInitialStateView />
+          {activeUnlockedLayerIds.has('parcel-boundaries') && <SelectedParcelAutoFocus features={verifiedParcelFeatures} boundaryKey={selectedBoundaryKey} />}
+          <MapBaseTiles baseMapId={baseMapId} />
+          {activeUnlockedLayerIds.has('county-boundaries') && countyBoundaryData && <LeafletGeoJSON key={`county-boundaries-${countyBoundaryData.features.length}`} data={countyBoundaryData as never} style={() => ({ color: '#dbeafe', weight: 2.2, opacity: 0.9, fillOpacity: 0, dashArray: '6 4' })} />}
+          {activeUnlockedLayerIds.has('city-boundaries') && cityBoundaryData && <LeafletGeoJSON key={`city-boundaries-${cityBoundaryData.features.length}`} data={cityBoundaryData as never} style={() => ({ color: '#c4b5fd', weight: 1.8, opacity: 0.85, fillOpacity: 0, dashArray: '3 5' })} />}
+          {activeUnlockedLayerIds.has('parcel-boundaries') && verifiedParcelFeatures.map((feature) => (
+            feature.kind === 'polygon' ? feature.rings?.map((ring, ringIndex) => <Polygon key={`${feature.id}-ring-${ringIndex}`} positions={ring} pathOptions={{ color: '#ef4444', weight: 4, opacity: 1, fillColor: '#ef4444', fillOpacity: 0.08, className: 'verified-parcel-boundary-red' }} />) : feature.paths?.map((path, pathIndex) => <Polyline key={`${feature.id}-path-${pathIndex}`} positions={path} pathOptions={{ color: '#ef4444', weight: 4, opacity: 1, className: 'verified-parcel-boundary-red' }} />)
           ))}
-          {activeUnlockedLayerIds.has('city-boundaries') && cityBounds.map((group) => (
-            <Polygon
-              key={`city-${group.key}`}
-              positions={group.coords}
-              pathOptions={{ color: '#a78bfa', weight: 1.5, opacity: 0.5, fillOpacity: 0.012, dashArray: '4 7' }}
-            />
-          ))}
-          {activeUnlockedLayerIds.has('parcel-boundaries') && withCoords.map((prop, idx) => (
-            <Rectangle
-              key={`parcel-${idx}`}
-              bounds={parcelBounds(Number(prop.Latitude), Number(prop.Longitude), 0.00022)}
-              pathOptions={{ color: '#f59e0b', weight: 1.2, opacity: 0.75, fillOpacity: 0.025 }}
-            />
-          ))}
-          {activeUnlockedLayerIds.has('fema-flood') && datasetBounds.length > 0 && (
-            <Polygon
-              positions={datasetBounds}
-              pathOptions={{ color: '#38bdf8', weight: 1, opacity: 0.35, fillColor: '#0ea5e9', fillOpacity: 0.055 }}
-            />
-          )}
-          {activeUnlockedLayerIds.has('zoning') && withCoords.map((prop, idx) => idx % 2 === 0 ? (
-            <Rectangle
-              key={`zoning-${idx}`}
-              bounds={parcelBounds(Number(prop.Latitude), Number(prop.Longitude), 0.00045)}
-              pathOptions={{ color: '#ec4899', weight: 0.8, opacity: 0.38, fillColor: '#ec4899', fillOpacity: 0.045 }}
-            />
-          ) : null)}
-          {activeUnlockedLayerIds.has('off-market-candidates') && withCoords.map((prop, idx) => (
-            <Circle
-              key={`offmarket-${idx}`}
-              center={[Number(prop.Latitude), Number(prop.Longitude)]}
-              radius={85}
-              pathOptions={{ color: '#f97316', weight: 1.2, opacity: 0.55, fillColor: '#f97316', fillOpacity: 0.07 }}
-            />
-          ))}
-
-          {coords.length > 0 && <MapBoundsUpdater coords={coords} boundsKey={boundsKey} />}
+          {activeUnlockedLayerIds.has('fema-flood') && datasetBounds.length > 0 && <Polygon positions={datasetBounds} pathOptions={{ color: '#38bdf8', weight: 1, opacity: 0.35, fillColor: '#0ea5e9', fillOpacity: 0.055 }} />}
+          {activeUnlockedLayerIds.has('zoning') && verifiedZoningFeatures.map((feature) => feature.rings?.map((ring, ringIndex) => <Polygon key={`${feature.id}-zoning-${ringIndex}`} positions={ring} pathOptions={{ color: '#ec4899', weight: 1, opacity: 0.6, fillColor: '#ec4899', fillOpacity: 0.055 }} />))}
+          {activeUnlockedLayerIds.has('off-market-candidates') && withCoords.map((prop, idx) => <Circle key={`offmarket-${idx}`} center={[Number(prop.Latitude), Number(prop.Longitude)]} radius={85} pathOptions={{ color: '#f97316', weight: 1.2, opacity: 0.55, fillColor: '#f97316', fillOpacity: 0.07 }} />)}
           {withCoords.map((prop, idx) => {
+            const pId = getPropertyPinId(prop, properties.indexOf(prop));
+            const isHovered = hoveredId === pId;
+            const price = parsePrice(prop.Estimated_Price_or_Min_Bid);
             const fit = parseScore(prop.Fit_Score_0_to_100);
             const risk = parseScore(prop.Risk_Score_0_to_100);
-            const pId = prop.Parcel_ID || prop.Property_Name_or_Address.replace(/\s+/g, '-');
-            const isHovered = hoveredId === pId;
-
+            const imageUrl = getSatelliteImageUrl(prop.Latitude, prop.Longitude, 18);
+            const propertyBoundaryKey = getPropertyBoundaryKey(prop);
+            const isBoundarySelected = selectedBoundaryKey === propertyBoundaryKey;
+            const boundaryStatusText = isBoundarySelected
+              ? (verifiedParcelFeatures.length ? 'Verified red parcel boundary loaded.' : gisSourceError)
+              : '';
             return (
-              <Marker
-                key={idx}
-                position={[+prop.Latitude, +prop.Longitude]}
-                icon={createCustomIcon(fit, isHovered, pId)}
-                eventHandlers={{
-                  click: () => {
-                    setPreviewProperty(prop);
-                    handleMarkerClick(pId);
-                  },
-                  mouseover: () => {
-                    setHoveredId(pId);
-                    setPreviewProperty(prop);
-                  },
-                  mousemove: () => {
-                    setHoveredId(pId);
-                    setPreviewProperty(prop);
-                  },
-                  add: (event) => {
-                    const marker = event.target;
-                    marker.getElement()?.addEventListener('mouseenter', () => {
-                      setHoveredId(pId);
-                      setPreviewProperty(prop);
-                    });
-                  },
-                  mouseout: () => {
-                    setHoveredId(null);
-                    if (shouldAutoHidePreview) setPreviewProperty(null);
+              <Marker key={idx} position={[+prop.Latitude, +prop.Longitude]} icon={createCustomIcon(prop, isHovered, pId)} eventHandlers={{
+                click: (event) => {
+                  setSelectedBoundaryProperty(prop);
+                  setHoveredId(pId);
+                  const map = event.target._map as L.Map | undefined;
+                  if (!map) return;
+                  const currentZoom = map.getZoom();
+                  if (currentZoom < PIN_CLICK_AUTO_ZOOM_BELOW) {
+                    map.flyTo([+prop.Latitude, +prop.Longitude], PIN_CLICK_TARGET_ZOOM, { animate: true, duration: 0.55 });
+                  } else {
+                    map.panTo([+prop.Latitude, +prop.Longitude], { animate: true, duration: 0.35 });
                   }
-                }}
-              >
-                <Popup maxWidth={320} className="property-preview-popup">
-                  <div className="w-72 overflow-hidden rounded-xl bg-olive-950 text-white shadow-2xl">
-                    {getSatelliteImageUrl(prop.Latitude, prop.Longitude, 18) && (
-                      <img
-                        src={getSatelliteImageUrl(prop.Latitude, prop.Longitude, 18) || ''}
-                        alt={`Satellite view of ${displayValue(prop.Property_Name_or_Address)}`}
-                        className="h-32 w-full object-cover"
-                        loading="lazy"
-                      />
-                    )}
-                    <div className="space-y-2 p-3">
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <h3 className="font-semibold text-sm text-white leading-snug">
-                            {displayValue(prop.Property_Name_or_Address)}
-                          </h3>
-                          <p className="mt-1 flex items-center gap-1 text-xs text-olive-400">
-                            <MapPin size={11} /> {[prop.City, prop.County, 'GA'].filter(Boolean).join(', ')}
-                          </p>
+                },
+                mouseover: () => { setHoveredId(pId); },
+                add: (event) => {
+                  const marker = event.target;
+                  const element = marker.getElement?.();
+                  if (!element) return;
+                  const enter = () => { setHoveredId(pId); };
+                  const leave = () => { setHoveredId((current) => (current === pId ? null : current)); };
+                  element.addEventListener('mouseenter', enter);
+                  element.addEventListener('mouseleave', leave);
+                  marker.once('remove', () => { element.removeEventListener('mouseenter', enter); element.removeEventListener('mouseleave', leave); });
+                },
+                mouseout: () => { setHoveredId((current) => (current === pId ? null : current)); }
+              }}>
+                <Popup className="glf-property-popup" maxWidth={360} minWidth={300}>
+                  <div className="w-[300px] overflow-hidden rounded-2xl bg-olive-950 text-white shadow-2xl">
+                    <div className="relative h-36 bg-olive-900">
+                      {imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt={`Close-up satellite view of ${displayValue(prop.Property_Name_or_Address)}`}
+                          className="h-full w-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="flex h-full flex-col items-center justify-center text-olive-500">
+                          <MapPin size={24} className="mb-2 opacity-40" />
+                          <span className="text-xs font-bold">No coordinates</span>
                         </div>
-                        {prop.Estimated_Price_or_Min_Bid && (
-                          <span className="shrink-0 rounded-full bg-brand-900/70 px-2 py-1 text-[10px] font-bold text-brand-300">
-                            {prop.Estimated_Price_or_Min_Bid}
-                          </span>
-                        )}
+                      )}
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-olive-950 via-olive-950/70 to-transparent p-3">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-300">Property selected</p>
                       </div>
-                      <div className="flex gap-2 flex-wrap">
-                        <span className={`badge ${getFitScoreClass(fit)} text-xs`}>Fit: {fit || '–'}</span>
-                        <span className={`badge ${getRiskScoreClass(risk)} text-xs`}>Risk: {risk || '–'}</span>
-                        {prop.Lot_Size_Acres && <span className="badge bg-olive-800 border-olive-700 text-olive-200 text-xs">{prop.Lot_Size_Acres} ac</span>}
+                      {prop.Priority_Rank && (
+                        <span className="absolute left-3 top-3 rounded-full border border-white/20 bg-black/65 px-2 py-1 text-[10px] font-black text-emerald-200 backdrop-blur">
+                          #{prop.Priority_Rank}
+                        </span>
+                      )}
+                    </div>
+                    <div className="space-y-3 p-4">
+                      <div>
+                        <h3 className="line-clamp-2 text-sm font-black leading-tight">{displayValue(prop.Property_Name_or_Address)}</h3>
+                        <p className="mt-1 flex items-center gap-1 text-xs font-semibold text-olive-300"><MapPin size={12} /> {[prop.City, prop.County, 'GA'].filter(Boolean).join(', ')}</p>
                       </div>
+                      <div className="grid grid-cols-2 gap-2 text-xs font-bold">
+                        <div className="rounded-xl bg-white/10 px-3 py-2"><span className="block text-[9px] uppercase tracking-wider text-olive-500">Price</span>{price !== null ? formatMoneyShort(price) : (prop.Estimated_Price_or_Min_Bid || 'N/A')}</div>
+                        <div className="rounded-xl bg-white/10 px-3 py-2"><span className="block text-[9px] uppercase tracking-wider text-olive-500">Acreage</span>{prop.Lot_Size_Acres || 'N/A'}</div>
+                      </div>
+                      <div className="flex flex-wrap gap-2 text-[11px] font-bold">
+                        <span className={`badge ${hasScore(prop.Fit_Score_0_to_100) ? getFitScoreClass(fit) : 'bg-slate-800 text-slate-300 border border-slate-600'}`}>Fit: {hasScore(prop.Fit_Score_0_to_100) ? fit : 'Needs scoring'}</span>
+                        <span className={`badge ${getRiskScoreClass(risk)}`}>Risk: {risk || '–'}</span>
+                        {prop.Acquisition_Type && <span className="badge bg-olive-800 border-olive-700 text-olive-200">{prop.Acquisition_Type}</span>}
+                      </div>
+                      {prop.Recommended_Next_Action && (
+                        <p className="line-clamp-2 text-[11px] font-semibold italic text-emerald-200/80">→ {prop.Recommended_Next_Action}</p>
+                      )}
+                      {boundaryStatusText && (
+                        <div className={`rounded-xl border px-3 py-2 text-[11px] font-bold ${verifiedParcelFeatures.length ? 'border-red-400/40 bg-red-500/12 text-red-100' : 'border-amber-400/35 bg-amber-500/10 text-amber-100'}`}>
+                          {boundaryStatusText}
+                        </div>
+                      )}
                       <button
-                        onClick={() => onPropertyClick(prop)}
-                        className="w-full mt-1 text-xs bg-green-700 hover:bg-brand-600 text-white rounded-lg py-2 transition-colors"
+                        type="button"
+                        onClick={(clickEvent) => {
+                          clickEvent.stopPropagation();
+                          onPropertyClick(prop);
+                        }}
+                        className="w-full rounded-xl bg-emerald-500 px-3 py-2 text-xs font-black uppercase tracking-wider text-slate-950 transition hover:bg-emerald-300"
                       >
-                        View Details
+                        Open property info
                       </button>
                     </div>
                   </div>
@@ -475,30 +630,139 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
         </MapContainer>
       </div>
 
-      {/* Cards Column */}
-      <div className={`${isMapExpanded ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 overflow-visible pr-0 pb-8' : 'lg:w-[45%] xl:w-[40%] flex flex-col gap-4 overflow-y-auto pr-2 pb-4'} scroll-smooth`}>
-        {properties.length === 0 ? (
-          <div className="card text-olive-500 text-center py-10">No properties to display</div>
+      <div className={`absolute left-5 top-20 z-[520] flex max-w-[calc(100%-2rem)] flex-col gap-3 transition-all duration-300 ${isLeftPanelCollapsed ? 'w-14' : 'w-[21rem] lg:w-[22rem]'}`}>
+        <button type="button" onClick={() => setIsLeftPanelCollapsed((value) => !value)} className="absolute -right-3 top-5 z-[2] rounded-full border border-white/30 bg-slate-950/88 p-1.5 text-white shadow-xl backdrop-blur" aria-label={isLeftPanelCollapsed ? 'Open map tools' : 'Collapse map tools'}>
+          {isLeftPanelCollapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}
+        </button>
+        {isLeftPanelCollapsed ? (
+          <div className="flex flex-col items-center gap-3 rounded-2xl border border-white/14 bg-slate-950/80 p-3 text-white shadow-2xl backdrop-blur-xl">
+            <MapPin size={18} className="text-emerald-300" />
+            <Layers size={18} />
+            <Search size={18} />
+          </div>
         ) : (
-          properties.map((prop, idx) => {
-            const pId = prop.Parcel_ID || prop.Property_Name_or_Address.replace(/\s+/g, '-');
-            const isFav = favoriteIds.has(prop.Parcel_ID || prop.Property_Name_or_Address);
-            return (
-              <PropertyCard
-                key={idx}
-                id={`card-${pId}`}
-                property={prop}
-                onClick={() => onPropertyClick(prop)}
-                isFavorite={isFav}
-                onToggleFavorite={(e) => { e.stopPropagation(); onToggleFavorite(prop); }}
-                isHovered={hoveredId === pId}
-                onMouseEnter={() => setHoveredId(pId)}
-                onMouseLeave={() => setHoveredId(null)}
-              />
-            );
-          })
+          <>
+            <div className="overflow-hidden rounded-2xl border border-white/14 bg-white/92 text-slate-950 shadow-2xl backdrop-blur-xl">
+              <div className="p-3">
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <div>
+                    <p className="text-[9px] font-black uppercase tracking-[0.24em] text-blue-700">Georgia Land Finder</p>
+                    <h2 className="text-sm font-black">Map Tools</h2>
+                  </div>
+                  <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-black uppercase text-emerald-700">{withCoords.length} mapped</span>
+                </div>
+                <button type="button" onClick={() => setRightPanelMode('layers')} className="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-black text-slate-700 transition hover:border-blue-300 hover:text-blue-700">
+                  <span className="inline-flex items-center gap-2"><Layers size={14}/> Map layers</span>
+                  <span>{activeUnlockedLayerIds.size} on</span>
+                </button>
+              </div>
+              <div className="grid grid-cols-4 gap-1.5 border-t border-slate-200 p-2 text-[10px] font-black uppercase text-slate-600">
+                {[
+                  { label: 'Inspect', icon: MousePointer2 },
+                  { label: 'Locate', icon: LocateFixed },
+                  { label: 'Filter', icon: ListFilter },
+                  { label: 'Value', icon: BarChart3 },
+                ].map(({ label, icon: Icon }) => <button key={label} type="button" className="flex flex-col items-center gap-1 rounded-xl border border-slate-200 bg-white py-2 shadow-sm transition hover:border-blue-300 hover:text-blue-700"><Icon size={14}/>{label}</button>)}
+              </div>
+            </div>
+            {selectedForInsight && (
+              <div className="rounded-2xl border border-white/14 bg-slate-950/86 p-4 text-white shadow-2xl backdrop-blur-xl">
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-300">Selected property</p>
+                  <button type="button" onClick={() => onPropertyClick(selectedForInsight)} className="rounded-full bg-emerald-500 px-3 py-1 text-[10px] font-black uppercase text-slate-950">Details</button>
+                </div>
+                <h3 className="line-clamp-2 text-sm font-black">{displayValue(selectedForInsight.Property_Name_or_Address)}</h3>
+                <p className="mt-1 flex items-center gap-1 text-xs font-semibold text-slate-300"><MapPin size={12} /> {[selectedForInsight.City, selectedForInsight.County, 'GA'].filter(Boolean).join(', ')}</p>
+                <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                  <span className={`badge ${hasScore(selectedForInsight.Fit_Score_0_to_100) ? getFitScoreClass(parseScore(selectedForInsight.Fit_Score_0_to_100)) : 'bg-slate-800 text-slate-300 border border-slate-600'}`}>Fit: {hasScore(selectedForInsight.Fit_Score_0_to_100) ? parseScore(selectedForInsight.Fit_Score_0_to_100) : 'Needs scoring'}</span>
+                  <span className={`badge ${getRiskScoreClass(parseScore(selectedForInsight.Risk_Score_0_to_100))}`}>Risk: {parseScore(selectedForInsight.Risk_Score_0_to_100) || '–'}</span>
+                  <span className="rounded-lg bg-white/10 px-2 py-1 font-bold">{selectedForInsight.Estimated_Price_or_Min_Bid || 'Price N/A'}</span>
+                  <span className="rounded-lg bg-white/10 px-2 py-1 font-bold">{selectedForInsight.Lot_Size_Acres || 'Acres N/A'}</span>
+                </div>
+                <div className={`mt-3 flex items-start gap-2 rounded-xl border px-3 py-2 text-[11px] font-semibold ${verifiedParcelFeatures.length ? 'border-red-400/40 bg-red-500/12 text-red-100' : 'border-amber-400/30 bg-amber-500/10 text-amber-100'}`}>
+                  {verifiedParcelFeatures.length ? <CheckCircle2 size={13} className="mt-0.5 shrink-0" /> : <AlertTriangle size={13} className="mt-0.5 shrink-0" />}
+                  <span>{verifiedParcelFeatures.length ? 'Verified red parcel boundary loaded for this selected property.' : (gisSourceError || 'Select a property with a verified parcel ID to load its red boundary.')}</span>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
-    </div>
+
+      <div className={`absolute right-5 top-20 z-[520] flex max-w-[calc(100%-2rem)] flex-col gap-3 transition-all duration-300 ${isRightPanelCollapsed ? 'w-14' : 'w-[20rem] xl:w-[21rem]'}`}>
+        <button type="button" onClick={() => setIsRightPanelCollapsed((value) => !value)} className="absolute -left-3 top-5 z-[2] rounded-full border border-white/30 bg-slate-950/88 p-1.5 text-white shadow-xl backdrop-blur" aria-label={isRightPanelCollapsed ? 'Open insights panel' : 'Collapse insights panel'}>
+          {isRightPanelCollapsed ? <ChevronLeft size={15} /> : <ChevronRight size={15} />}
+        </button>
+        {isRightPanelCollapsed ? (
+          <div className="flex flex-col items-center gap-3 rounded-2xl border border-white/14 bg-white/88 p-3 text-slate-950 shadow-2xl backdrop-blur-xl">
+            <BarChart3 size={18} />
+            <Layers size={18} />
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-white/14 bg-white/92 p-3 text-slate-950 shadow-2xl backdrop-blur-xl">
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <div className="flex rounded-xl bg-slate-100 p-1 text-[11px] font-black">
+                <button type="button" onClick={() => setRightPanelMode('insights')} className={`rounded-lg px-3 py-1.5 ${rightPanelMode === 'insights' ? 'bg-blue-700 text-white shadow' : 'text-slate-600'}`}>Insights</button>
+                <button type="button" onClick={() => setRightPanelMode('layers')} className={`rounded-lg px-3 py-1.5 ${rightPanelMode === 'layers' ? 'bg-blue-700 text-white shadow' : 'text-slate-600'}`}>Map Layers</button>
+              </div>
+              <button type="button" onClick={() => setIsMapExpanded((value) => !value)} className="rounded-xl border border-slate-200 p-2 text-slate-600 hover:text-slate-950">{isMapExpanded ? <Minimize2 size={15} /> : <Maximize2 size={15} />}</button>
+            </div>
+            {rightPanelMode === 'layers' ? <MapLayerControl layers={GIS_LAYER_CONFIGS} activeLayerIds={activeLayerIds} accessLevel={accessLevel} baseMapId={baseMapId} onBaseMapChange={(value) => setBaseMapId(value as BaseMapId)} onToggleLayer={handleToggleLayer} onClose={() => setRightPanelMode('insights')} /> : (
+              <div className="space-y-3">
+                <div className="grid grid-cols-3 gap-2 text-center text-[10px]">
+                  <div className="rounded-xl bg-slate-100 p-2"><b className="block text-lg text-slate-950">{insightMetrics.avgFit}%</b>Avg fit</div>
+                  <div className="rounded-xl bg-slate-100 p-2"><b className="block text-lg text-slate-950">{insightMetrics.avgRisk}%</b>Avg risk</div>
+                  <div className="rounded-xl bg-slate-100 p-2"><b className="block text-lg text-slate-950">{formatMoneyShort(insightMetrics.avgPrice)}</b>Avg price</div>
+                </div>
+                <div className="rounded-xl border border-slate-200 bg-white p-3">
+                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">Market score trend</p>
+                  <MiniTrendChart values={insightMetrics.trend} />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      {experienceMode === '3d' && (
+        <div className="absolute left-1/2 top-20 z-[530] w-[min(28rem,calc(100%-2rem))] -translate-x-1/2 rounded-2xl border border-cyan-300/30 bg-slate-950/82 p-3 text-white shadow-2xl backdrop-blur-xl">
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-cyan-200"><SlidersHorizontal size={14} /> Functional 3D map pitch</div>
+            <span className="rounded-full bg-cyan-400/15 px-2 py-1 text-[10px] font-black text-cyan-200">{mapPitch}°</span>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max="62"
+            value={mapPitch}
+            onChange={(event) => setMapPitch(Number(event.target.value))}
+            className="w-full accent-cyan-300"
+            aria-label="3D map pitch"
+          />
+          <p className="mt-2 text-[11px] font-semibold text-cyan-100/75">Uses the real live map, pins, and red parcel boundaries. Click a property to zoom; hover will not move the map.</p>
+        </div>
+      )}
+
+      <div className="absolute bottom-4 left-1/2 z-[520] w-[min(34rem,calc(100%-2rem))] -translate-x-1/2 overflow-hidden rounded-2xl border border-white/15 bg-slate-950/82 text-white shadow-2xl backdrop-blur-xl">
+        <div className="grid grid-cols-2 divide-x divide-white/10 sm:grid-cols-5">
+          <div className="p-2.5 text-center"><p className="text-[9px] uppercase tracking-widest text-slate-500">Listings</p><b className="font-mono text-base">{properties.length}</b></div>
+          <div className="p-2.5 text-center"><p className="text-[9px] uppercase tracking-widest text-slate-500">Mapped</p><b className="font-mono text-base text-emerald-300">{withCoords.length}</b></div>
+          <div className="p-2.5 text-center"><p className="text-[9px] uppercase tracking-widest text-slate-500">Avg Fit</p><b className="font-mono text-base text-blue-300">{insightMetrics.avgFit}%</b></div>
+          <div className="p-2.5 text-center"><p className="text-[9px] uppercase tracking-widest text-slate-500">Avg Risk</p><b className="font-mono text-base text-amber-300">{insightMetrics.avgRisk}%</b></div>
+          <div className="flex items-center justify-center p-3">
+            <button type="button" onClick={() => setExperienceMode((mode) => mode === '2d' ? '3d' : '2d')} className="inline-flex items-center gap-2 rounded-xl bg-cyan-400 px-4 py-2 text-xs font-black uppercase tracking-wider text-slate-950 shadow-[0_0_24px_rgba(34,211,238,0.55)] transition hover:bg-cyan-300" aria-pressed={experienceMode === '3d'}>
+              {experienceMode === '3d' ? <Orbit size={15} /> : <Box size={15} />}
+              {experienceMode === '3d' ? 'Exit 3D' : 'Enter 3D'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="absolute left-4 bottom-4 z-[520] hidden max-w-xs rounded-xl xl:hidden border border-cyan-300/30 bg-slate-950/75 p-3 text-[11px] font-semibold text-cyan-100 shadow-xl backdrop-blur lg:block">
+        <div className="mb-1 flex items-center gap-2 font-black uppercase tracking-wider"><Sparkles size={13}/> Interactive map-first workspace</div>
+        <p className="text-cyan-100/75">3D mode tilts the live map with real pins and parcel boundaries; click pins to zoom.</p>
+      </div>
+      <GisSourceStatusPanel statuses={gisSourceStatuses} />
+      <GisLayerLegend layers={GIS_LAYER_CONFIGS} activeLayerIds={activeLayerIds} />
+    </section>
   );
 }

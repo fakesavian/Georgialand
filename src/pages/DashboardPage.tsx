@@ -37,6 +37,10 @@ const DEFAULT_FILTERS: Filters = {
   affordableHousingReq: '', redemptionRisk: '', floodRiskStatus: '', titleStatus: '',
   under50k: false, atlantaOnly: false, metroAtlantaOnly: false,
   lowRiskOnly: false, needsVerification: false,
+  priceMin: 0, priceMax: 0,
+  pricePerAcreMin: 0, pricePerAcreMax: 0,
+  sourceType: '', listingStatus: '',
+  valueScoreMin: 0,
 };
 
 const LS_FAVORITES = 'glf_favorites';
@@ -67,8 +71,8 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'Priority_Rank', direction: 'asc' });
-  const [viewMode, setViewMode] = useState<ViewMode>('map');
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [viewMode, setViewMode] = useState<ViewMode>('table');
+  const [activeTab, setActiveTab] = useState('map');
   const [currentSubTab, setCurrentSubTab] = useState('all');
   const [selectedProperty, setSelectedProperty] = useState<LandProperty | null>(null);
   const [favorites, setFavorites] = useState<Favorite[]>(() => loadFromLS(LS_FAVORITES, []));
@@ -282,6 +286,8 @@ export default function App() {
     ? notes[selectedProperty.Parcel_ID || selectedProperty.Property_Name_or_Address] || ''
     : '';
 
+  const isImmersiveMapDashboard = activeTab === 'map';
+
   // Stats Card Calculations
   const stats = useMemo(() => {
     const total = properties.length;
@@ -354,11 +360,15 @@ export default function App() {
     { id: 'monetization', label: 'Monetization View' },
   ];
 
+  const updateQuickFilter = (key: 'under50k' | 'lowRiskOnly' | 'needsVerification') => {
+    setFilters((current) => ({ ...current, [key]: !current[key] }));
+  };
+
   return (
-    <div className="min-h-screen bg-olive-950 text-olive-50 font-sans pb-16">
+    <div className={`min-h-screen bg-olive-950 text-olive-50 font-sans ${isImmersiveMapDashboard ? 'pb-0' : 'pb-16'}`}>
       <SEO 
         title="Land Database Dashboard"
-        description="Search, filter, and analyze Georgia low-cost land opportunities."
+        description="Map, search, filter, and analyze Georgia low-cost land opportunities."
         noindex={true}
       />
       <Header
@@ -369,15 +379,99 @@ export default function App() {
         onExportFiltered={handleExportFiltered}
         onExportFavorites={handleExportFavorites}
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={(tab) => {
+          setActiveTab(tab);
+          if (tab === 'dashboard' && viewMode === 'map') setViewMode('table');
+        }}
       />
 
-      <main className="max-w-screen-2xl mx-auto px-4 py-6">
-        {/* Dashboard tab */}
-        {activeTab === 'dashboard' && (() => {
+      <main className={isImmersiveMapDashboard ? 'mx-auto max-w-none px-0 py-0' : 'max-w-screen-2xl mx-auto px-4 py-6'}>
+        {/* Map + Dashboard tabs */}
+        {(activeTab === 'map' || activeTab === 'dashboard') && (() => {
           // Sponsors configuration
           const activeSidebarSponsors = sponsors.filter(s => s.active && s.placements.includes('sidebar'));
           const hasSponsors = activeSidebarSponsors.length > 0;
+
+          if (activeTab === 'map') {
+            return (
+              <section className="relative h-[calc(100dvh-104px)] min-h-[680px] overflow-hidden bg-slate-950">
+                {loading && (
+                  <div className="absolute inset-0 z-[900] flex items-center justify-center bg-slate-950 text-slate-300">
+                    <Loader2 size={22} className="mr-3 animate-spin text-brand-400" /> Loading map workspace...
+                  </div>
+                )}
+                {!loading && error && (
+                  <div className="absolute inset-0 z-[900] flex items-center justify-center bg-slate-950 p-6">
+                    <div className="max-w-lg rounded-3xl border border-amber-400/30 bg-amber-950/30 p-6 text-amber-100 shadow-2xl">
+                      <p className="font-bold">No data loaded</p>
+                      <p className="mt-2 text-sm text-amber-200/80">{error}</p>
+                    </div>
+                  </div>
+                )}
+                {!loading && !error && (
+                  <React.Suspense fallback={
+                    <div className="absolute inset-0 z-[900] flex items-center justify-center bg-slate-950 text-slate-300">
+                      <Loader2 size={22} className="mr-3 animate-spin text-brand-400" /> Loading map...
+                    </div>
+                  }>
+                    <MapView
+                      properties={filteredProperties}
+                      onPropertyClick={(p) => {
+                        setSelectedProperty(p);
+                        trackEvent('Engagement', 'listing_view', p.Property_Name_or_Address);
+                      }}
+                      favoriteIds={favoriteIds}
+                      onToggleFavorite={handleToggleFavorite}
+                      accessLevel={accessLevel}
+                    />
+                  </React.Suspense>
+                )}
+
+                <div className="pointer-events-none absolute inset-x-4 top-3 z-[760] flex flex-col gap-2">
+                  <div className="pointer-events-auto mx-auto flex w-full max-w-7xl items-center gap-2 overflow-x-auto rounded-[1.25rem] border border-white/10 bg-slate-950/72 px-3 py-2 shadow-2xl backdrop-blur-xl">
+                    <input
+                      type="text"
+                      placeholder="Search address, parcel, city, county..."
+                      value={filters.search}
+                      onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                      className="h-9 min-w-[240px] rounded-xl border border-white/15 bg-white/95 px-3 text-xs font-semibold text-slate-900 outline-none focus:border-emerald-400"
+                    />
+                    <span className="shrink-0 rounded-xl bg-black/35 px-3 py-2 text-xs font-black text-white"><strong className="text-emerald-300">{filteredProperties.length}</strong> visible</span>
+                    {subTabs.filter((tab) => tab.id !== 'monetization').map(tab => {
+                      const count = properties.filter(p => {
+                        switch (tab.id) {
+                          case 'atlanta-core': return (p.Region_Tier || '').toLowerCase() === 'atlanta core' || (p.City || '').toLowerCase() === 'atlanta';
+                          case 'metro-atlanta': return (p.Region_Tier || '').toLowerCase() === 'metro-atlanta' || (p.Region_Tier || '').toLowerCase() === 'metro atlanta' || (p.Metro_Atlanta || '').toLowerCase() === 'yes';
+                          case 'land-banks': return (p.Acquisition_Type || '').toLowerCase() === 'land bank' || (p.Land_Bank_Status || '').toLowerCase() === 'yes' || (p.Region_Tier || '').toLowerCase() === 'georgia land bank city';
+                          case 'tax-sales': return ['sheriff sale', 'tax sale', 'tax deed', 'repository property'].includes((p.Acquisition_Type || '').toLowerCase()) || (p.Tax_Sale_Status || '').toLowerCase() === 'yes' || (p.Region_Tier || '').toLowerCase() === 'georgia county tax sale';
+                          case 'surplus': return (p.Acquisition_Type || '').toLowerCase().includes('surplus') || (p.Surplus_Property_Status || '').toLowerCase() === 'yes' || (p.Region_Tier || '').toLowerCase() === 'georgia surplus property';
+                          case 'best-deals': return parseScore(p.Fit_Score_0_to_100) >= 70;
+                          case 'highest-confidence': return parseScore(p.Data_Confidence_0_to_100 || '0') >= 80;
+                          case 'alert-worthy': return (p.Alert_Worthy || '').toLowerCase() === 'yes';
+                          case 'avoid-risk': return (p.Avoid_Flag || '').toLowerCase() === 'yes' || parseScore(p.Risk_Score_0_to_100) >= 60;
+                          case 'missing-data': return getPropertyWarnings(p).length > 0;
+                          default: return true;
+                        }
+                      }).length;
+                      return (
+                        <button
+                          key={tab.id}
+                          type="button"
+                          onClick={() => setCurrentSubTab(tab.id)}
+                          className={`shrink-0 rounded-2xl px-3 py-2 text-xs font-black transition ${currentSubTab === tab.id ? 'bg-emerald-400 text-slate-950 shadow-[0_0_22px_rgba(52,211,153,0.38)]' : 'bg-white/10 text-white/78 hover:bg-white/18 hover:text-white'}`}
+                        >
+                          {tab.label} {tab.id !== 'all' && <span className="ml-1 rounded-full bg-black/15 px-1.5 py-0.5 font-mono text-[10px]">{count}</span>}
+                        </button>
+                      );
+                    })}
+                    <button type="button" onClick={() => updateQuickFilter('under50k')} className={`shrink-0 rounded-2xl px-3 py-2 text-xs font-black transition ${filters.under50k ? 'bg-cyan-300 text-slate-950' : 'bg-white/10 text-white/78 hover:bg-white/18'}`}>Under $50K</button>
+                    <button type="button" onClick={() => updateQuickFilter('lowRiskOnly')} className={`shrink-0 rounded-2xl px-3 py-2 text-xs font-black transition ${filters.lowRiskOnly ? 'bg-cyan-300 text-slate-950' : 'bg-white/10 text-white/78 hover:bg-white/18'}`}>Low Risk</button>
+                    <button type="button" onClick={() => updateQuickFilter('needsVerification')} className={`shrink-0 rounded-2xl px-3 py-2 text-xs font-black transition ${filters.needsVerification ? 'bg-cyan-300 text-slate-950' : 'bg-white/10 text-white/78 hover:bg-white/18'}`}>Needs Verification</button>
+                  </div>
+                </div>
+              </section>
+            );
+          }
 
           return (
           <div
@@ -430,6 +524,7 @@ export default function App() {
             </div>
 
             {/* Summary Cards Grid */}
+            {viewMode !== 'map' && (
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
               {[
                 { label: 'Total Listings', value: stats.total, sub: 'Enriched' },
@@ -458,6 +553,7 @@ export default function App() {
                 </div>
               ))}
             </div>
+            )}
 
             {/* Filter panel */}
             <FilterPanel
@@ -533,7 +629,6 @@ export default function App() {
                   {[
                     { mode: 'table' as ViewMode, icon: <List size={13} />, label: 'Table' },
                     { mode: 'card' as ViewMode, icon: <LayoutGrid size={13} />, label: 'Cards' },
-                    { mode: 'map' as ViewMode, icon: <Map size={13} />, label: 'Map' },
                   ].map(({ mode, icon, label }) => (
                     <button
                       key={mode}
@@ -746,26 +841,6 @@ export default function App() {
                         )}
                       </div>
                     )}
-
-                    {viewMode === 'map' && (
-                      <React.Suspense fallback={
-                        <div className="card flex items-center justify-center h-64 gap-3">
-                          <Loader2 size={18} className="animate-spin text-brand-500" />
-                          <span className="text-olive-500">Loading map...</span>
-                        </div>
-                      }>
-                        <MapView
-                          properties={filteredProperties}
-                          onPropertyClick={(p) => {
-                            setSelectedProperty(p);
-                            trackEvent('Engagement', 'listing_view', p.Property_Name_or_Address);
-                          }}
-                          favoriteIds={favoriteIds}
-                          onToggleFavorite={handleToggleFavorite}
-                          accessLevel={accessLevel}
-                        />
-                      </React.Suspense>
-                    )}
                   </>
                 )}
               </>
@@ -886,3 +961,4 @@ export default function App() {
     </div>
   );
 }
+

@@ -187,6 +187,15 @@ export interface Filters {
   metroAtlantaOnly: boolean;
   lowRiskOnly: boolean;
   needsVerification: boolean;
+
+  // New Search & Source Filters
+  priceMin: number;
+  priceMax: number;
+  pricePerAcreMin: number;
+  pricePerAcreMax: number;
+  sourceType: string;
+  listingStatus: string;
+  valueScoreMin: number;
 }
 
 export interface Favorite {

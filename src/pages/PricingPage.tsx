@@ -18,10 +18,11 @@ const PLANS = [
     desc: 'Proof of value — no credit card required.',
     annualDesc: 'Proof of value — no credit card required.',
     features: [
-      '10 hand-curated land leads',
-      'Basic risk notes on each property',
-      'Direct source links to county sites',
-      'Due-diligence checklist included',
+      'Preview 10 curated Georgia land leads',
+      'Basic search and county filter',
+      'Map view with property pins',
+      'Risk notes and source links',
+      'No exports, no saved searches, no off-market layer',
     ],
     cta: 'Start Free Tier',
     annualCta: 'Start Free Tier',
@@ -102,7 +103,7 @@ export default function PricingPage() {
     <div className="min-h-screen bg-olive-950 text-olive-50 font-sans">
       <SEO 
         title="Pricing & Access | Georgia Land Finder"
-        description="Choose the right access tier for your land investing needs. Starter, Pro, and Investor tiers available for the Georgia low-cost land database."
+        description="Choose the right access tier for your Georgia land intelligence needs. Starter, Pro, and Investor tiers with listings, parcels, off-market leads, and GIS map layers."
         canonicalUrl="https://georgialandfinder.com/pricing"
       />
       

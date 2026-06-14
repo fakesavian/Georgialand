@@ -33,6 +33,7 @@ export default function Header({
   };
 
   const tabs = [
+    { id: 'map', label: 'Map' },
     { id: 'dashboard', label: 'Dashboard' },
     { id: 'analytics', label: 'Analytics' },
     { id: 'data-quality', label: 'Data Quality' },
