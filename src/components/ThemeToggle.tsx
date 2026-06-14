@@ -1,13 +1,16 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from '../lib/ThemeContext';
 
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
+  const location = useLocation();
+  const isDashboard = location.pathname.startsWith('/dashboard');
 
   return (
     <div
-      className="fixed right-4 top-4 z-[1000] inline-flex rounded-full border border-white/10 bg-olive-950/75 p-0.5 text-[11px] font-bold shadow-lg shadow-black/15 backdrop-blur-xl transition-colors day-toggle-shell"
+      className={`theme-toggle ${isDashboard ? 'theme-toggle--dashboard' : 'theme-toggle--site'} fixed right-4 top-4 z-[1000] inline-flex rounded-full border border-white/10 bg-olive-950/75 p-0.5 text-[11px] font-bold shadow-lg shadow-black/15 backdrop-blur-xl transition-colors day-toggle-shell`}
       aria-label="Site color theme"
     >
       <button

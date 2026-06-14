@@ -34,7 +34,7 @@ function UrlButton({ url, label, icon, onClick }: { url: string; label: string; 
         if (!valid) e.preventDefault();
         else if (onClick) onClick();
       }}
-      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+      className={`inline-flex min-h-11 items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
         valid
           ? 'bg-green-900/40 border-green-700 text-green-300 hover:bg-green-800/60 hover:border-brand-500 cursor-pointer'
           : 'bg-olive-800 border-olive-700 text-olive-600 cursor-not-allowed opacity-60'
@@ -48,9 +48,9 @@ function UrlButton({ url, label, icon, onClick }: { url: string; label: string; 
 
 function FieldRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex gap-2 py-1.5 border-b border-surface-border/60">
-      <span className="text-xs text-olive-500 w-40 shrink-0">{label}</span>
-      <span className="text-xs text-olive-100 flex-1 break-words">
+    <div className="property-field-row flex gap-2 py-1.5 border-b border-surface-border/60">
+      <span className="property-field-label text-xs text-olive-500 w-40 shrink-0">{label}</span>
+      <span className="property-field-value text-xs text-olive-100 flex-1 break-words">
         {value || <span className="text-olive-600 italic">Needs verification</span>}
       </span>
     </div>
@@ -271,9 +271,9 @@ export default function PropertyDrawer({
       )}
 
       {/* Drawer */}
-      <aside className="fixed right-0 top-0 h-full w-full max-w-lg bg-olive-950 border-l border-surface-border z-[1000] flex flex-col animate-slide-in-right overflow-hidden">
+      <aside className="property-drawer-shell fixed right-0 top-0 h-full w-full max-w-lg bg-olive-950 border-l border-surface-border z-[1000] flex flex-col animate-slide-in-right overflow-hidden">
         {/* Drawer header */}
-        <div className="flex items-start justify-between p-4 border-b border-surface-border gap-3">
+        <div className="property-drawer-header flex items-start justify-between p-4 border-b border-surface-border gap-3">
           <div className="min-w-0">
             <h2 className="text-sm font-medium text-white leading-snug">
               {displayValue(property.Property_Name_or_Address)}
@@ -305,7 +305,7 @@ export default function PropertyDrawer({
         </div>
 
         {/* Score pills */}
-        <div className="flex gap-3 px-4 py-3 border-b border-surface-border">
+        <div className="property-drawer-badges flex gap-3 px-4 py-3 border-b border-surface-border">
           <div className={`badge ${getFitScoreClass(fit)} text-sm font-medium px-3 py-1`}>
             Fit: {fit || 'N/A'}
           </div>
@@ -325,7 +325,7 @@ export default function PropertyDrawer({
         </div>
 
         {/* URL buttons */}
-        <div className="flex flex-wrap gap-2 px-4 py-3 border-b border-surface-border">
+        <div className="property-drawer-actions grid grid-cols-2 gap-2 px-4 py-3 border-b border-surface-border sm:flex sm:flex-wrap">
           <UrlButton url={property.Source_URL} label="Source" onClick={() => trackEvent('Engagement', 'source_link_click', property.Property_Name_or_Address)} />
           <UrlButton url={property.Property_Page_URL} label="Property Page" />
           <UrlButton url={property.Map_URL} label="Map" icon={<MapPin size={11} />} onClick={() => trackEvent('Engagement', 'map_link_click', property.Property_Name_or_Address)} />

@@ -193,9 +193,12 @@ export interface Filters {
   priceMax: number;
   pricePerAcreMin: number;
   pricePerAcreMax: number;
+  acreageMin: number;
+  acreageMax: number;
   sourceType: string;
   listingStatus: string;
   valueScoreMin: number;
+  gisAvailableOnly: boolean;
 }
 
 export interface Favorite {

@@ -108,13 +108,13 @@ export default function PricingPage() {
       />
       
       {/* Nav */}
-      <nav className="border-b border-surface-border bg-olive-900/50 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
+      <nav className="marketing-nav border-b border-surface-border bg-olive-900/50 backdrop-blur-md sticky top-0 z-50">
+        <div className="marketing-nav__inner max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <Link to="/" className="marketing-nav__brand flex items-center gap-2">
             <Layers className="text-brand-500" size={24} />
             <span className="font-display font-bold text-lg text-white tracking-tight">Georgia Land Finder</span>
           </Link>
-          <div className="flex items-center gap-6 text-sm font-semibold">
+          <div className="marketing-nav__links flex items-center gap-6 text-sm font-semibold">
             <Link to="/pricing" className="text-white">Pricing</Link>
             <Link to="/docs" className="text-olive-300 hover:text-white transition-colors">Docs</Link>
             <Link to="/faq" className="text-olive-300 hover:text-white transition-colors">FAQ</Link>

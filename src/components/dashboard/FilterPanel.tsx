@@ -8,10 +8,14 @@ interface FilterPanelProps {
   filters: Filters;
   onChange: (filters: Filters) => void;
   properties: LandProperty[];
+  variant?: 'panel' | 'sheet';
+  resultCount?: number;
+  onClose?: () => void;
 }
 
-export default function FilterPanel({ filters, onChange, properties }: FilterPanelProps) {
-  const [expanded, setExpanded] = useState(false);
+export default function FilterPanel({ filters, onChange, properties, variant = 'panel', resultCount, onClose }: FilterPanelProps) {
+  const isSheet = variant === 'sheet';
+  const [expanded, setExpanded] = useState(isSheet);
 
   const cities = getUniqueValues(properties, 'City');
   const counties = getUniqueValues(properties, 'County');
@@ -49,8 +53,9 @@ export default function FilterPanel({ filters, onChange, properties }: FilterPan
     filters.lowRiskOnly || filters.needsVerification ||
     filters.priceMin > 0 || filters.priceMax > 0 ||
     filters.pricePerAcreMin > 0 || filters.pricePerAcreMax > 0 ||
+    filters.acreageMin > 0 || filters.acreageMax > 0 ||
     filters.sourceType || filters.listingStatus ||
-    filters.valueScoreMin > 0;
+    filters.valueScoreMin > 0 || filters.gisAvailableOnly;
 
   const resetFilters = () => onChange({
     search: '',
@@ -69,12 +74,32 @@ export default function FilterPanel({ filters, onChange, properties }: FilterPan
     lowRiskOnly: false, needsVerification: false,
     priceMin: 0, priceMax: 0,
     pricePerAcreMin: 0, pricePerAcreMax: 0,
+    acreageMin: 0, acreageMax: 0,
     sourceType: '', listingStatus: '',
     valueScoreMin: 0,
+    gisAvailableOnly: false,
   });
 
+  const detailsOpen = isSheet || expanded;
+
   return (
-    <div className="bg-olive-900 border border-surface-border rounded-xl shadow-lg">
+    <div className={`${isSheet ? 'bg-olive-950 text-olive-50' : 'dashboard-filter-panel bg-olive-900 border border-surface-border rounded-xl shadow-lg'}`}>
+      {isSheet && (
+        <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-surface-border bg-olive-950/95 px-4 py-3 backdrop-blur">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-brand-300">Mobile filters</p>
+            <h3 className="text-base font-bold text-white">Refine Georgia land leads</h3>
+          </div>
+          <div className="flex items-center gap-2">
+            {typeof resultCount === 'number' && (
+              <span className="rounded-full border border-brand-700 bg-brand-900/30 px-2.5 py-1 text-xs font-black text-brand-200">{resultCount} visible</span>
+            )}
+            <button type="button" onClick={onClose} className="grid h-10 w-10 place-items-center rounded-full border border-olive-700 bg-olive-900 text-olive-200" aria-label="Close filters">
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+      )}
       {/* Search bar + toggle */}
       <div className="flex items-center gap-2 p-3">
         <div className="relative flex-1">
@@ -95,17 +120,24 @@ export default function FilterPanel({ filters, onChange, properties }: FilterPan
             </button>
           )}
         </div>
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className={`btn-ghost flex items-center gap-1.5 text-sm whitespace-nowrap ${expanded || hasActiveFilters ? 'text-brand-400 border-brand-800 bg-brand-950/20' : ''}`}
-        >
-          <SlidersHorizontal size={14} />
-          Filters
-          {hasActiveFilters && (
-            <span className="bg-brand-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">!</span>
-          )}
-          <ChevronDown size={12} className={`transition-transform ${expanded ? 'rotate-180' : ''}`} />
-        </button>
+        {!isSheet && (
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className={`btn-ghost flex items-center gap-1.5 text-sm whitespace-nowrap ${expanded || hasActiveFilters ? 'text-brand-400 border-brand-800 bg-brand-950/20' : ''}`}
+          >
+            <SlidersHorizontal size={14} />
+            Filters
+            {hasActiveFilters && (
+              <span className="bg-brand-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">!</span>
+            )}
+            <ChevronDown size={12} className={`transition-transform ${expanded ? 'rotate-180' : ''}`} />
+          </button>
+        )}
+        {isSheet && (
+          <span className="hidden rounded-full border border-olive-700 bg-olive-900 px-3 py-2 text-xs font-bold text-olive-300 sm:inline-flex">
+            Live count updates as you filter
+          </span>
+        )}
         {hasActiveFilters && (
           <button onClick={resetFilters} className="btn-danger text-xs whitespace-nowrap">
             <X size={12} /> Reset
@@ -137,10 +169,10 @@ export default function FilterPanel({ filters, onChange, properties }: FilterPan
       </div>
 
       {/* Expanded filters */}
-      {expanded && (
-        <div className="border-t border-surface-border p-4 space-y-4 animate-fade-in">
+      {detailsOpen && (
+        <div className={`${isSheet ? 'px-4 pb-28 pt-1' : 'border-t border-surface-border p-4'} space-y-4 animate-fade-in`}>
           {/* Dropdowns Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+          <div className={`grid ${isSheet ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'} gap-3`}>
             {/* Core geographic options */}
             <div>
               <label className="block text-xs text-olive-500 mb-1">Region Tier</label>
@@ -519,6 +551,34 @@ export default function FilterPanel({ filters, onChange, properties }: FilterPan
               </div>
             </div>
 
+            {/* Acreage Range */}
+            <div className="col-span-2 grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-xs text-olive-500 mb-1">Acreage Min</label>
+                <input
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  placeholder="0"
+                  value={filters.acreageMin || ''}
+                  onChange={e => update({ acreageMin: +e.target.value })}
+                  className="input w-full text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-olive-500 mb-1">Acreage Max</label>
+                <input
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  placeholder="Any"
+                  value={filters.acreageMax || ''}
+                  onChange={e => update({ acreageMax: +e.target.value })}
+                  className="input w-full text-sm"
+                />
+              </div>
+            </div>
+
             {/* Price Per Acre Range */}
             <div>
               <label className="block text-xs text-olive-500 mb-1">Price/Acre Min ($/ac)</label>
@@ -575,6 +635,18 @@ export default function FilterPanel({ filters, onChange, properties }: FilterPan
                 <option value="Sold">Sold</option>
                 <option value="Unknown">Unknown</option>
               </select>
+            </div>
+
+            {/* GIS availability */}
+            <div>
+              <label className="block text-xs text-olive-500 mb-1">GIS / parcel boundary</label>
+              <button
+                type="button"
+                onClick={() => update({ gisAvailableOnly: !filters.gisAvailableOnly })}
+                className={`min-h-[42px] w-full rounded-lg border px-3 py-2 text-left text-sm font-semibold transition ${filters.gisAvailableOnly ? 'border-brand-500 bg-brand-600 text-white' : 'border-olive-700 bg-olive-800 text-olive-300 hover:border-olive-500'}`}
+              >
+                {filters.gisAvailableOnly ? 'Showing GIS-ready leads' : 'Any GIS status'}
+              </button>
             </div>
 
             {/* Value Score Min slider */}

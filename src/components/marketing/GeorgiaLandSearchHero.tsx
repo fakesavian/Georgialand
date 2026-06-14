@@ -90,7 +90,7 @@ export default function GeorgiaLandSearchHero() {
   };
 
   return (
-    <section className={`relative overflow-hidden pt-24 pb-16 transition-colors duration-300 ${isDay ? 'bg-[#f6f8f3]' : 'bg-[#0a1713]'}`}>
+    <section className={`glf-search-hero relative overflow-hidden pt-24 pb-16 transition-colors duration-300 ${isDay ? 'bg-[#f6f8f3]' : 'bg-[#0a1713]'}`}>
       {/* Background Textures */}
       <div className="absolute inset-0 pointer-events-none opacity-20" 
            style={{ backgroundImage: isDay ? 'radial-gradient(circle at 2px 2px, rgba(50, 103, 82, 0.16) 1px, transparent 0)' : 'radial-gradient(circle at 2px 2px, #425c50 1px, transparent 0)', backgroundSize: '48px 48px' }}>
@@ -106,11 +106,11 @@ export default function GeorgiaLandSearchHero() {
           </div>
           
           <h1 className={`text-5xl md:text-7xl font-display font-medium tracking-tight leading-[1.1] ${isDay ? 'text-olive-950' : 'text-[#f3f4f1]'}`}>
-            Find Georgia land
+            Georgia land intelligence
           </h1>
           
           <p className={`text-lg md:text-xl leading-relaxed font-light ${isDay ? 'text-olive-700' : 'text-olive-300/90'}`}>
-            Discover low-cost land opportunities, scenic acreage, wooded tracts, vacant lots, and redevelopment leads across Georgia.
+            Search land-bank, surplus, tax-sale, GIS, and off-market leads with value, risk, and data-confidence signals built for field research.
           </p>
 
           {/* Search Bar */}

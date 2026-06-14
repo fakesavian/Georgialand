@@ -127,6 +127,44 @@ export function filterProperties(properties: LandProperty[], filters: Filters): 
       if (!hasIssue) return false;
     }
 
+    // Mobile/search-sheet numeric filters
+    const propertyPrice = parsePrice(prop.Estimated_Price_or_Min_Bid);
+    if (filters.priceMin > 0 && (propertyPrice === null || propertyPrice < filters.priceMin)) return false;
+    if (filters.priceMax > 0 && (propertyPrice === null || propertyPrice > filters.priceMax)) return false;
+
+    const acreageRaw = String(prop.Lot_Size_Acres || '').replace(/[^0-9.]/g, '');
+    const acreage = acreageRaw ? Number.parseFloat(acreageRaw) : null;
+    if (filters.acreageMin > 0 && (acreage === null || !Number.isFinite(acreage) || acreage < filters.acreageMin)) return false;
+    if (filters.acreageMax > 0 && (acreage === null || !Number.isFinite(acreage) || acreage > filters.acreageMax)) return false;
+
+    const pricePerAcre = propertyPrice !== null && acreage && acreage > 0 ? propertyPrice / acreage : null;
+    if (filters.pricePerAcreMin > 0 && (pricePerAcre === null || pricePerAcre < filters.pricePerAcreMin)) return false;
+    if (filters.pricePerAcreMax > 0 && (pricePerAcre === null || pricePerAcre > filters.pricePerAcreMax)) return false;
+
+    if (filters.sourceType) {
+      const sourceNeedle = filters.sourceType.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const sourceFields = [prop.Data_Source_Type, prop.Acquisition_Type, prop.Source_Name, prop.Source_Agency, prop.Region_Tier, prop.Deal_Type];
+      const sourceMatch = sourceFields.some((value) => String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '').includes(sourceNeedle));
+      if (!sourceMatch) return false;
+    }
+
+    if (filters.listingStatus && String(prop.Listing_Status || '').toLowerCase() !== filters.listingStatus.toLowerCase()) return false;
+
+    if (filters.valueScoreMin > 0) {
+      const valueScore = Math.max(
+        parseScore(prop.Value_Score_0_to_100 || '0'),
+        parseScore(prop.Monetization_Value_0_to_100 || '0'),
+        parseScore(prop.Fit_Score_0_to_100 || '0')
+      );
+      if (valueScore < filters.valueScoreMin) return false;
+    }
+
+    if (filters.gisAvailableOnly) {
+      const hasCoordinates = Boolean(prop.Latitude && prop.Longitude && !Number.isNaN(Number(prop.Latitude)) && !Number.isNaN(Number(prop.Longitude)));
+      const hasParcelKey = Boolean(prop.Parcel_ID && !String(prop.Parcel_ID).toLowerCase().includes('needs verification'));
+      if (!isValidUrl(prop.GIS_URL) && !(hasCoordinates && hasParcelKey)) return false;
+    }
+
     return true;
   });
 }

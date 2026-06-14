@@ -42,21 +42,22 @@ export default function Header({
   ];
 
   return (
-    <header className="bg-olive-950 border-b border-surface-border sticky top-0 z-50">
-      <div className="max-w-screen-2xl mx-auto px-4">
+    <header className="dashboard-header bg-olive-950 border-b border-surface-border sticky top-0 z-50">
+      <div className="max-w-screen-2xl mx-auto px-3 sm:px-4">
         {/* Top bar */}
-        <div className="flex items-center justify-between py-3 gap-4">
+        <div className="flex items-center justify-between py-2.5 sm:py-3 gap-2 sm:gap-4">
           {/* Logo — links back to home */}
-          <Link to="/" className="flex items-center gap-3 min-w-0 group">
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 min-w-0 group">
             <div className="flex-shrink-0 w-9 h-9 bg-brand-600 group-hover:bg-brand-500 transition-colors rounded-lg flex items-center justify-center">
               <MapPin size={18} className="text-white" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-base font-bold text-white leading-tight truncate group-hover:text-brand-200 transition-colors">
-                Georgia Low-Cost Land Finder
+              <h1 className="text-sm sm:text-base font-bold text-white leading-tight truncate group-hover:text-brand-200 transition-colors">
+                <span className="sm:hidden">GA Land Intel</span>
+                <span className="hidden sm:inline">Georgia Land Intelligence</span>
               </h1>
-              <p className="text-xs text-olive-500 hidden sm:block">
-                Official land-bank, surplus, tax-sale &amp; low-cost opportunities
+              <p className="text-xs text-olive-500 hidden md:block">
+                Land-bank, surplus, tax-sale, GIS &amp; off-market research dashboard
               </p>
             </div>
           </Link>
@@ -77,7 +78,7 @@ export default function Header({
             </div>
 
             {/* Export dropdown */}
-            <div className="relative group">
+            <div className="relative group hidden sm:block">
               <button className="btn-ghost text-xs">
                 <Download size={14} />
                 <span className="hidden sm:inline">Export</span>
@@ -101,7 +102,7 @@ export default function Header({
                     <User size={13} />
                     <span className="uppercase tracking-wide">{accessLevel.replace(/_/g, ' ')}</span>
                   </div>
-                  <Link to="/pricing" className="text-xs font-semibold btn-primary py-1.5 px-3">
+                  <Link to="/pricing" className="text-[11px] sm:text-xs font-semibold btn-primary py-1.5 px-2.5 sm:px-3">
                     Upgrade
                   </Link>
 
@@ -131,7 +132,7 @@ export default function Header({
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-0 border-t border-surface-border -mx-4 px-4 overflow-x-auto">
+        <div className="dashboard-desktop-tabs hidden md:flex gap-0 border-t border-surface-border -mx-4 px-4 overflow-x-auto">
           {tabs.map(tab => (
             <button
               key={tab.id}

@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, ZoomControl, Polygon, Polyline, Circle, GeoJSON as LeafletGeoJSON } from 'react-leaflet';
 import L from 'leaflet';
-import { AlertTriangle, BarChart3, Box, CheckCircle2, ChevronLeft, ChevronRight, Layers, ListFilter, LocateFixed, Maximize2, Minimize2, MapPin, MousePointer2, Orbit, Search, SlidersHorizontal, Sparkles } from 'lucide-react';
+import { AlertTriangle, BarChart3, Box, CheckCircle2, ChevronLeft, ChevronRight, ExternalLink, Heart, Layers, ListFilter, LocateFixed, Maximize2, Minimize2, MapPin, MousePointer2, Orbit, Search, SlidersHorizontal, Sparkles, X } from 'lucide-react';
 import { LandProperty } from '../../types';
-import { parseScore, parsePrice, getFitScoreClass, getRiskScoreClass, displayValue, getSatelliteImageUrl } from '../../utils';
+import { parseScore, parsePrice, getFitScoreClass, getRiskScoreClass, displayValue, getSatelliteImageUrl, isValidUrl } from '../../utils';
 import { AccessLevel } from '../../lib/authTypes';
 import { GIS_LAYER_CONFIGS, canAccessGisLayer } from '../../lib/gisLayers';
 import MapLayerControl from './MapLayerControl';
@@ -193,7 +193,7 @@ function GisSourceStatusPanel({ statuses }: { statuses: GisSourceStatus[] }) {
   if (!statuses.length) return null;
 
   return (
-    <div className={`absolute right-5 z-[900] max-w-[calc(100%-2rem)] rounded-2xl border border-surface-border bg-olive-950/95 text-xs text-olive-200 shadow-[0_25px_80px_rgba(0,0,0,0.5)] backdrop-blur-xl ${isMinimized ? 'bottom-20 w-auto' : 'bottom-24 w-96 p-3'}`}>
+    <div className={`gis-source-status-panel absolute right-5 z-[900] max-w-[calc(100%-2rem)] rounded-2xl border border-surface-border bg-olive-950/95 text-xs text-olive-200 shadow-[0_25px_80px_rgba(0,0,0,0.5)] backdrop-blur-xl ${isMinimized ? 'bottom-20 w-auto' : 'bottom-24 w-96 p-3'}`}>
       <button
         type="button"
         onClick={() => setIsMinimized((value) => !value)}
@@ -289,6 +289,112 @@ function MapBaseTiles({ baseMapId }: { baseMapId: BaseMapId }) {
   );
 }
 
+type MobileSheetState = 'collapsed' | 'half' | 'full';
+
+function MobileSelectedPropertySheet({
+  property,
+  sheetState,
+  onSheetStateChange,
+  onClose,
+  onOpenDetails,
+  isFavorite,
+  onToggleFavorite,
+}: {
+  property: LandProperty | null;
+  sheetState: MobileSheetState;
+  onSheetStateChange: (state: MobileSheetState) => void;
+  onClose: () => void;
+  onOpenDetails: () => void;
+  isFavorite: boolean;
+  onToggleFavorite: () => void;
+}) {
+  if (!property) return null;
+
+  const fit = parseScore(property.Fit_Score_0_to_100);
+  const risk = parseScore(property.Risk_Score_0_to_100);
+  const price = parsePrice(property.Estimated_Price_or_Min_Bid);
+  const location = [property.City, property.County, 'GA'].filter(Boolean).join(', ');
+  const isFull = sheetState === 'full';
+
+  return (
+    <aside className={`mobile-selected-property-sheet mobile-selected-property-sheet--${sheetState}`} aria-label="Selected property summary">
+      <div className="mx-auto mb-2 h-1.5 w-12 rounded-full bg-olive-700" />
+      <div className="flex items-start justify-between gap-3">
+        <button
+          type="button"
+          onClick={() => onSheetStateChange(sheetState === 'collapsed' ? 'half' : 'collapsed')}
+          className="min-w-0 flex-1 text-left"
+          aria-label="Toggle selected property sheet"
+        >
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-brand-300">Selected land lead</p>
+          <h3 className="mt-1 line-clamp-2 text-base font-black leading-tight text-white">{displayValue(property.Property_Name_or_Address)}</h3>
+          <p className="mt-1 flex items-center gap-1 text-xs font-semibold text-olive-300"><MapPin size={12} /> {location}</p>
+        </button>
+        <div className="flex shrink-0 items-center gap-2">
+          <button type="button" onClick={onToggleFavorite} className={`grid h-10 w-10 place-items-center rounded-full border ${isFavorite ? 'border-red-500/50 bg-red-500/20 text-red-300' : 'border-olive-700 bg-olive-900 text-olive-300'}`} aria-label={isFavorite ? 'Remove favorite' : 'Save favorite'}>
+            <Heart size={16} className={isFavorite ? 'fill-red-400' : ''} />
+          </button>
+          <button type="button" onClick={onClose} className="grid h-10 w-10 place-items-center rounded-full border border-olive-700 bg-olive-900 text-olive-300" aria-label="Close selected property">
+            <X size={16} />
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-3 grid grid-cols-3 gap-2 text-xs font-bold">
+        <div className="rounded-2xl bg-white/10 px-3 py-2"><span className="block text-[9px] uppercase tracking-widest text-olive-500">Price</span>{price !== null ? formatMoneyShort(price) : (property.Estimated_Price_or_Min_Bid || 'N/A')}</div>
+        <div className="rounded-2xl bg-white/10 px-3 py-2"><span className="block text-[9px] uppercase tracking-widest text-olive-500">Acres</span>{property.Lot_Size_Acres || 'N/A'}</div>
+        <div className="rounded-2xl bg-white/10 px-3 py-2"><span className="block text-[9px] uppercase tracking-widest text-olive-500">Source</span>{property.Acquisition_Type || property.Data_Source_Type || 'Lead'}</div>
+      </div>
+
+      {sheetState !== 'collapsed' && (
+        <div className="mt-3 space-y-3">
+          <div className="flex flex-wrap gap-2 text-[11px] font-bold">
+            <span className={`badge ${hasScore(property.Fit_Score_0_to_100) ? getFitScoreClass(fit) : 'bg-slate-800 text-slate-300 border border-slate-600'}`}>Fit: {hasScore(property.Fit_Score_0_to_100) ? fit : 'Needs scoring'}</span>
+            <span className={`badge ${getRiskScoreClass(risk)}`}>Risk: {risk || '–'}</span>
+            {property.Price_Category && <span className="badge bg-olive-800 border-olive-700 text-olive-200">{property.Price_Category}</span>}
+            {property.Data_Confidence_0_to_100 && <span className="badge bg-blue-950/60 text-blue-200 border border-blue-800">Data: {property.Data_Confidence_0_to_100}</span>}
+          </div>
+          {property.Recommended_Next_Action && (
+            <p className="line-clamp-3 rounded-2xl border border-brand-500/20 bg-brand-500/10 px-3 py-2 text-xs font-semibold text-brand-100">→ {property.Recommended_Next_Action}</p>
+          )}
+          <div className="grid grid-cols-2 gap-2">
+            <button type="button" onClick={onOpenDetails} className="rounded-2xl bg-emerald-400 px-4 py-3 text-xs font-black uppercase tracking-wider text-slate-950 shadow-[0_0_20px_rgba(52,211,153,0.35)]">Full details</button>
+            <button type="button" onClick={() => onSheetStateChange(isFull ? 'half' : 'full')} className="rounded-2xl border border-olive-700 bg-olive-900 px-4 py-3 text-xs font-black uppercase tracking-wider text-olive-100">{isFull ? 'Less' : 'More'}</button>
+          </div>
+        </div>
+      )}
+
+      {isFull && (
+        <div className="mt-3 grid grid-cols-2 gap-2 border-t border-olive-800 pt-3 text-xs">
+          {[{ label: 'Source', url: property.Source_URL }, { label: 'Property', url: property.Property_Page_URL }, { label: 'Map', url: property.Map_URL }, { label: 'GIS', url: property.GIS_URL }].map((item) => (
+            <a key={item.label} href={isValidUrl(item.url) ? item.url : undefined} target="_blank" rel="noopener noreferrer" className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border px-3 py-2 font-black ${isValidUrl(item.url) ? 'border-brand-700 bg-brand-900/30 text-brand-200' : 'pointer-events-none border-olive-800 bg-olive-900 text-olive-600'}`}>
+              <ExternalLink size={13} /> {item.label}
+            </a>
+          ))}
+        </div>
+      )}
+    </aside>
+  );
+}
+
+function MobileLayerSheet({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
+  return (
+    <div className="mobile-layer-sheet" role="dialog" aria-modal="true" aria-label="Map layers">
+      <button type="button" className="mobile-layer-sheet__backdrop" onClick={onClose} aria-label="Close map layers" />
+      <div className="mobile-layer-sheet__panel">
+        <div className="flex items-center justify-between border-b border-surface-border px-4 py-3">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-brand-300">Map layers</p>
+            <h3 className="text-base font-bold text-white">GIS overlays & basemap</h3>
+          </div>
+          <button type="button" onClick={onClose} className="grid h-10 w-10 place-items-center rounded-full border border-olive-700 bg-olive-900 text-olive-300" aria-label="Close map layers"><X size={16} /></button>
+        </div>
+        <div className="max-h-[68dvh] overflow-y-auto p-4">{children}</div>
+      </div>
+    </div>
+  );
+}
+
 export default function MapView({ properties, onPropertyClick, favoriteIds, onToggleFavorite, accessLevel }: MapViewProps) {
   const [hoveredId, setHoveredId] = React.useState<string | null>(null);
   const [previewProperty, setPreviewProperty] = React.useState<LandProperty | null>(null);
@@ -300,6 +406,8 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
   const [rightPanelMode, setRightPanelMode] = React.useState<'layers' | 'insights'>('insights');
   const [isLeftPanelCollapsed, setIsLeftPanelCollapsed] = React.useState(false);
   const [isRightPanelCollapsed, setIsRightPanelCollapsed] = React.useState(false);
+  const [mobileSheetState, setMobileSheetState] = React.useState<MobileSheetState>('half');
+  const [isMobileLayerSheetOpen, setIsMobileLayerSheetOpen] = React.useState(false);
   const shouldAutoHidePreview = previewMode !== 'persistent';
   const [isMapExpanded, setIsMapExpanded] = React.useState(true);
   const [activeLayerIds, setActiveLayerIds] = React.useState<Set<string>>(
@@ -502,7 +610,6 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
 
   const clearMapPreview = React.useCallback(() => {
     if (shouldAutoHidePreview) {
-      setPreviewProperty(null);
       setHoveredId(null);
     }
   }, [shouldAutoHidePreview]);
@@ -541,6 +648,8 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
               <Marker key={idx} position={[+prop.Latitude, +prop.Longitude]} icon={createCustomIcon(prop, isHovered, pId)} eventHandlers={{
                 click: (event) => {
                   setSelectedBoundaryProperty(prop);
+                  setPreviewProperty(prop);
+                  setMobileSheetState('half');
                   setHoveredId(pId);
                   const map = event.target._map as L.Map | undefined;
                   if (!map) return;
@@ -630,7 +739,7 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
         </MapContainer>
       </div>
 
-      <div className={`absolute left-5 top-20 z-[520] flex max-w-[calc(100%-2rem)] flex-col gap-3 transition-all duration-300 ${isLeftPanelCollapsed ? 'w-14' : 'w-[21rem] lg:w-[22rem]'}`}>
+      <div className={`desktop-map-left-panel absolute left-5 top-20 z-[520] flex max-w-[calc(100%-2rem)] flex-col gap-3 transition-all duration-300 ${isLeftPanelCollapsed ? 'w-14' : 'w-[21rem] lg:w-[22rem]'}`}>
         <button type="button" onClick={() => setIsLeftPanelCollapsed((value) => !value)} className="absolute -right-3 top-5 z-[2] rounded-full border border-white/30 bg-slate-950/88 p-1.5 text-white shadow-xl backdrop-blur" aria-label={isLeftPanelCollapsed ? 'Open map tools' : 'Collapse map tools'}>
           {isLeftPanelCollapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}
         </button>
@@ -689,7 +798,7 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
         )}
       </div>
 
-      <div className={`absolute right-5 top-20 z-[520] flex max-w-[calc(100%-2rem)] flex-col gap-3 transition-all duration-300 ${isRightPanelCollapsed ? 'w-14' : 'w-[20rem] xl:w-[21rem]'}`}>
+      <div className={`desktop-map-right-panel absolute right-5 top-20 z-[520] flex max-w-[calc(100%-2rem)] flex-col gap-3 transition-all duration-300 ${isRightPanelCollapsed ? 'w-14' : 'w-[20rem] xl:w-[21rem]'}`}>
         <button type="button" onClick={() => setIsRightPanelCollapsed((value) => !value)} className="absolute -left-3 top-5 z-[2] rounded-full border border-white/30 bg-slate-950/88 p-1.5 text-white shadow-xl backdrop-blur" aria-label={isRightPanelCollapsed ? 'Open insights panel' : 'Collapse insights panel'}>
           {isRightPanelCollapsed ? <ChevronLeft size={15} /> : <ChevronRight size={15} />}
         </button>
@@ -723,8 +832,30 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
           </div>
         )}
       </div>
+
+      <div className="mobile-map-action-rail" aria-label="Map actions">
+        <button type="button" onClick={() => setIsMobileLayerSheetOpen(true)} aria-label="Open map layers">
+          <Layers size={18} />
+          <span>Layers</span>
+        </button>
+        <button type="button" onClick={() => setExperienceMode((mode) => mode === '2d' ? '3d' : '2d')} aria-pressed={experienceMode === '3d'} aria-label="Toggle 3D map">
+          {experienceMode === '3d' ? <Orbit size={18} /> : <Box size={18} />}
+          <span>{experienceMode === '3d' ? '2D' : '3D'}</span>
+        </button>
+        <button type="button" onClick={() => setPreviewProperty(null)} aria-label="Clear selected property">
+          <X size={18} />
+          <span>Clear</span>
+        </button>
+      </div>
+
+      {isMobileLayerSheetOpen && (
+        <MobileLayerSheet onClose={() => setIsMobileLayerSheetOpen(false)}>
+          <MapLayerControl layers={GIS_LAYER_CONFIGS} activeLayerIds={activeLayerIds} accessLevel={accessLevel} baseMapId={baseMapId} onBaseMapChange={(value) => setBaseMapId(value as BaseMapId)} onToggleLayer={handleToggleLayer} onClose={() => setIsMobileLayerSheetOpen(false)} />
+        </MobileLayerSheet>
+      )}
+
       {experienceMode === '3d' && (
-        <div className="absolute left-1/2 top-20 z-[530] w-[min(28rem,calc(100%-2rem))] -translate-x-1/2 rounded-2xl border border-cyan-300/30 bg-slate-950/82 p-3 text-white shadow-2xl backdrop-blur-xl">
+        <div className="desktop-map-3d-control absolute left-1/2 top-20 z-[530] w-[min(28rem,calc(100%-2rem))] -translate-x-1/2 rounded-2xl border border-cyan-300/30 bg-slate-950/82 p-3 text-white shadow-2xl backdrop-blur-xl">
           <div className="mb-2 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-cyan-200"><SlidersHorizontal size={14} /> Functional 3D map pitch</div>
             <span className="rounded-full bg-cyan-400/15 px-2 py-1 text-[10px] font-black text-cyan-200">{mapPitch}°</span>
@@ -742,7 +873,7 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
         </div>
       )}
 
-      <div className="absolute bottom-4 left-1/2 z-[520] w-[min(34rem,calc(100%-2rem))] -translate-x-1/2 overflow-hidden rounded-2xl border border-white/15 bg-slate-950/82 text-white shadow-2xl backdrop-blur-xl">
+      <div className="desktop-map-stats-bar absolute bottom-4 left-1/2 z-[520] w-[min(34rem,calc(100%-2rem))] -translate-x-1/2 overflow-hidden rounded-2xl border border-white/15 bg-slate-950/82 text-white shadow-2xl backdrop-blur-xl">
         <div className="grid grid-cols-2 divide-x divide-white/10 sm:grid-cols-5">
           <div className="p-2.5 text-center"><p className="text-[9px] uppercase tracking-widest text-slate-500">Listings</p><b className="font-mono text-base">{properties.length}</b></div>
           <div className="p-2.5 text-center"><p className="text-[9px] uppercase tracking-widest text-slate-500">Mapped</p><b className="font-mono text-base text-emerald-300">{withCoords.length}</b></div>
@@ -763,6 +894,18 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
       </div>
       <GisSourceStatusPanel statuses={gisSourceStatuses} />
       <GisLayerLegend layers={GIS_LAYER_CONFIGS} activeLayerIds={activeLayerIds} />
+      <MobileSelectedPropertySheet
+        property={previewProperty}
+        sheetState={mobileSheetState}
+        onSheetStateChange={setMobileSheetState}
+        onClose={() => {
+          setPreviewProperty(null);
+          setHoveredId(null);
+        }}
+        onOpenDetails={() => previewProperty && onPropertyClick(previewProperty)}
+        isFavorite={previewProperty ? favoriteIds.has(previewProperty.Parcel_ID || previewProperty.Property_Name_or_Address) : false}
+        onToggleFavorite={() => previewProperty && onToggleFavorite(previewProperty)}
+      />
     </section>
   );
 }

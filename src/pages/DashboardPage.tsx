@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Papa from 'papaparse';
-import { LayoutGrid, List, Map, Loader2, AlertCircle, FileText, CheckSquare, Square, AlertTriangle, Coins, Star, Users } from 'lucide-react';
+import { LayoutGrid, List, Map, Loader2, AlertCircle, FileText, CheckSquare, Square, AlertTriangle, Coins, Star, Users, SlidersHorizontal, Search, BarChart3, Database, X } from 'lucide-react';
 
 import Header from '../components/dashboard/Header';
 import FilterPanel from '../components/dashboard/FilterPanel';
@@ -21,6 +21,7 @@ import { fetchDashboardData } from '../lib/dataFetcher';
 import { trackEvent } from '../lib/analytics';
 import SEO from '../components/SEO';
 import { sponsors } from '../data/sponsors';
+import { useIsMobile } from '../hooks/useResponsiveViewport';
 
 const DEFAULT_FILTERS: Filters = {
   search: '',
@@ -39,8 +40,10 @@ const DEFAULT_FILTERS: Filters = {
   lowRiskOnly: false, needsVerification: false,
   priceMin: 0, priceMax: 0,
   pricePerAcreMin: 0, pricePerAcreMax: 0,
+  acreageMin: 0, acreageMax: 0,
   sourceType: '', listingStatus: '',
   valueScoreMin: 0,
+  gisAvailableOnly: false,
 };
 
 const LS_FAVORITES = 'glf_favorites';
@@ -64,8 +67,74 @@ function saveToLS(key: string, value: unknown) {
 // Lazy-load MapView to avoid SSR/bundle issues
 const MapView = React.lazy(() => import('../components/dashboard/MapView'));
 
+type MobileNavItem = {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  count?: number;
+};
+
+function MobileDashboardNav({ activeTab, onTabChange, favoritesCount }: { activeTab: string; onTabChange: (tab: string) => void; favoritesCount: number }) {
+  const items: MobileNavItem[] = [
+    { id: 'map', label: 'Map', icon: <Map size={18} /> },
+    { id: 'dashboard', label: 'List', icon: <List size={18} /> },
+    { id: 'analytics', label: 'Stats', icon: <BarChart3 size={18} /> },
+    { id: 'data-quality', label: 'Quality', icon: <Database size={18} /> },
+    { id: 'favorites', label: 'Saved', icon: <Star size={18} />, count: favoritesCount },
+  ];
+
+  return (
+    <nav className="mobile-dashboard-nav" aria-label="Dashboard sections">
+      {items.map((item) => (
+        <button
+          key={item.id}
+          type="button"
+          onClick={() => onTabChange(item.id)}
+          className={`mobile-dashboard-nav__item ${activeTab === item.id ? 'is-active' : ''}`}
+          aria-current={activeTab === item.id ? 'page' : undefined}
+        >
+          <span className="relative">
+            {item.icon}
+            {typeof item.count === 'number' && item.count > 0 && (
+              <span className="absolute -right-2 -top-2 grid h-4 min-w-4 place-items-center rounded-full bg-red-500 px-1 text-[9px] font-black text-white">
+                {item.count > 9 ? '9+' : item.count}
+              </span>
+            )}
+          </span>
+          <span>{item.label}</span>
+        </button>
+      ))}
+    </nav>
+  );
+}
+
+function MobileFilterModal({ filters, onChange, properties, resultCount, onClose }: { filters: Filters; onChange: (filters: Filters) => void; properties: LandProperty[]; resultCount: number; onClose: () => void }) {
+  return (
+    <div className="mobile-filter-modal" role="dialog" aria-modal="true" aria-label="Filter land leads">
+      <button type="button" className="mobile-filter-modal__backdrop" onClick={onClose} aria-label="Close filters" />
+      <div className="mobile-filter-modal__sheet">
+        <FilterPanel
+          filters={filters}
+          onChange={onChange}
+          properties={properties}
+          variant="sheet"
+          resultCount={resultCount}
+          onClose={onClose}
+        />
+        <div className="mobile-filter-modal__apply">
+          <button type="button" onClick={onClose} className="btn-primary h-12 w-full text-sm">
+            Show {resultCount} land leads
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const { accessLevel } = useAuth();
+  const isMobile = useIsMobile();
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [properties, setProperties] = useState<LandProperty[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -175,6 +244,12 @@ export default function App() {
     const filtered = filterProperties(subTabFilteredProperties, filters);
     return sortProperties(filtered, sortConfig.key, sortConfig.direction);
   }, [subTabFilteredProperties, filters, sortConfig]);
+
+  useEffect(() => {
+    if (isMobile && activeTab === 'dashboard' && viewMode === 'table') {
+      setViewMode('card');
+    }
+  }, [activeTab, isMobile, viewMode]);
 
   // Sort handler
   const handleSort = (key: keyof LandProperty) => {
@@ -365,7 +440,7 @@ export default function App() {
   };
 
   return (
-    <div className={`min-h-screen bg-olive-950 text-olive-50 font-sans ${isImmersiveMapDashboard ? 'pb-0' : 'pb-16'}`}>
+    <div className={`min-h-screen bg-olive-950 text-olive-50 font-sans dashboard-app-shell ${isImmersiveMapDashboard ? 'pb-0' : 'pb-16'}`}>
       <SEO 
         title="Land Database Dashboard"
         description="Map, search, filter, and analyze Georgia low-cost land opportunities."
@@ -385,7 +460,16 @@ export default function App() {
         }}
       />
 
-      <main className={isImmersiveMapDashboard ? 'mx-auto max-w-none px-0 py-0' : 'max-w-screen-2xl mx-auto px-4 py-6'}>
+      <MobileDashboardNav
+        activeTab={activeTab}
+        favoritesCount={favorites.length}
+        onTabChange={(tab) => {
+          setActiveTab(tab);
+          if (tab === 'dashboard' && (viewMode === 'map' || isMobile)) setViewMode('card');
+        }}
+      />
+
+      <main className={isImmersiveMapDashboard ? 'mx-auto max-w-none px-0 py-0' : 'max-w-screen-2xl mx-auto px-4 py-6 dashboard-main-content'}>
         {/* Map + Dashboard tabs */}
         {(activeTab === 'map' || activeTab === 'dashboard') && (() => {
           // Sponsors configuration
@@ -394,7 +478,7 @@ export default function App() {
 
           if (activeTab === 'map') {
             return (
-              <section className="relative h-[calc(100dvh-104px)] min-h-[680px] overflow-hidden bg-slate-950">
+              <section className="dashboard-map-section relative h-[calc(100dvh-104px)] min-h-[680px] overflow-hidden bg-slate-950">
                 {loading && (
                   <div className="absolute inset-0 z-[900] flex items-center justify-center bg-slate-950 text-slate-300">
                     <Loader2 size={22} className="mr-3 animate-spin text-brand-400" /> Loading map workspace...
@@ -427,16 +511,26 @@ export default function App() {
                   </React.Suspense>
                 )}
 
-                <div className="pointer-events-none absolute inset-x-4 top-3 z-[760] flex flex-col gap-2">
+                <div className="mobile-map-controls pointer-events-none absolute inset-x-4 top-3 z-[760] flex flex-col gap-2">
                   <div className="pointer-events-auto mx-auto flex w-full max-w-7xl items-center gap-2 overflow-x-auto rounded-[1.25rem] border border-white/10 bg-slate-950/72 px-3 py-2 shadow-2xl backdrop-blur-xl">
-                    <input
-                      type="text"
-                      placeholder="Search address, parcel, city, county..."
-                      value={filters.search}
-                      onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                      className="h-9 min-w-[240px] rounded-xl border border-white/15 bg-white/95 px-3 text-xs font-semibold text-slate-900 outline-none focus:border-emerald-400"
-                    />
-                    <span className="shrink-0 rounded-xl bg-black/35 px-3 py-2 text-xs font-black text-white"><strong className="text-emerald-300">{filteredProperties.length}</strong> visible</span>
+                    <div className="relative min-w-[240px] flex-1">
+                      <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                      <input
+                        type="text"
+                        placeholder="Search address, parcel, city, county..."
+                        value={filters.search}
+                        onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                        className="h-10 w-full rounded-xl border border-white/15 bg-white/95 pl-9 pr-3 text-sm font-semibold text-slate-900 outline-none focus:border-emerald-400"
+                      />
+                    </div>
+                    <span className="mobile-map-count-chip shrink-0 rounded-xl bg-black/35 px-3 py-2 text-xs font-black text-white"><strong className="text-emerald-300">{filteredProperties.length}</strong> visible</span>
+                    <button type="button" onClick={() => setMobileFiltersOpen(true)} className="mobile-map-filter-btn shrink-0 rounded-2xl bg-emerald-400 px-3 py-2 text-xs font-black text-slate-950 shadow-[0_0_18px_rgba(52,211,153,0.35)]">
+                      <SlidersHorizontal size={14} /> Filters
+                    </button>
+                    <button type="button" onClick={() => { setActiveTab('dashboard'); setViewMode('card'); }} className="mobile-map-list-btn shrink-0 rounded-2xl bg-white/10 px-3 py-2 text-xs font-black text-white/85 hover:bg-white/18">
+                      <List size={14} /> List
+                    </button>
+                    <div className="mobile-map-chip-scroll contents">
                     {subTabs.filter((tab) => tab.id !== 'monetization').map(tab => {
                       const count = properties.filter(p => {
                         switch (tab.id) {
@@ -467,6 +561,7 @@ export default function App() {
                     <button type="button" onClick={() => updateQuickFilter('under50k')} className={`shrink-0 rounded-2xl px-3 py-2 text-xs font-black transition ${filters.under50k ? 'bg-cyan-300 text-slate-950' : 'bg-white/10 text-white/78 hover:bg-white/18'}`}>Under $50K</button>
                     <button type="button" onClick={() => updateQuickFilter('lowRiskOnly')} className={`shrink-0 rounded-2xl px-3 py-2 text-xs font-black transition ${filters.lowRiskOnly ? 'bg-cyan-300 text-slate-950' : 'bg-white/10 text-white/78 hover:bg-white/18'}`}>Low Risk</button>
                     <button type="button" onClick={() => updateQuickFilter('needsVerification')} className={`shrink-0 rounded-2xl px-3 py-2 text-xs font-black transition ${filters.needsVerification ? 'bg-cyan-300 text-slate-950' : 'bg-white/10 text-white/78 hover:bg-white/18'}`}>Needs Verification</button>
+                    </div>
                   </div>
                 </div>
               </section>
@@ -481,7 +576,26 @@ export default function App() {
             }
           >
             {/* ── Main content column ── */}
-            <div className="min-w-0 overflow-hidden space-y-6">
+            <div className="min-w-0 overflow-hidden space-y-6 dashboard-list-column">
+            <div className="mobile-dashboard-toolbar">
+              <div className="mobile-dashboard-toolbar__search">
+                <Search size={16} />
+                <input
+                  type="text"
+                  value={filters.search}
+                  onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                  placeholder="Search land leads, parcel, city, county..."
+                />
+              </div>
+              <button type="button" onClick={() => setMobileFiltersOpen(true)} className="mobile-dashboard-toolbar__filter">
+                <SlidersHorizontal size={16} />
+                Filter
+              </button>
+              <div className="mobile-dashboard-toolbar__count">
+                <b>{filteredProperties.length}</b>
+                <span>visible</span>
+              </div>
+            </div>
             {/* Upgrade Banner for Free Users */}
             {!canViewFullDatabase(accessLevel) && (
               <div className="bg-accent-warning/20 border border-accent-warning/40 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
@@ -938,6 +1052,16 @@ export default function App() {
           onToggleFavorite={handleToggleFavorite}
           note={selectedNote}
           onNoteChange={handleNoteChange}
+        />
+      )}
+
+      {mobileFiltersOpen && (
+        <MobileFilterModal
+          filters={filters}
+          onChange={setFilters}
+          properties={properties}
+          resultCount={filteredProperties.length}
+          onClose={() => setMobileFiltersOpen(false)}
         />
       )}
 

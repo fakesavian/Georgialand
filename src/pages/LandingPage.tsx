@@ -12,8 +12,8 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-olive-950 text-olive-50 font-sans selection:bg-brand-500/30">
       <SEO 
-        title="Find Cheap Land in Georgia | Off-Market & Tax Deals"
-        description="Access curated lists of low-cost land opportunities in Georgia. Find land bank lots, tax deed properties, and wholesale deals under $50k."
+        title="Georgia land intelligence for buyers, builders, and investors"
+        description="Map-based Georgia land intelligence for land-bank, surplus, tax-sale, GIS, and off-market property leads with value, risk, and data-confidence signals."
         canonicalUrl="https://georgialandfinder.com/"
         jsonLd={{
           "@context": "https://schema.org",
@@ -28,13 +28,13 @@ export default function LandingPage() {
         }}
       />
       {/* Navbar */}
-      <nav className="border-b border-surface-border bg-olive-900/50 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+      <nav className="marketing-nav border-b border-surface-border bg-olive-900/50 backdrop-blur-md sticky top-0 z-50">
+        <div className="marketing-nav__inner max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="marketing-nav__brand flex items-center gap-2">
             <Layers className="text-brand-500" size={24} />
             <span className="font-display font-bold text-lg text-white tracking-tight">Georgia Land Finder</span>
           </div>
-          <div className="flex items-center gap-6 text-sm font-semibold">
+          <div className="marketing-nav__links flex items-center gap-6 text-sm font-semibold">
             <Link to="/pricing" className="text-olive-300 hover:text-white transition-colors">Pricing</Link>
             <Link to="/docs" className="text-olive-300 hover:text-white transition-colors">Docs</Link>
             <Link to="/faq" className="text-olive-300 hover:text-white transition-colors">FAQ</Link>
@@ -54,7 +54,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 flex flex-wrap justify-center gap-12 md:gap-24 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
           <div className="text-center">
             <p className="text-3xl font-display font-bold text-white mb-1">150+</p>
-            <p className="text-xs font-semibold uppercase tracking-wider text-olive-400">Curated Lots</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-olive-400">Intelligence Leads</p>
           </div>
           <div className="text-center">
             <p className="text-3xl font-display font-bold text-white mb-1">12</p>
