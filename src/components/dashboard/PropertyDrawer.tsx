@@ -1,9 +1,79 @@
 import React from 'react';
-import { ExternalLink, MapPin, AlertCircle, Lock, AlertTriangle } from 'lucide-react';
+import { ExternalLink, MapPin, AlertCircle, Lock, AlertTriangle, ShieldCheck, ShieldAlert } from 'lucide-react';
 import { LandProperty } from '../../types';
 import { trackEvent } from '../../lib/analytics';
-import { isValidUrl, displayValue, getFitScoreClass, getRiskScoreClass, parseScore, getProList, getConsList, getPropertyWarnings, getSatelliteImageUrl, getStreetContextImageUrl, getGoogleStreetViewEmbedUrl, getGoogleMapsEmbedUrl } from '../../utils';
+import { isValidUrl, displayValue, getFitScoreClass, getRiskScoreClass, parseScore, getProList, getConsList, getPropertyWarnings, getSatelliteImageUrl, getStreetContextImageUrl, getGoogleStreetViewEmbedUrl, getGoogleMapsEmbedUrl, getBoundaryStatus, parseParcelBoundaryGeoJSON } from '../../utils';
 import MediaLightbox, { PropertyMediaItem } from './MediaLightbox';
+
+const ParcelBoundaryMiniMap = React.lazy(() => import('./ParcelBoundaryMiniMap'));
+
+function BoundaryStatusPanel({ property }: { property: LandProperty }) {
+  const status = getBoundaryStatus(property);
+  const geometry = parseParcelBoundaryGeoJSON(property.Parcel_Boundary_GeoJSON);
+  const tone =
+    status.state === 'verified'
+      ? 'border-brand-700 bg-brand-900/25'
+      : status.state === 'review'
+      ? 'border-amber-700 bg-amber-950/30'
+      : 'border-orange-800 bg-orange-950/20';
+  const label = status.state === 'verified' ? 'Verified' : status.state === 'review' ? 'Needs review' : 'Missing';
+  const badgeTone =
+    status.state === 'verified'
+      ? 'bg-brand-900/60 text-brand-300'
+      : status.state === 'review'
+      ? 'bg-amber-950/70 text-amber-300'
+      : 'bg-orange-950/70 text-orange-300';
+
+  return (
+    <div className={`rounded-lg border p-3 ${tone}`}>
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-olive-300">
+          {status.verified ? <ShieldCheck size={13} className="text-brand-400" /> : <ShieldAlert size={13} className="text-amber-400" />}
+          Parcel Boundary
+        </p>
+        <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${badgeTone}`}>{label}</span>
+      </div>
+
+      {status.verified && geometry && (
+        <div className="mb-3 h-44 overflow-hidden rounded-lg border border-surface-border">
+          <React.Suspense fallback={<div className="flex h-full items-center justify-center text-xs text-olive-500">Loading boundary map…</div>}>
+            <ParcelBoundaryMiniMap geometry={geometry} />
+          </React.Suspense>
+        </div>
+      )}
+
+      <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
+        <div><dt className="text-olive-500">Parcel ID</dt><dd className="text-olive-100 break-words">{displayValue(property.Parcel_ID)}</dd></div>
+        <div><dt className="text-olive-500">Geometry confidence</dt><dd className="font-mono text-olive-100">{status.confidence ? `${status.confidence}/100` : '—'}</dd></div>
+        <div><dt className="text-olive-500">Source</dt><dd className="text-olive-100 break-words">{status.source || 'Not yet sourced'}</dd></div>
+        <div><dt className="text-olive-500">Last checked</dt><dd className="font-mono text-olive-100">{status.lastChecked || '—'}</dd></div>
+      </dl>
+
+      {(isValidUrl(property.GIS_Parcel_URL || '') || isValidUrl(property.GIS_URL) || isValidUrl(property.Assessor_Parcel_URL || '')) && (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {isValidUrl(property.GIS_Parcel_URL || property.GIS_URL) && (
+            <a href={property.GIS_Parcel_URL || property.GIS_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-md border border-green-800 bg-green-900/30 px-2 py-1 text-[11px] font-bold text-green-300 hover:bg-green-800/50">
+              <ExternalLink size={11} /> County GIS parcel
+            </a>
+          )}
+          {isValidUrl(property.Assessor_Parcel_URL || '') && (
+            <a href={property.Assessor_Parcel_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-md border border-green-800 bg-green-900/30 px-2 py-1 text-[11px] font-bold text-green-300 hover:bg-green-800/50">
+              <ExternalLink size={11} /> Assessor parcel
+            </a>
+          )}
+        </div>
+      )}
+
+      {!status.verified && (
+        <p className="mt-2 text-xs text-amber-300">
+          {status.error
+            ? status.error
+            : 'Parcel boundary not yet verified. Use the GIS/source link to confirm the exact lot lines before relying on this lead.'}
+        </p>
+      )}
+    </div>
+  );
+}
 
 interface PropertyDrawerProps {
   property: LandProperty | null;
@@ -282,6 +352,7 @@ export default function PropertyDrawer({
 
         {/* Detail content */}
         <div className="p-4 space-y-5">
+          <BoundaryStatusPanel property={property} />
           <SourceVerificationPanel property={property} />
 
           {/* Data Quality Warnings */}

@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, ZoomControl, Polygon, P
 import L from 'leaflet';
 import { AlertTriangle, BarChart3, Box, CheckCircle2, ChevronLeft, ChevronRight, ExternalLink, Heart, Layers, ListFilter, LocateFixed, Maximize2, Minimize2, MapPin, MousePointer2, Orbit, Search, SlidersHorizontal, Sparkles, X } from 'lucide-react';
 import { LandProperty } from '../../types';
-import { parseScore, parsePrice, getFitScoreClass, getRiskScoreClass, displayValue, getSatelliteImageUrl, isValidUrl } from '../../utils';
+import { parseScore, parsePrice, parsePriceValue, formatPinPriceLabel, getFitScoreClass, getRiskScoreClass, displayValue, getSatelliteImageUrl, isValidUrl, parseParcelBoundaryGeoJSON } from '../../utils';
 import { AccessLevel } from '../../lib/authTypes';
 import { GIS_LAYER_CONFIGS, canAccessGisLayer } from '../../lib/gisLayers';
 import MapLayerControl from './MapLayerControl';
@@ -66,28 +66,22 @@ function compactPinPrice(value: number | null) {
   return `${value}`;
 }
 
+// Map pins now represent the property PRICE (not an arbitrary rank/score).
+// "$2.5K" / "$25K" / "$1.2M" for numeric prices; "?" unknown; "Bid"/"Ask"/"TBD" for descriptive.
 function getMapPinLabel(property: LandProperty) {
-  if (hasScore(property.Fit_Score_0_to_100)) return String(Math.round(parseScore(property.Fit_Score_0_to_100)));
-  const priceLabel = compactPinPrice(parsePrice(property.Estimated_Price_or_Min_Bid));
-  if (priceLabel) return priceLabel;
-  if (property.Priority_Rank) return `#${property.Priority_Rank}`;
-  const parcelKey = normalizeParcelKey(property.Parcel_ID);
-  if (parcelKey) return parcelKey.slice(-3);
-  return (property.County || property.City || 'GA').slice(0, 2).toUpperCase();
+  return formatPinPriceLabel(property.Estimated_Price_or_Min_Bid);
 }
 
+// Pin colour communicates the price band so the price-labelled pins read at a glance.
 function getMapPinTone(property: LandProperty) {
-  if (hasScore(property.Fit_Score_0_to_100)) {
-    const fit = parseScore(property.Fit_Score_0_to_100);
-    return fit >= 70 ? '#22c55e' : fit >= 40 ? '#eab308' : '#64748b';
-  }
-  const price = parsePrice(property.Estimated_Price_or_Min_Bid);
+  const price = parsePriceValue(property.Estimated_Price_or_Min_Bid);
   if (price !== null) {
-    if (price < 50_000) return '#06b6d4';
-    if (price < 150_000) return '#3b82f6';
-    return '#8b5cf6';
+    if (price < 25_000) return '#06b6d4';   // cyan — lowest cost
+    if (price < 75_000) return '#22c55e';   // green
+    if (price < 150_000) return '#3b82f6';  // blue
+    return '#8b5cf6';                        // purple — higher cost
   }
-  return '#475569';
+  return '#64748b';                          // slate — unknown / descriptive price
 }
 
 function createCustomIcon(property: LandProperty, isHovered: boolean = false, propertyId?: string) {
@@ -658,6 +652,24 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
           {activeUnlockedLayerIds.has('parcel-boundaries') && verifiedParcelFeatures.map((feature) => (
             feature.kind === 'polygon' ? feature.rings?.map((ring, ringIndex) => <Polygon key={`${feature.id}-ring-${ringIndex}`} positions={ring} pathOptions={{ color: '#ef4444', weight: 4, opacity: 1, fillColor: '#ef4444', fillOpacity: 0.08, className: 'verified-parcel-boundary-red' }} />) : feature.paths?.map((path, pathIndex) => <Polyline key={`${feature.id}-path-${pathIndex}`} positions={path} pathOptions={{ color: '#ef4444', weight: 4, opacity: 1, className: 'verified-parcel-boundary-red' }} />)
           ))}
+          {/* Stored verified parcel geometry (from dataset backfill). Drawn for the
+              selected pin always, and for all pins when the parcel-boundaries layer is on.
+              These are real GeoJSON polygons in the overlay pane, so they persist across
+              base-map (satellite/dark/topo/light) switches just like the live fetch. */}
+          {withCoords.map((prop) => {
+            const geom = parseParcelBoundaryGeoJSON(prop.Parcel_Boundary_GeoJSON);
+            if (!geom) return null;
+            const boundaryKey = getPropertyBoundaryKey(prop);
+            const isSel = Boolean(selectedBoundaryKey) && selectedBoundaryKey === boundaryKey;
+            if (!isSel && !activeUnlockedLayerIds.has('parcel-boundaries')) return null;
+            return (
+              <LeafletGeoJSON
+                key={`stored-parcel-${boundaryKey}-${isSel ? 'sel' : 'all'}`}
+                data={{ type: 'Feature', geometry: geom, properties: {} } as never}
+                style={() => ({ color: '#ef4444', weight: isSel ? 4 : 2.5, opacity: 1, fillColor: '#ef4444', fillOpacity: isSel ? 0.12 : 0.06, className: 'verified-parcel-boundary-red' })}
+              />
+            );
+          })}
           {activeUnlockedLayerIds.has('fema-flood') && datasetBounds.length > 0 && <Polygon positions={datasetBounds} pathOptions={{ color: '#38bdf8', weight: 1, opacity: 0.35, fillColor: '#0ea5e9', fillOpacity: 0.055 }} />}
           {activeUnlockedLayerIds.has('zoning') && verifiedZoningFeatures.map((feature) => feature.rings?.map((ring, ringIndex) => <Polygon key={`${feature.id}-zoning-${ringIndex}`} positions={ring} pathOptions={{ color: '#ec4899', weight: 1, opacity: 0.6, fillColor: '#ec4899', fillOpacity: 0.055 }} />))}
           {activeUnlockedLayerIds.has('off-market-candidates') && withCoords.map((prop, idx) => <Circle key={`offmarket-${idx}`} center={[Number(prop.Latitude), Number(prop.Longitude)]} radius={85} pathOptions={{ color: '#f97316', weight: 1.2, opacity: 0.55, fillColor: '#f97316', fillOpacity: 0.07 }} />)}

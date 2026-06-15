@@ -1,0 +1,103 @@
+{
+  "generatedAt": "2026-06-15T13:09:39.858Z",
+  "attempted": 10,
+  "verified": 6,
+  "flagged": 4,
+  "byMethod": {
+    "point_in_polygon": 5,
+    "none": 4,
+    "parcel_id_match": 1
+  },
+  "results": [
+    {
+      "Listing_ID": "GA-001",
+      "County": "Fulton",
+      "Parcel_ID": "Needs verification",
+      "method": "point_in_polygon",
+      "confidence": 80,
+      "verified": true,
+      "error": ""
+    },
+    {
+      "Listing_ID": "GA-002",
+      "County": "Fulton",
+      "Parcel_ID": "Needs verification",
+      "method": "point_in_polygon",
+      "confidence": 80,
+      "verified": true,
+      "error": ""
+    },
+    {
+      "Listing_ID": "GA-003",
+      "County": "Fulton",
+      "Parcel_ID": "14 020900020883",
+      "method": "point_in_polygon",
+      "confidence": 96,
+      "verified": true,
+      "error": ""
+    },
+    {
+      "Listing_ID": "GA-004",
+      "County": "DeKalb",
+      "Parcel_ID": "Needs verification",
+      "method": "none",
+      "confidence": 0,
+      "verified": false,
+      "error": "No single official DeKalb County parcel polygon contained the listing point."
+    },
+    {
+      "Listing_ID": "GA-005",
+      "County": "DeKalb",
+      "Parcel_ID": "Needs verification",
+      "method": "point_in_polygon",
+      "confidence": 80,
+      "verified": true,
+      "error": ""
+    },
+    {
+      "Listing_ID": "GA-007",
+      "County": "DeKalb",
+      "Parcel_ID": "15 009 01 033",
+      "method": "point_in_polygon",
+      "confidence": 96,
+      "verified": true,
+      "error": ""
+    },
+    {
+      "Listing_ID": "GA-009",
+      "County": "Clayton",
+      "Parcel_ID": "Needs verification",
+      "method": "none",
+      "confidence": 0,
+      "verified": false,
+      "error": "No single official Clayton County parcel polygon contained the listing point."
+    },
+    {
+      "Listing_ID": "GA-035",
+      "County": "Clarke",
+      "Parcel_ID": "122C2 B014",
+      "method": "none",
+      "confidence": 0,
+      "verified": false,
+      "error": "GIS query failed for Clarke: HTTP 400"
+    },
+    {
+      "Listing_ID": "GA-042",
+      "County": "Clarke",
+      "Parcel_ID": "162B1 E005",
+      "method": "none",
+      "confidence": 0,
+      "verified": false,
+      "error": "GIS query failed for Clarke: HTTP 400"
+    },
+    {
+      "Listing_ID": "GA-046",
+      "County": "Floyd",
+      "Parcel_ID": "I14W 120",
+      "method": "parcel_id_match",
+      "confidence": 90,
+      "verified": true,
+      "error": ""
+    }
+  ]
+}

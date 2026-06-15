@@ -133,6 +133,19 @@ export interface LandProperty {
   Data_Source_Type?: string;
   Official_Source_Confirmed?: string;
 
+  // Parcel boundary / geometry (added by the parcel-boundary data-quality pass).
+  // Geometry is ONLY populated from verified official GIS sources — never guessed.
+  Parcel_Boundary_GeoJSON?: string;                 // stringified GeoJSON Polygon/MultiPolygon (WGS84 [lon,lat]) or empty
+  Parcel_Boundary_Source_URL?: string;              // official FeatureServer/MapServer query URL used
+  Parcel_Boundary_Source_Type?: string;            // e.g. "County ArcGIS FeatureServer", "County GIS portal (manual)"
+  Parcel_Boundary_Verified?: string;               // "Yes" | "No"
+  Parcel_Boundary_Confidence_0_to_100?: string;    // 0-100
+  Parcel_Boundary_Last_Checked_Date?: string;      // ISO date
+  Parcel_Boundary_Method?: string;                 // "parcel_id_match" | "point_in_polygon" | "manual_link" | "none"
+  Parcel_Boundary_Error?: string;                  // reason geometry is missing/unverified, if any
+  Assessor_Parcel_URL?: string;                    // deep link to assessor parcel page (manual verification)
+  GIS_Parcel_URL?: string;                         // deep link to county GIS parcel viewer (manual verification)
+
   [key: string]: any;
 }
 

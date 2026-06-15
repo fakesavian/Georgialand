@@ -1,0 +1,584 @@
+{
+  "summary": {
+    "dataset": "public\\local_dashboard_dataset.csv",
+    "generatedAt": "2026-06-15T13:08:38.699Z",
+    "totalRows": 358,
+    "fieldCount": 133,
+    "price": {
+      "numeric": 314,
+      "numeric_range": 12,
+      "descriptive": 28,
+      "blank": 4
+    },
+    "parcelIdPresent": 358,
+    "parcelIdUsable": 325,
+    "latLonValid": 335,
+    "gisOrAssessorUrl": 53,
+    "boundaryGeoJsonValid": 0,
+    "boundaryVerified": 0,
+    "boundaryReady": 0,
+    "boundaryMissing": 358,
+    "countyQueryable": 336,
+    "countyPlaceholder": 18,
+    "countyUnsupported": 4
+  },
+  "byCounty": [
+    {
+      "county": "DeKalb",
+      "rows": 306,
+      "queryable": true,
+      "ready": 0
+    },
+    {
+      "county": "Fulton",
+      "rows": 16,
+      "queryable": true,
+      "ready": 0
+    },
+    {
+      "county": "Richmond",
+      "rows": 9,
+      "queryable": false,
+      "ready": 0
+    },
+    {
+      "county": "Ware",
+      "rows": 6,
+      "queryable": true,
+      "ready": 0
+    },
+    {
+      "county": "Clayton",
+      "rows": 3,
+      "queryable": true,
+      "ready": 0
+    },
+    {
+      "county": "Chatham",
+      "rows": 3,
+      "queryable": false,
+      "ready": 0
+    },
+    {
+      "county": "Bibb",
+      "rows": 2,
+      "queryable": false,
+      "ready": 0
+    },
+    {
+      "county": "Clarke",
+      "rows": 2,
+      "queryable": true,
+      "ready": 0
+    },
+    {
+      "county": "Cobb",
+      "rows": 1,
+      "queryable": true,
+      "ready": 0
+    },
+    {
+      "county": "Gwinnett",
+      "rows": 1,
+      "queryable": true,
+      "ready": 0
+    },
+    {
+      "county": "Muscogee",
+      "rows": 1,
+      "queryable": false,
+      "ready": 0
+    },
+    {
+      "county": "Dougherty",
+      "rows": 1,
+      "queryable": false,
+      "ready": 0
+    },
+    {
+      "county": "Lowndes",
+      "rows": 1,
+      "queryable": false,
+      "ready": 0
+    },
+    {
+      "county": "Bartow",
+      "rows": 1,
+      "queryable": false,
+      "ready": 0
+    },
+    {
+      "county": "Spalding",
+      "rows": 1,
+      "queryable": false,
+      "ready": 0
+    },
+    {
+      "county": "Houston",
+      "rows": 1,
+      "queryable": false,
+      "ready": 0
+    },
+    {
+      "county": "Glynn",
+      "rows": 1,
+      "queryable": false,
+      "ready": 0
+    },
+    {
+      "county": "Sumter",
+      "rows": 1,
+      "queryable": false,
+      "ready": 0
+    },
+    {
+      "county": "Floyd",
+      "rows": 1,
+      "queryable": true,
+      "ready": 0
+    }
+  ],
+  "notReadyCount": 358,
+  "notReadySample": [
+    {
+      "Listing_ID": "GA-001",
+      "Property": "Metro Atlanta Land Bank – Residential Vacant Lot (Vine City Area)",
+      "County": "Fulton",
+      "Parcel_ID": "Needs verification",
+      "latLonValid": true,
+      "parcelUsable": false,
+      "priceBucket": "numeric_range",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-002",
+      "Property": "Metro Atlanta Land Bank – Residential Vacant Lot (Pittsburgh/Mechanicsville)",
+      "County": "Fulton",
+      "Parcel_ID": "Needs verification",
+      "latLonValid": true,
+      "parcelUsable": false,
+      "priceBucket": "numeric_range",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-003",
+      "Property": "0 Crescendo Dr NW, Atlanta, GA 30318",
+      "County": "Fulton",
+      "Parcel_ID": "14 020900020883",
+      "latLonValid": true,
+      "parcelUsable": true,
+      "priceBucket": "numeric_range",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-004",
+      "Property": "DeKalb Regional Land Bank – Residential Vacant Lot (Decatur/East DeKalb)",
+      "County": "DeKalb",
+      "Parcel_ID": "Needs verification",
+      "latLonValid": true,
+      "parcelUsable": false,
+      "priceBucket": "descriptive",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-005",
+      "Property": "DeKalb Regional Land Bank – Community-Inspired Development Lot (Lithonia Area)",
+      "County": "DeKalb",
+      "Parcel_ID": "Needs verification",
+      "latLonValid": true,
+      "parcelUsable": false,
+      "priceBucket": "descriptive",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-006",
+      "Property": "Fulton County Tax Sale – Vacant Residential Lot (First Tuesday Monthly Auction)",
+      "County": "Fulton",
+      "Parcel_ID": "Published in sale list prior to auction",
+      "latLonValid": false,
+      "parcelUsable": false,
+      "priceBucket": "numeric_range",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-007",
+      "Property": "2718 Windrock Ct, DeKalb County, GA",
+      "County": "DeKalb",
+      "Parcel_ID": "15 009 01 033",
+      "latLonValid": true,
+      "parcelUsable": true,
+      "priceBucket": "numeric_range",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-008",
+      "Property": "Clayton County Tax Sale – Vacant Residential Lot (Jonesboro Courthouse)",
+      "County": "Clayton",
+      "Parcel_ID": "Published 4 weeks prior in local legal organ",
+      "latLonValid": false,
+      "parcelUsable": false,
+      "priceBucket": "descriptive",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-009",
+      "Property": "Clayton County Land Bank Authority – Residential Lot",
+      "County": "Clayton",
+      "Parcel_ID": "Needs verification",
+      "latLonValid": true,
+      "parcelUsable": false,
+      "priceBucket": "descriptive",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-010",
+      "Property": "Cobb County Tax Sale – Vacant Residential Lot (Marietta Courthouse)",
+      "County": "Cobb",
+      "Parcel_ID": "Published in Marietta Daily Journal 4 weeks prior",
+      "latLonValid": false,
+      "parcelUsable": false,
+      "priceBucket": "descriptive",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-011",
+      "Property": "Gwinnett County Tax Sale – Vacant Residential Lot (Lawrenceville)",
+      "County": "Gwinnett",
+      "Parcel_ID": "Published in Gwinnett Daily Post 4 weeks prior",
+      "latLonValid": false,
+      "parcelUsable": false,
+      "priceBucket": "descriptive",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-012",
+      "Property": "0 Keels Ln, South Fulton, GA 30349",
+      "County": "Fulton",
+      "Parcel_ID": "13 016000020296",
+      "latLonValid": true,
+      "parcelUsable": true,
+      "priceBucket": "descriptive",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-013",
+      "Property": "Macon-Bibb County Land Bank – Residential Vacant Lot",
+      "County": "Bibb",
+      "Parcel_ID": "Needs verification",
+      "latLonValid": true,
+      "parcelUsable": false,
+      "priceBucket": "numeric_range",
+      "countySupport": "placeholder",
+      "reason": "no_geometry_placeholder_county"
+    },
+    {
+      "Listing_ID": "GA-014",
+      "Property": "Augusta Georgia Land Bank Authority – Residential Vacant Lot",
+      "County": "Richmond",
+      "Parcel_ID": "Needs verification",
+      "latLonValid": true,
+      "parcelUsable": false,
+      "priceBucket": "descriptive",
+      "countySupport": "placeholder",
+      "reason": "no_geometry_placeholder_county"
+    },
+    {
+      "Listing_ID": "GA-015",
+      "Property": "Chatham-Savannah Land Bank – Residential Vacant Lot",
+      "County": "Chatham",
+      "Parcel_ID": "Needs verification",
+      "latLonValid": true,
+      "parcelUsable": false,
+      "priceBucket": "descriptive",
+      "countySupport": "placeholder",
+      "reason": "no_geometry_placeholder_county"
+    },
+    {
+      "Listing_ID": "GA-016",
+      "Property": "Columbus Land Bank Authority – Residential Vacant Lot",
+      "County": "Muscogee",
+      "Parcel_ID": "Needs verification",
+      "latLonValid": true,
+      "parcelUsable": false,
+      "priceBucket": "descriptive",
+      "countySupport": "placeholder",
+      "reason": "no_geometry_placeholder_county"
+    },
+    {
+      "Listing_ID": "GA-017",
+      "Property": "MALB – Vacant Lot (Westside Atlanta / English Avenue Area)",
+      "County": "Fulton",
+      "Parcel_ID": "Needs verification",
+      "latLonValid": true,
+      "parcelUsable": false,
+      "priceBucket": "numeric_range",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-018",
+      "Property": "MALB – Vacant Lot (Bankhead/West Atlanta)",
+      "County": "Fulton",
+      "Parcel_ID": "Needs verification",
+      "latLonValid": true,
+      "parcelUsable": false,
+      "priceBucket": "numeric_range",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-019",
+      "Property": "DeKalb Tax Sale – Vacant Lot (Candler Park / East Atlanta Adjacent)",
+      "County": "DeKalb",
+      "Parcel_ID": "Published 4 weeks prior in The Champion",
+      "latLonValid": false,
+      "parcelUsable": false,
+      "priceBucket": "numeric",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-020",
+      "Property": "Fulton County Tax Sale – Vacant Lot (College Park/East Point Area)",
+      "County": "Fulton",
+      "Parcel_ID": "Published in South Fulton Neighbor 4 weeks prior",
+      "latLonValid": false,
+      "parcelUsable": false,
+      "priceBucket": "descriptive",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-021",
+      "Property": "DRLBA – Side Lot Program (Adjacent Owner DeKalb County)",
+      "County": "DeKalb",
+      "Parcel_ID": "Needs verification",
+      "latLonValid": true,
+      "parcelUsable": false,
+      "priceBucket": "descriptive",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-022",
+      "Property": "MALB – Vacant Lot (South Atlanta / Adair Park)",
+      "County": "Fulton",
+      "Parcel_ID": "Needs verification",
+      "latLonValid": true,
+      "parcelUsable": false,
+      "priceBucket": "numeric_range",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-023",
+      "Property": "Fulton County Tax Sale – Vacant Lot (South Fulton / Union City Area)",
+      "County": "Fulton",
+      "Parcel_ID": "Published in South Fulton Neighbor 4 weeks prior",
+      "latLonValid": false,
+      "parcelUsable": false,
+      "priceBucket": "descriptive",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-024",
+      "Property": "MALB – Vacant Lot (Grant Park / Ormewood Park Adjacent)",
+      "County": "Fulton",
+      "Parcel_ID": "Needs verification",
+      "latLonValid": true,
+      "parcelUsable": false,
+      "priceBucket": "numeric_range",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-025",
+      "Property": "Clayton County Tax Sale – Larger Lot (Forest Park / Riverdale Area)",
+      "County": "Clayton",
+      "Parcel_ID": "Published 4 weeks prior in local legal organ",
+      "latLonValid": false,
+      "parcelUsable": false,
+      "priceBucket": "descriptive",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-026",
+      "Property": "MALB – Vacant Lot (Mozley Park / West End)",
+      "County": "Fulton",
+      "Parcel_ID": "Needs verification",
+      "latLonValid": true,
+      "parcelUsable": false,
+      "priceBucket": "numeric_range",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-027",
+      "Property": "GovDeals – City of Atlanta or Metro Government Auction Property",
+      "County": "Fulton",
+      "Parcel_ID": "Needs verification",
+      "latLonValid": false,
+      "parcelUsable": false,
+      "priceBucket": "descriptive",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-028",
+      "Property": "DeKalb County Tax Sale – Larger Suburban Lot (Stone Mountain / Lithonia Area)",
+      "County": "DeKalb",
+      "Parcel_ID": "Published in The Champion 4 weeks prior",
+      "latLonValid": false,
+      "parcelUsable": false,
+      "priceBucket": "numeric",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-029",
+      "Property": "MALB – Vacant Lot (Oakland City / Browns Mill Area)",
+      "County": "Fulton",
+      "Parcel_ID": "Needs verification",
+      "latLonValid": true,
+      "parcelUsable": false,
+      "priceBucket": "numeric_range",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-030",
+      "Property": "Fulton County Tax Sale – Intown Atlanta Vacant Lot (Off-Cycle Opportunity)",
+      "County": "Fulton",
+      "Parcel_ID": "Published in South Fulton Neighbor 4 weeks prior",
+      "latLonValid": false,
+      "parcelUsable": false,
+      "priceBucket": "descriptive",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-031",
+      "Property": "512 Mercer Ave",
+      "County": "Dougherty",
+      "Parcel_ID": "0024/0002/021",
+      "latLonValid": true,
+      "parcelUsable": true,
+      "priceBucket": "numeric",
+      "countySupport": "placeholder",
+      "reason": "no_geometry_placeholder_county"
+    },
+    {
+      "Listing_ID": "GA-032",
+      "Property": "714 W 39th St",
+      "County": "Chatham",
+      "Parcel_ID": "2-0048-18-005",
+      "latLonValid": true,
+      "parcelUsable": true,
+      "priceBucket": "numeric",
+      "countySupport": "placeholder",
+      "reason": "no_geometry_placeholder_county"
+    },
+    {
+      "Listing_ID": "GA-033",
+      "Property": "1540 Wrightsboro Rd",
+      "County": "Richmond",
+      "Parcel_ID": "046-2-120-00-0",
+      "latLonValid": true,
+      "parcelUsable": true,
+      "priceBucket": "numeric",
+      "countySupport": "placeholder",
+      "reason": "no_geometry_placeholder_county"
+    },
+    {
+      "Listing_ID": "GA-034",
+      "Property": "884 Walnut St",
+      "County": "Bibb",
+      "Parcel_ID": "Q073-0245",
+      "latLonValid": true,
+      "parcelUsable": true,
+      "priceBucket": "numeric",
+      "countySupport": "placeholder",
+      "reason": "no_geometry_placeholder_county"
+    },
+    {
+      "Listing_ID": "GA-035",
+      "Property": "112 Rocksprings St",
+      "County": "Clarke",
+      "Parcel_ID": "122C2 B014",
+      "latLonValid": true,
+      "parcelUsable": true,
+      "priceBucket": "numeric",
+      "countySupport": "queryable",
+      "reason": "no_geometry_backfillable"
+    },
+    {
+      "Listing_ID": "GA-036",
+      "Property": "415 River St",
+      "County": "Lowndes",
+      "Parcel_ID": "0112 045",
+      "latLonValid": true,
+      "parcelUsable": true,
+      "priceBucket": "numeric",
+      "countySupport": "placeholder",
+      "reason": "no_geometry_placeholder_county"
+    },
+    {
+      "Listing_ID": "GA-037",
+      "Property": "1410 Carter St",
+      "County": "Bartow",
+      "Parcel_ID": "C022-0004-012",
+      "latLonValid": true,
+      "parcelUsable": true,
+      "priceBucket": "numeric",
+      "countySupport": "unsupported",
+      "reason": "no_geometry_unsupported_county"
+    },
+    {
+      "Listing_ID": "GA-038",
+      "Property": "312 W Solomon St",
+      "County": "Spalding",
+      "Parcel_ID": "006 01004",
+      "latLonValid": true,
+      "parcelUsable": true,
+      "priceBucket": "numeric",
+      "countySupport": "unsupported",
+      "reason": "no_geometry_unsupported_county"
+    },
+    {
+      "Listing_ID": "GA-039",
+      "Property": "215 Oak Ave",
+      "County": "Houston",
+      "Parcel_ID": "0W49B0 041000",
+      "latLonValid": true,
+      "parcelUsable": true,
+      "priceBucket": "numeric",
+      "countySupport": "unsupported",
+      "reason": "no_geometry_unsupported_county"
+    },
+    {
+      "Listing_ID": "GA-040",
+      "Property": "802 Lee St",
+      "County": "Glynn",
+      "Parcel_ID": "01-02391",
+      "latLonValid": true,
+      "parcelUsable": true,
+      "priceBucket": "numeric",
+      "countySupport": "placeholder",
+      "reason": "no_geometry_placeholder_county"
+    }
+  ]
+}

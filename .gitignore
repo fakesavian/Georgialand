@@ -49,3 +49,6 @@ CLAUDE.md
 .env
 .env.*
 !.env.example
+
+# Generated parcel-boundary backfill output (promote to production only after review)
+public/*.enriched.csv

@@ -24,6 +24,117 @@ export function parsePrice(val: string): number | null {
   return isNaN(n) ? null : n;
 }
 
+/**
+ * Robustly extract a numeric USD value from a messy price string.
+ * Handles "$2,500", "2500", "Min bid $5,000", and ranges ("$2,500-$5,000" -> low end).
+ * Returns null for descriptive/contact/unknown text with no usable number.
+ */
+export function parsePriceValue(raw: string | number | null | undefined): number | null {
+  if (raw === null || raw === undefined) return null;
+  const str = String(raw).trim();
+  if (!str || str.toLowerCase().includes('needs verification')) return null;
+  const matches = str.match(/\$?\s?\d{1,3}(?:,\d{3})+(?:\.\d+)?|\$?\s?\d+(?:\.\d+)?/g);
+  if (!matches) return null;
+  for (const m of matches) {
+    const n = parseFloat(m.replace(/[^0-9.]/g, ''));
+    if (Number.isFinite(n) && n > 0) return n;
+  }
+  return null;
+}
+
+/** Format a numeric dollar amount compactly: $2.5K, $25K, $149K, $1.2M. */
+export function formatCompactUsd(value: number): string {
+  if (!Number.isFinite(value)) return '?';
+  if (value >= 1_000_000) {
+    const m = value / 1_000_000;
+    return `$${m >= 10 ? Math.round(m) : Math.round(m * 10) / 10}M`;
+  }
+  if (value >= 1_000) {
+    const k = value / 1_000;
+    return `$${k >= 100 ? Math.round(k) : Math.round(k * 10) / 10}K`;
+  }
+  return `$${Math.round(value)}`;
+}
+
+/**
+ * Decide what a MAP PIN should display for a property price.
+ * - numeric price -> "$2.5K", "$25K", "$1.2M" (range -> low end + "+")
+ * - blank/unknown -> "?"
+ * - descriptive   -> short bucket "Bid" / "Ask" / "TBD" (full text stays in the card/drawer)
+ */
+export function formatPinPriceLabel(raw: string | number | null | undefined): string {
+  const str = String(raw ?? '').trim();
+  if (!str || str.toLowerCase().includes('needs verification')) return '?';
+  const value = parsePriceValue(str);
+  if (value !== null) {
+    const isRange = /\d\s*[-–—to]+\s*\$?\s*\d/i.test(str);
+    return isRange ? `${formatCompactUsd(value)}+` : formatCompactUsd(value);
+  }
+  if (/bid|auction|sheriff|upset|min(?:imum)?\b/i.test(str)) return 'Bid';
+  if (/contact|inquire|call|ask|negotiat|email|offer|market|quote/i.test(str)) return 'Ask';
+  return 'TBD';
+}
+
+export interface BoundaryStatus {
+  state: 'verified' | 'review' | 'missing';
+  verified: boolean;
+  hasGeometry: boolean;
+  confidence: number;
+  source: string;
+  sourceUrl: string;
+  method: string;
+  lastChecked: string;
+  error: string;
+}
+
+/**
+ * Parse + validate a stored parcel-boundary GeoJSON string.
+ * Returns the geometry object only if it is a non-empty Polygon/MultiPolygon.
+ * Never fabricates geometry — a malformed/empty value returns null.
+ */
+export function parseParcelBoundaryGeoJSON(raw: unknown): Record<string, any> | null {
+  if (!raw) return null;
+  try {
+    const obj = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    if (!obj || typeof obj !== 'object') return null;
+    const geom = (obj as any).type === 'Feature' ? (obj as any).geometry : obj;
+    if (!geom || (geom.type !== 'Polygon' && geom.type !== 'MultiPolygon')) return null;
+    if (!Array.isArray(geom.coordinates) || geom.coordinates.length === 0) return null;
+    return geom;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Summarize the parcel-boundary verification state of a row for UI + reports.
+ * "verified" requires real geometry, an explicit Verified=Yes flag, and confidence >= 70.
+ */
+export function getBoundaryStatus(prop: LandProperty): BoundaryStatus {
+  const geom = parseParcelBoundaryGeoJSON(prop.Parcel_Boundary_GeoJSON);
+  const confidence = parseScore(prop.Parcel_Boundary_Confidence_0_to_100 || '0');
+  const verifiedFlag = String(prop.Parcel_Boundary_Verified || '').toLowerCase() === 'yes';
+  const verified = Boolean(geom) && verifiedFlag && confidence >= 70;
+  const state: BoundaryStatus['state'] = verified ? 'verified' : geom || verifiedFlag ? 'review' : 'missing';
+  return {
+    state,
+    verified,
+    hasGeometry: Boolean(geom),
+    confidence,
+    source: prop.Parcel_Boundary_Source_Type || '',
+    sourceUrl: prop.Parcel_Boundary_Source_URL || prop.GIS_Parcel_URL || prop.GIS_URL || '',
+    method: prop.Parcel_Boundary_Method || '',
+    lastChecked: prop.Parcel_Boundary_Last_Checked_Date || '',
+    error: prop.Parcel_Boundary_Error || '',
+  };
+}
+
+/** Boundary-readiness gate for "verified boundaries only" views / reports. */
+export function isBoundaryReady(prop: LandProperty, threshold = 70): boolean {
+  const status = getBoundaryStatus(prop);
+  return status.verified && status.confidence >= threshold;
+}
+
 export function isValidUrl(url: string): boolean {
   if (!url || url.trim() === '') return false;
   if (url.toLowerCase().includes('needs verification')) return false;
