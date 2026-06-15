@@ -46,6 +46,13 @@ permits SaaS display. Everything else is enterprise-tier and premature pre-reven
 3. **Export boundary:** End-user export is prohibited. We currently let paid users export lead CSVs. Confirm we may export our *own* fields while excluding Regrid-sourced geometry/attributes — and whether parcel boundary GeoJSON specifically may never be exported.
 4. **Tile caching:** Confirm whether map tiles may be cached for performance (ToS says not without written approval).
 
+**Integration security (already enforced in the stub):** the Regrid API token is a
+private paid credential and is **server-only** — `REGRID_API_TOKEN` (no `VITE_`
+prefix), read via `process.env` in `src/lib/providers/regridConnector.ts` and only
+ever called from a Vercel API function or Node script. Browser code must call a
+same-origin serverless endpoint, never hold the token. Any public *tile* token
+Regrid may offer is a separate, explicitly-browser-safe credential.
+
 **ATTOM (when revisited):**
 1. Can assessment/sale/valuation data be displayed to and cached for authenticated SaaS subscribers?
 2. Lowest annual commitment + per-endpoint call pricing for a small-business tier?
