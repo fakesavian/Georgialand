@@ -1,7 +1,7 @@
 import React from 'react';
 import { ExternalLink, Heart, MapPin, Lock } from 'lucide-react';
 import { LandProperty } from '../../types';
-import { getFitScoreClass, getRiskScoreClass, parseScore, displayValue, isValidUrl, getProList, getConsList, getSatelliteImageUrl } from '../../utils';
+import { getFitScoreClass, getRiskScoreClass, parseScore, displayValue, isValidUrl, getProList, getConsList, getSatelliteImageUrl, getBoundaryStatus } from '../../utils';
 
 interface PropertyCardProps {
   property: LandProperty;
@@ -40,6 +40,8 @@ export default function PropertyCard({ property, onClick, isFavorite, onToggleFa
   const pros = getProList(property.Pros);
   const cons = getConsList(property.Cons);
   const imageUrl = getSatelliteImageUrl(property.Latitude, property.Longitude, 17);
+  const boundaryVerified = getBoundaryStatus(property).verified;
+  const isGold = property.Gold_Dataset_Status === 'eligible';
 
   return (
     <div
@@ -108,6 +110,12 @@ export default function PropertyCard({ property, onClick, isFavorite, onToggleFa
         <span className={`badge ${getRiskScoreClass(risk)} font-mono text-xs`}>Risk: {risk || '–'}</span>
         {property.Price_Category && (
           <span className="badge bg-olive-800 border-olive-700 text-olive-200 text-xs">{property.Price_Category}</span>
+        )}
+        {isGold && (
+          <span className="badge bg-amber-900/40 text-amber-300 border border-amber-700 text-xs">★ Gold</span>
+        )}
+        {boundaryVerified && (
+          <span className="badge bg-brand-900/50 text-brand-300 border border-brand-700 text-xs">Boundary ✓</span>
         )}
       </div>
 

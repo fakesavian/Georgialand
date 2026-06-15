@@ -146,6 +146,17 @@ export interface LandProperty {
   Assessor_Parcel_URL?: string;                    // deep link to assessor parcel page (manual verification)
   GIS_Parcel_URL?: string;                         // deep link to county GIS parcel viewer (manual verification)
 
+  // Gold-dataset curation (added by the gold-dataset/provider-strategy pass).
+  Row_Type?: string;                               // "parcel_lead" | "program_lead" | "research_placeholder"
+  Gold_Dataset_Status?: string;                    // "eligible" | "near_ready" | "not_ready" | "quarantined"
+  Gold_Dataset_Readiness_0_to_100?: string;
+  Boundary_Readiness_0_to_100?: string;
+  Price_Normalized?: string;                       // numeric value parsed from the raw price, or empty
+  Price_Label?: string;                            // compact pin label ($2.5K / Ask / TBD / ?)
+  Price_Parse_Status?: string;                     // "numeric" | "range" | "descriptive" | "blank"
+  Acquisition_Type_Suggested?: string;             // inferred acquisition type when original is blank
+  Acquisition_Type_Suggestion_Status?: string;     // "auto_confident" | "suggested_needs_review" | "unknown_needs_research"
+
   [key: string]: any;
 }
 

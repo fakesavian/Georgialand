@@ -1,0 +1,81 @@
+{
+  "summary": {
+    "dataset": "public\\local_dashboard_dataset.csv",
+    "generatedAt": "2026-06-15T14:19:08.756Z",
+    "totalRows": 358,
+    "fieldCount": 133,
+    "goldEligible": 0,
+    "nearReady": 45,
+    "notReady": 304,
+    "quarantined": 9,
+    "rowType": {
+      "parcel_lead": 319,
+      "program_lead": 39,
+      "research_placeholder": 0
+    },
+    "missing": {
+      "acquisition_type": 300,
+      "parcel_id": 33,
+      "valid_price": 32,
+      "boundary_geojson": 358,
+      "gis_or_assessor_link": 314,
+      "title_redemption_risk": 300,
+      "last_checked_date": 300,
+      "human_reviewed": 306
+    },
+    "blockerCounts": {
+      "parcel_id": 33,
+      "boundary_geojson": 358,
+      "lat_lon": 23,
+      "source_url": 309,
+      "gis_or_assessor_link": 305,
+      "human_reviewed": 306,
+      "acquisition_type": 300,
+      "title_redemption_risk": 300,
+      "last_checked_date": 300,
+      "price": 4
+    }
+  },
+  "topBlockers": [
+    [
+      "boundary_geojson",
+      358
+    ],
+    [
+      "source_url",
+      309
+    ],
+    [
+      "human_reviewed",
+      306
+    ],
+    [
+      "gis_or_assessor_link",
+      305
+    ],
+    [
+      "acquisition_type",
+      300
+    ],
+    [
+      "title_redemption_risk",
+      300
+    ],
+    [
+      "last_checked_date",
+      300
+    ],
+    [
+      "parcel_id",
+      33
+    ],
+    [
+      "lat_lon",
+      23
+    ],
+    [
+      "price",
+      4
+    ]
+  ]
+}
