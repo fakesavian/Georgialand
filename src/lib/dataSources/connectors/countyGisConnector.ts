@@ -187,6 +187,14 @@ const COUNTY_FIELD_MAPS: Record<
     appraised: 'APPRAISED',
     taxYear: 'TAXYR',
   },
+  floyd: {
+    parcelId: 'PARCEL',
+    owner: 'NAME',
+    address: 'PROP_ADDR',
+    acreage: 'TOTALACRES',
+    appraised: 'VALUE2022',
+    landUse: 'DESCRIP',
+  },
   cherokee: {
     parcelId: 'PARID',
     owner: 'OWNER',

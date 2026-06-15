@@ -392,15 +392,51 @@ export async function queryByParcelId(
 ): Promise<ArcGisConnectorResult> {
   // Escape single quotes in parcel ID to prevent SQL injection in WHERE clause
   const escapedId = parcelId.replace(/'/g, "''");
+  const normalizedId = normalizeParcelId(parcelId);
+  const normalizedEscapedId = normalizedId.replace(/'/g, "''");
+
   const exactResult = await queryByWhereClause(config, `${parcelIdField} = '${escapedId}'`, sourceId);
   if (exactResult.features.length || exactResult.errors.length) return exactResult;
 
+  if (normalizedEscapedId && normalizedEscapedId !== escapedId) {
+    const normalizedExactResult = await queryByWhereClause(
+      config,
+      `${parcelIdField} = '${normalizedEscapedId}'`,
+      sourceId
+    );
+    if (normalizedExactResult.features.length || normalizedExactResult.errors.length) {
+      return {
+        ...normalizedExactResult,
+        errors: [
+          ...exactResult.errors,
+          ...normalizedExactResult.errors,
+        ],
+      };
+    }
+  }
+
   const likeResult = await queryByWhereClause(config, `${parcelIdField} LIKE '%${escapedId}%'`, sourceId);
+  if (likeResult.features.length || likeResult.errors.length || !normalizedEscapedId || normalizedEscapedId === escapedId) {
+    return {
+      ...likeResult,
+      errors: [
+        ...exactResult.errors,
+        ...likeResult.errors,
+      ],
+    };
+  }
+
+  const normalizedLikeResult = await queryByWhereClause(
+    config,
+    `${parcelIdField} LIKE '%${normalizedEscapedId}%'`,
+    sourceId
+  );
   return {
-    ...likeResult,
+    ...normalizedLikeResult,
     errors: [
       ...exactResult.errors,
       ...likeResult.errors,
+      ...normalizedLikeResult.errors,
     ],
   };
 }

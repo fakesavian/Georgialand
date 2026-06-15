@@ -47,6 +47,7 @@ interface ArcGisQueryResponse {
 const WARE_COUNTY_FEATURE_SERVER = 'https://services9.arcgis.com/XAyIBOsw3fLfDjTY/arcgis/rest/services/WareCounty_Base_gdb/FeatureServer';
 const FULTON_TAX_PARCELS_FEATURE_LAYER = 'https://services1.arcgis.com/AQDHTHDrZzfsFsB5/arcgis/rest/services/Tax_Parcels/FeatureServer/0';
 const DEKALB_TAX_PARCELS_2025_FEATURE_LAYER = 'https://services2.arcgis.com/IxVN2oUE9EYLSnPE/arcgis/rest/services/Tax_Parcels_2025/FeatureServer/0';
+const FLOYD_CURRENT_PARCELS_FEATURE_LAYER = 'https://services2.arcgis.com/nV67H1IJR8GS6SAA/ArcGIS/rest/services/Current_Parcels/FeatureServer/5';
 const QUERY_PAD_DEGREES = 0.01;
 
 const WARE_LAYERS = {
@@ -109,6 +110,10 @@ function isDekalbCounty(property: LandProperty) {
   return String(property.County || '').trim().toLowerCase() === 'dekalb';
 }
 
+function isFloydCounty(property: LandProperty) {
+  return String(property.County || '').trim().toLowerCase() === 'floyd';
+}
+
 function getQueryableFultonParcelIds(properties: LandProperty[]) {
   const seen = new Set<string>();
   return properties
@@ -128,6 +133,19 @@ function getQueryableDekalbParcelIds(properties: LandProperty[]) {
     .filter(isDekalbCounty)
     .map((property) => ({ property, parcelId: String(property.Parcel_ID || '').trim(), normalizedParcelId: normalizeParcelId(property.Parcel_ID) }))
     .filter(({ parcelId, normalizedParcelId }) => parcelId.length >= 8 && normalizedParcelId.length >= 8 && !/NEEDS|PUBLISHED|UNKNOWN|PROGRAM|VERIFY/.test(normalizedParcelId))
+    .filter(({ normalizedParcelId }) => {
+      if (seen.has(normalizedParcelId)) return false;
+      seen.add(normalizedParcelId);
+      return true;
+    });
+}
+
+function getQueryableFloydParcelIds(properties: LandProperty[]) {
+  const seen = new Set<string>();
+  return properties
+    .filter(isFloydCounty)
+    .map((property) => ({ property, parcelId: String(property.Parcel_ID || '').trim(), normalizedParcelId: normalizeParcelId(property.Parcel_ID) }))
+    .filter(({ normalizedParcelId }) => normalizedParcelId.length >= 6 && !/NEEDS|PUBLISHED|UNKNOWN|PROGRAM|VERIFY/.test(normalizedParcelId))
     .filter(({ normalizedParcelId }) => {
       if (seen.has(normalizedParcelId)) return false;
       seen.add(normalizedParcelId);
@@ -372,7 +390,22 @@ export function buildGisSourceStatuses(properties: LandProperty[], verifiedFeatu
     });
   }
 
-  const pendingCounties = Array.from(counties).filter((county) => !['Ware', 'Fulton', 'DeKalb'].includes(county));
+  const floydCandidateCount = getQueryableFloydParcelIds(properties).length;
+  if (Array.from(counties).some((county) => county.toLowerCase() === 'floyd')) {
+    statuses.push({
+      id: 'floyd-parcels',
+      label: 'Floyd property lines',
+      status: error ? 'error' : floydCandidateCount > 0 ? 'verified_query' : 'source_pending',
+      message: floydCandidateCount > 0
+        ? `${floydCandidateCount} Floyd parcel ID(s) can be queried against the official Rome/Floyd Current Parcels FeatureServer. Matching property lines render as red parcel outlines.`
+        : 'Floyd source configured, but current Floyd rows need parcel-specific IDs before exact property lines can be drawn.',
+      sourceName: 'Floyd County GIS Current Parcels',
+      sourceUrl: FLOYD_CURRENT_PARCELS_FEATURE_LAYER,
+      featureCount: verifiedFeatureCount,
+    });
+  }
+
+  const pendingCounties = Array.from(counties).filter((county) => !['Ware', 'Fulton', 'DeKalb', 'Floyd'].includes(county));
   if (pendingCounties.length) {
     statuses.push({
       id: 'pending-counties',
