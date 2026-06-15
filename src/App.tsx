@@ -27,7 +27,6 @@ import AuthCallbackPage from './pages/AuthCallbackPage';
 
 import { AuthProvider } from './lib/AuthContext';
 import { ThemeProvider } from './lib/ThemeContext';
-import ThemeToggle from './components/ThemeToggle';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { initAnalytics, trackEvent } from './lib/analytics';
 import posthog from 'posthog-js';
@@ -64,7 +63,6 @@ export default function App() {
         <AuthProvider>
         <Router>
           <AnalyticsTracker />
-          <ThemeToggle />
           <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />

@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Layers, CheckCircle2, Star, Zap, Crown, ArrowRight, Loader2 } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
 import SEO from '../components/SEO';
+import MarketingNav from '../components/marketing/MarketingNav';
 import { useAuth } from '../lib/AuthContext';
 import { startCheckout } from '../lib/stripeClient';
 import { PAID_PLANS, PaidPlanId, BillingCycle } from '../lib/stripePlans';
@@ -108,23 +109,7 @@ export default function PricingPage() {
       />
       
       {/* Nav */}
-      <nav className="marketing-nav border-b border-surface-border bg-olive-900/50 backdrop-blur-md sticky top-0 z-50">
-        <div className="marketing-nav__inner max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="marketing-nav__brand flex items-center gap-2">
-            <Layers className="text-brand-500" size={24} />
-            <span className="font-display font-bold text-lg text-white tracking-tight">Georgia Land Finder</span>
-          </Link>
-          <div className="marketing-nav__links flex items-center gap-6 text-sm font-semibold">
-            <Link to="/pricing" className="text-white">Pricing</Link>
-            <Link to="/docs" className="text-olive-300 hover:text-white transition-colors">Docs</Link>
-            <Link to="/faq" className="text-olive-300 hover:text-white transition-colors">FAQ</Link>
-            <Link to="/free-tier" className="text-olive-300 hover:text-white transition-colors">Free Tier</Link>
-            <Link to="/free-tier" className="btn-primary">
-              Start Free
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <MarketingNav />
 
       {/* Hero */}
       <section className="pt-20 pb-4 text-center px-6">

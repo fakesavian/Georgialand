@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Layers, Loader2, Mail, Map, ShieldCheck, Sparkles } from 'lucide-react';
 import { trackEvent } from '../lib/analytics';
 import SEO from '../components/SEO';
+import MarketingNav from '../components/marketing/MarketingNav';
 import { useTheme } from '../lib/ThemeContext';
 
 type FunnelTheme = 'day' | 'night';
@@ -138,20 +139,7 @@ export default function FreeSamplePage() {
         canonicalUrl="https://georgialandfinder.com/free-tier"
       />
 
-      <nav className={`sticky top-0 z-50 border-b backdrop-blur-md transition-colors duration-300 ${t.nav}`}>
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <Layers className={t.logo} size={24} />
-            <span className={`font-display font-bold text-lg tracking-tight ${t.logoText}`}>Georgia Land Finder</span>
-          </Link>
-          <div className="flex items-center gap-4 pr-36 text-sm font-semibold">
-            <Link to="/pricing" className={`transition-colors ${t.navLink}`}>Pricing</Link>
-            <Link to="/docs" className={`transition-colors ${t.navLink}`}>Docs</Link>
-            <Link to="/faq" className={`transition-colors ${t.navLink}`}>FAQ</Link>
-            <Link to="/free-tier" className={`rounded-xl px-5 py-2.5 shadow-sm transition-colors ${t.button}`}>Start Free</Link>
-          </div>
-        </div>
-      </nav>
+      <MarketingNav />
 
       <section className="relative overflow-hidden py-16 md:py-24">
         <div className={`absolute inset-x-0 top-0 h-72 bg-gradient-to-b ${t.heroGradient}`} />

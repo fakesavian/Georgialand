@@ -3,6 +3,7 @@ import { ExternalLink, MapPin, AlertCircle, Lock, AlertTriangle } from 'lucide-r
 import { LandProperty } from '../../types';
 import { trackEvent } from '../../lib/analytics';
 import { isValidUrl, displayValue, getFitScoreClass, getRiskScoreClass, parseScore, getProList, getConsList, getPropertyWarnings, getSatelliteImageUrl, getStreetContextImageUrl, getGoogleStreetViewEmbedUrl, getGoogleMapsEmbedUrl } from '../../utils';
+import MediaLightbox, { PropertyMediaItem } from './MediaLightbox';
 
 interface PropertyDrawerProps {
   property: LandProperty | null;
@@ -12,16 +13,6 @@ interface PropertyDrawerProps {
   note: string;
   onNoteChange: (parcelId: string, note: string) => void;
 }
-
-type PropertyMediaItem = {
-  id: 'sky' | 'close' | 'street';
-  label: string;
-  title: string;
-  thumbnailKind: 'image' | 'frame';
-  thumbnailSrc: string | null;
-  fullKind: 'image' | 'frame';
-  fullSrc: string | null;
-};
 
 function UrlButton({ url, label, icon, onClick }: { url: string; label: string; icon?: React.ReactNode; onClick?: () => void }) {
   const valid = isValidUrl(url);
@@ -66,28 +57,15 @@ function MediaFallback({ label }: { label: string }) {
   );
 }
 
-function MapMediaFrame({ src, title }: { src: string | null; title: string }) {
-  if (!src) return <MediaFallback label="Location unavailable" />;
-  return (
-    <iframe
-      src={src}
-      title={title}
-      className="h-full w-full border-0"
-      loading="lazy"
-      referrerPolicy="no-referrer-when-downgrade"
-    />
-  );
-}
-
-function PropertyMediaTile({ item, onSelect }: { item: PropertyMediaItem; onSelect: (item: PropertyMediaItem) => void }) {
+function PropertyMediaTile({ item, onSelect }: { item: PropertyMediaItem; onSelect: () => void }) {
   return (
     <button
       type="button"
-      onClick={() => onSelect(item)}
+      onClick={onSelect}
       className="group overflow-hidden rounded-xl border border-olive-800 bg-olive-900 text-left shadow-inner transition hover:border-brand-500 hover:shadow-[0_0_18px_rgba(34,197,94,0.22)]"
       aria-label={`Enlarge ${item.label}`}
     >
-      <div className="relative h-32">
+      <div className="relative h-24 sm:h-32">
         {item.thumbnailSrc ? (
           item.thumbnailKind === 'image' ? (
             <img src={item.thumbnailSrc} alt={item.title} className="h-full w-full object-cover transition duration-200 group-hover:scale-105" loading="lazy" />
@@ -150,17 +128,17 @@ function buildPropertyMediaItems(property: LandProperty): PropertyMediaItem[] {
   ];
 }
 
-function PropertyMediaGallery({ property, onSelect }: { property: LandProperty; onSelect: (item: PropertyMediaItem) => void }) {
+function PropertyMediaGallery({ property, onOpen }: { property: LandProperty; onOpen: (index: number) => void }) {
   const mediaItems = buildPropertyMediaItems(property);
 
   return (
     <div className="border-b border-surface-border bg-olive-950/70 px-4 py-3">
       <div className="mb-2 flex items-center justify-between gap-3">
         <p className="text-xs font-bold uppercase tracking-wider text-olive-400">Property Images</p>
-        <p className="text-[10px] text-olive-600">Click to enlarge • Street works enlarged</p>
+        <p className="text-[10px] text-olive-600">Tap to enlarge</p>
       </div>
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-        {mediaItems.map((item) => <PropertyMediaTile key={item.id} item={item} onSelect={onSelect} />)}
+      <div className="grid grid-cols-3 gap-2">
+        {mediaItems.map((item, index) => <PropertyMediaTile key={item.id} item={item} onSelect={() => onOpen(index)} />)}
       </div>
     </div>
   );
@@ -214,14 +192,10 @@ function SourceVerificationPanel({ property }: { property: LandProperty }) {
 export default function PropertyDrawer({
   property, onClose, isFavorite, onToggleFavorite, note, onNoteChange,
 }: PropertyDrawerProps) {
-  const [selectedMedia, setSelectedMedia] = React.useState<PropertyMediaItem | null>(null);
+  const [lightboxIndex, setLightboxIndex] = React.useState<number | null>(null);
 
   React.useEffect(() => {
-    if (!property) {
-      setSelectedMedia(null);
-      return;
-    }
-    setSelectedMedia(buildPropertyMediaItems(property).find((item) => item.id === 'close') || null);
+    setLightboxIndex(null);
   }, [property?.Listing_ID, property?.Parcel_ID, property?.Property_Name_or_Address]);
 
   if (!property) return null;
@@ -230,6 +204,7 @@ export default function PropertyDrawer({
   const risk = parseScore(property.Risk_Score_0_to_100);
   const pros = getProList(property.Pros);
   const cons = getConsList(property.Cons);
+  const mediaItems = buildPropertyMediaItems(property);
 
   return (
     <>
@@ -239,40 +214,9 @@ export default function PropertyDrawer({
         onClick={onClose}
       />
 
-      {selectedMedia && (
-        <section data-property-media-viewer="true" className="fixed left-0 top-0 z-[1010] hidden h-full items-center justify-center p-8 lg:flex lg:right-[32rem] xl:right-[32rem]" onClick={(event) => event.stopPropagation()}>
-          <div className="flex h-[72vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-surface-border bg-olive-950/95 shadow-2xl backdrop-blur">
-            <div className="flex items-center justify-between border-b border-surface-border px-4 py-3">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-brand-300">{selectedMedia.label}</p>
-                <p className="text-sm text-olive-200">{selectedMedia.title}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSelectedMedia(null)}
-                className="rounded-lg border border-olive-700 bg-olive-900 px-3 py-1.5 text-xs font-bold text-olive-300 hover:text-white"
-              >
-                Close
-              </button>
-            </div>
-            <div className="min-h-0 flex-1 bg-black">
-              {selectedMedia.fullSrc ? (
-                selectedMedia.fullKind === 'image' ? (
-                  <img src={selectedMedia.fullSrc} alt={selectedMedia.title} className="h-full w-full object-contain" />
-                ) : (
-                  <MapMediaFrame src={selectedMedia.fullSrc} title={selectedMedia.title} />
-                )
-              ) : (
-                <MediaFallback label="Location unavailable" />
-              )}
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* Drawer */}
-      <aside className="property-drawer-shell fixed right-0 top-0 h-full w-full max-w-lg bg-olive-950 border-l border-surface-border z-[1000] flex flex-col animate-slide-in-right overflow-hidden">
-        {/* Drawer header */}
+      <aside className="property-drawer-shell fixed right-0 top-0 h-full w-full max-w-lg bg-olive-950 border-l border-surface-border z-[1000] flex flex-col animate-slide-in-right">
+        {/* Drawer header — stays visible; close/favorite always reachable */}
         <div className="property-drawer-header flex items-start justify-between p-4 border-b border-surface-border gap-3">
           <div className="min-w-0">
             <h2 className="text-sm font-medium text-white leading-snug">
@@ -304,6 +248,8 @@ export default function PropertyDrawer({
           </div>
         </div>
 
+        {/* Single scroll region — header above stays fixed so close/favorite are always reachable */}
+        <div className="property-drawer-scroll flex-1 overflow-y-auto">
         {/* Score pills */}
         <div className="property-drawer-badges flex gap-3 px-4 py-3 border-b border-surface-border">
           <div className={`badge ${getFitScoreClass(fit)} text-sm font-medium px-3 py-1`}>
@@ -332,10 +278,10 @@ export default function PropertyDrawer({
           <UrlButton url={property.GIS_URL} label="GIS" />
         </div>
 
-        <PropertyMediaGallery property={property} onSelect={setSelectedMedia} />
+        <PropertyMediaGallery property={property} onOpen={setLightboxIndex} />
 
-        {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-5">
+        {/* Detail content */}
+        <div className="p-4 space-y-5">
           <SourceVerificationPanel property={property} />
 
           {/* Data Quality Warnings */}
@@ -392,15 +338,18 @@ export default function PropertyDrawer({
             </div>
           )}
 
-          {/* All fields */}
-          <div>
-            <p className="text-xs font-medium text-olive-400 mb-2 uppercase tracking-wider">All Fields</p>
-            <div className="space-y-0">
+          {/* All fields — collapsed by default so the key detail above is reachable */}
+          <details className="property-more-details">
+            <summary className="property-more-details__summary flex cursor-pointer items-center justify-between gap-2 rounded-lg border border-surface-border bg-olive-900/50 px-3 py-2 text-xs font-medium uppercase tracking-wider text-olive-300 hover:text-white">
+              <span>More details — all source fields</span>
+              <span className="text-olive-500">{Object.keys(property).length} fields</span>
+            </summary>
+            <div className="mt-3 space-y-0">
               {Object.entries(property).map(([key, val]) => (
                 <FieldRow key={key} label={key.replace(/_/g, ' ')} value={val} />
               ))}
             </div>
-          </div>
+          </details>
 
           {/* Personal notes */}
           <div>
@@ -415,7 +364,17 @@ export default function PropertyDrawer({
             <p className="text-xs text-olive-600 mt-1">Notes are saved automatically in your browser.</p>
           </div>
         </div>
+        </div>
       </aside>
+
+      {lightboxIndex !== null && (
+        <MediaLightbox
+          items={mediaItems}
+          index={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+          onIndexChange={setLightboxIndex}
+        />
+      )}
     </>
   );
 }

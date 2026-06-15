@@ -18,6 +18,7 @@ import {
   fetchCountyBoundaryGeoJson,
   BoundaryFeatureCollection,
 } from '../../lib/censusBoundaryConnector';
+import { useIsMobile } from '../../hooks/useResponsiveViewport';
 
 const MAP_PREVIEW_MODE_KEY = 'glf_map_hover_preview_mode';
 const GEORGIA_STATE_BOUNDS: L.LatLngBoundsExpression = [
@@ -316,18 +317,27 @@ function MobileSelectedPropertySheet({
   const location = [property.City, property.County, 'GA'].filter(Boolean).join(', ');
   const isFull = sheetState === 'full';
 
+  const isCollapsed = sheetState === 'collapsed';
+
   return (
     <aside className={`mobile-selected-property-sheet mobile-selected-property-sheet--${sheetState}`} aria-label="Selected property summary">
-      <div className="mx-auto mb-2 h-1.5 w-12 rounded-full bg-olive-700" />
+      <button
+        type="button"
+        onClick={() => onSheetStateChange(isCollapsed ? 'half' : 'collapsed')}
+        className="block w-full pb-1"
+        aria-label={isCollapsed ? 'Expand selected property' : 'Collapse selected property'}
+      >
+        <span className="mx-auto mb-2 block h-1.5 w-12 rounded-full bg-olive-700" />
+      </button>
       <div className="flex items-start justify-between gap-3">
         <button
           type="button"
-          onClick={() => onSheetStateChange(sheetState === 'collapsed' ? 'half' : 'collapsed')}
+          onClick={() => onSheetStateChange(isCollapsed ? 'half' : 'collapsed')}
           className="min-w-0 flex-1 text-left"
           aria-label="Toggle selected property sheet"
         >
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-brand-300">Selected land lead</p>
-          <h3 className="mt-1 line-clamp-2 text-base font-black leading-tight text-white">{displayValue(property.Property_Name_or_Address)}</h3>
+          <h3 className={`mt-1 ${isCollapsed ? 'line-clamp-1' : 'line-clamp-2'} text-base font-black leading-tight text-white`}>{displayValue(property.Property_Name_or_Address)}</h3>
           <p className="mt-1 flex items-center gap-1 text-xs font-semibold text-olive-300"><MapPin size={12} /> {location}</p>
         </button>
         <div className="flex shrink-0 items-center gap-2">
@@ -340,27 +350,45 @@ function MobileSelectedPropertySheet({
         </div>
       </div>
 
+      {/* Key facts — always visible, even when collapsed. Values are clamped so a
+          long descriptive price/source cannot blow up the compact sheet height. */}
       <div className="mt-3 grid grid-cols-3 gap-2 text-xs font-bold">
-        <div className="rounded-2xl bg-white/10 px-3 py-2"><span className="block text-[9px] uppercase tracking-widest text-olive-500">Price</span>{price !== null ? formatMoneyShort(price) : (property.Estimated_Price_or_Min_Bid || 'N/A')}</div>
-        <div className="rounded-2xl bg-white/10 px-3 py-2"><span className="block text-[9px] uppercase tracking-widest text-olive-500">Acres</span>{property.Lot_Size_Acres || 'N/A'}</div>
-        <div className="rounded-2xl bg-white/10 px-3 py-2"><span className="block text-[9px] uppercase tracking-widest text-olive-500">Source</span>{property.Acquisition_Type || property.Data_Source_Type || 'Lead'}</div>
+        <div className="rounded-2xl bg-white/10 px-3 py-2"><span className="block text-[9px] uppercase tracking-widest text-olive-500">Price</span><span className="mt-0.5 line-clamp-2 leading-tight">{price !== null ? formatMoneyShort(price) : (property.Estimated_Price_or_Min_Bid || 'N/A')}</span></div>
+        <div className="rounded-2xl bg-white/10 px-3 py-2"><span className="block text-[9px] uppercase tracking-widest text-olive-500">Acres</span><span className="mt-0.5 line-clamp-2 leading-tight">{property.Lot_Size_Acres || 'N/A'}</span></div>
+        <div className="rounded-2xl bg-white/10 px-3 py-2"><span className="block text-[9px] uppercase tracking-widest text-olive-500">Source</span><span className="mt-0.5 line-clamp-2 leading-tight">{property.Acquisition_Type || property.Data_Source_Type || 'Lead'}</span></div>
       </div>
 
-      {sheetState !== 'collapsed' && (
-        <div className="mt-3 space-y-3">
+      {/* Fit / risk — always visible */}
+      <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-bold">
+        <span className={`badge ${hasScore(property.Fit_Score_0_to_100) ? getFitScoreClass(fit) : 'bg-slate-800 text-slate-300 border border-slate-600'}`}>Fit: {hasScore(property.Fit_Score_0_to_100) ? fit : 'Needs scoring'}</span>
+        <span className={`badge ${getRiskScoreClass(risk)}`}>Risk: {risk || '–'}</span>
+        {property.Price_Category && <span className="badge bg-olive-800 border-olive-700 text-olive-200">{property.Price_Category}</span>}
+      </div>
+
+      {/* Primary actions — always visible */}
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <button type="button" onClick={onOpenDetails} className="rounded-2xl bg-emerald-400 px-4 py-3 text-xs font-black uppercase tracking-wider text-slate-950 shadow-[0_0_20px_rgba(52,211,153,0.35)]">Full details</button>
+        <button
+          type="button"
+          onClick={() => onSheetStateChange(isCollapsed ? 'half' : isFull ? 'half' : 'full')}
+          className="rounded-2xl border border-olive-700 bg-olive-900 px-4 py-3 text-xs font-black uppercase tracking-wider text-olive-100"
+        >
+          {isCollapsed ? 'More' : isFull ? 'Less' : 'More'}
+        </button>
+      </div>
+
+      {!isCollapsed && (
+        <div className="mt-3 space-y-3 border-t border-olive-800 pt-3">
           <div className="flex flex-wrap gap-2 text-[11px] font-bold">
-            <span className={`badge ${hasScore(property.Fit_Score_0_to_100) ? getFitScoreClass(fit) : 'bg-slate-800 text-slate-300 border border-slate-600'}`}>Fit: {hasScore(property.Fit_Score_0_to_100) ? fit : 'Needs scoring'}</span>
-            <span className={`badge ${getRiskScoreClass(risk)}`}>Risk: {risk || '–'}</span>
-            {property.Price_Category && <span className="badge bg-olive-800 border-olive-700 text-olive-200">{property.Price_Category}</span>}
-            {property.Data_Confidence_0_to_100 && <span className="badge bg-blue-950/60 text-blue-200 border border-blue-800">Data: {property.Data_Confidence_0_to_100}</span>}
+            {property.Data_Confidence_0_to_100 && <span className="badge bg-blue-950/60 text-blue-200 border border-blue-800">Data confidence: {property.Data_Confidence_0_to_100}</span>}
+            {(property.Data_Source_Type || property.Acquisition_Type) && <span className="badge bg-olive-800 border-olive-700 text-olive-200">{property.Data_Source_Type || property.Acquisition_Type}</span>}
           </div>
           {property.Recommended_Next_Action && (
-            <p className="line-clamp-3 rounded-2xl border border-brand-500/20 bg-brand-500/10 px-3 py-2 text-xs font-semibold text-brand-100">→ {property.Recommended_Next_Action}</p>
+            <div className="rounded-2xl border border-brand-500/20 bg-brand-500/10 px-3 py-2 text-xs font-semibold text-brand-100">
+              <span className="block text-[9px] uppercase tracking-widest text-brand-300/80">Next action</span>
+              <span className="mt-0.5 block line-clamp-3">{property.Recommended_Next_Action}</span>
+            </div>
           )}
-          <div className="grid grid-cols-2 gap-2">
-            <button type="button" onClick={onOpenDetails} className="rounded-2xl bg-emerald-400 px-4 py-3 text-xs font-black uppercase tracking-wider text-slate-950 shadow-[0_0_20px_rgba(52,211,153,0.35)]">Full details</button>
-            <button type="button" onClick={() => onSheetStateChange(isFull ? 'half' : 'full')} className="rounded-2xl border border-olive-700 bg-olive-900 px-4 py-3 text-xs font-black uppercase tracking-wider text-olive-100">{isFull ? 'Less' : 'More'}</button>
-          </div>
         </div>
       )}
 
@@ -396,6 +424,7 @@ function MobileLayerSheet({ children, onClose }: { children: React.ReactNode; on
 }
 
 export default function MapView({ properties, onPropertyClick, favoriteIds, onToggleFavorite, accessLevel }: MapViewProps) {
+  const isMobile = useIsMobile();
   const [hoveredId, setHoveredId] = React.useState<string | null>(null);
   const [previewProperty, setPreviewProperty] = React.useState<LandProperty | null>(null);
   const [selectedBoundaryProperty, setSelectedBoundaryProperty] = React.useState<LandProperty | null>(null);
@@ -649,15 +678,24 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
                 click: (event) => {
                   setSelectedBoundaryProperty(prop);
                   setPreviewProperty(prop);
-                  setMobileSheetState('half');
+                  // Mobile opens as a compact bottom sheet; desktop keeps its richer popup/panel.
+                  setMobileSheetState(isMobile ? 'collapsed' : 'half');
                   setHoveredId(pId);
                   const map = event.target._map as L.Map | undefined;
                   if (!map) return;
                   const currentZoom = map.getZoom();
-                  if (currentZoom < PIN_CLICK_AUTO_ZOOM_BELOW) {
-                    map.flyTo([+prop.Latitude, +prop.Longitude], PIN_CLICK_TARGET_ZOOM, { animate: true, duration: 0.55 });
+                  const targetZoom = currentZoom < PIN_CLICK_AUTO_ZOOM_BELOW ? PIN_CLICK_TARGET_ZOOM : currentZoom;
+                  const latlng = L.latLng(+prop.Latitude, +prop.Longitude);
+                  if (isMobile) {
+                    // Shift the centre below the pin so the selected pin stays visible
+                    // above the bottom sheet instead of being hidden behind it.
+                    const liftPx = Math.round(window.innerHeight * 0.2);
+                    const offsetCenter = map.unproject(map.project(latlng, targetZoom).add([0, liftPx]), targetZoom);
+                    map.flyTo(offsetCenter, targetZoom, { animate: true, duration: 0.55 });
+                  } else if (currentZoom < PIN_CLICK_AUTO_ZOOM_BELOW) {
+                    map.flyTo(latlng, PIN_CLICK_TARGET_ZOOM, { animate: true, duration: 0.55 });
                   } else {
-                    map.panTo([+prop.Latitude, +prop.Longitude], { animate: true, duration: 0.35 });
+                    map.panTo(latlng, { animate: true, duration: 0.35 });
                   }
                 },
                 mouseover: () => { setHoveredId(pId); },
@@ -673,6 +711,7 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
                 },
                 mouseout: () => { setHoveredId((current) => (current === pId ? null : current)); }
               }}>
+                {!isMobile && (
                 <Popup className="glf-property-popup" maxWidth={360} minWidth={300}>
                   <div className="w-[300px] overflow-hidden rounded-2xl bg-olive-950 text-white shadow-2xl">
                     <div className="relative h-36 bg-olive-900">
@@ -733,6 +772,7 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
                     </div>
                   </div>
                 </Popup>
+                )}
               </Marker>
             );
           })}

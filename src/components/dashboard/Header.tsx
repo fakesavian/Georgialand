@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MapPin, Download, Heart, User, LogOut, Loader2 } from 'lucide-react';
 import { useAuth } from '../../lib/AuthContext';
+import ThemeToggle from '../ThemeToggle';
 
 interface HeaderProps {
   totalCount: number;
@@ -63,6 +64,9 @@ export default function Header({
           </Link>
 
           <div className="flex items-center gap-2 flex-shrink-0">
+            {/* Day/night toggle — lives in the header on desktop and mobile */}
+            <ThemeToggle />
+
             {/* Stats pill */}
             <div className="hidden md:flex items-center gap-3 bg-olive-900 border border-surface-border rounded-lg px-3 py-1.5 text-xs text-olive-400">
               <span>

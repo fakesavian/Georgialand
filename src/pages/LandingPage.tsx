@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Search, BarChart3, ShieldCheck, CheckCircle2, Layers, AlertCircle, ArrowRight } from 'lucide-react';
 import GeorgiaLandSearchHero from '../components/marketing/GeorgiaLandSearchHero';
+import MarketingNav from '../components/marketing/MarketingNav';
 import { trackEvent } from '../lib/analytics';
 import SEO from '../components/SEO';
 import SponsorBanner from '../components/marketing/SponsorBanner';
@@ -28,23 +29,7 @@ export default function LandingPage() {
         }}
       />
       {/* Navbar */}
-      <nav className="marketing-nav border-b border-surface-border bg-olive-900/50 backdrop-blur-md sticky top-0 z-50">
-        <div className="marketing-nav__inner max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="marketing-nav__brand flex items-center gap-2">
-            <Layers className="text-brand-500" size={24} />
-            <span className="font-display font-bold text-lg text-white tracking-tight">Georgia Land Finder</span>
-          </div>
-          <div className="marketing-nav__links flex items-center gap-6 text-sm font-semibold">
-            <Link to="/pricing" className="text-olive-300 hover:text-white transition-colors">Pricing</Link>
-            <Link to="/docs" className="text-olive-300 hover:text-white transition-colors">Docs</Link>
-            <Link to="/faq" className="text-olive-300 hover:text-white transition-colors">FAQ</Link>
-            <Link to="/free-tier" className="text-olive-300 hover:text-white transition-colors">Free Tier</Link>
-            <Link to="/free-tier" className="btn-primary">
-              Start Free
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <MarketingNav />
 
       {/* Hero Section */}
       <GeorgiaLandSearchHero />

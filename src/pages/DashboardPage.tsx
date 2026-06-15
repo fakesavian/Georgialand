@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Papa from 'papaparse';
-import { LayoutGrid, List, Map, Loader2, AlertCircle, FileText, CheckSquare, Square, AlertTriangle, Coins, Star, Users, SlidersHorizontal, Search, BarChart3, Database, X } from 'lucide-react';
+import { LayoutGrid, List, Map, Loader2, AlertCircle, FileText, CheckSquare, Square, AlertTriangle, Coins, Star, Users, SlidersHorizontal, Search, BarChart3, Database, X, ChevronDown, ChevronUp } from 'lucide-react';
 
 import Header from '../components/dashboard/Header';
 import FilterPanel from '../components/dashboard/FilterPanel';
@@ -11,6 +11,7 @@ import Analytics from '../components/dashboard/Analytics';
 import DataQuality from '../components/dashboard/DataQuality';
 import FavoritesView from '../components/dashboard/FavoritesView';
 import AgencyContacts from '../components/dashboard/AgencyContacts';
+import MobileDashboardNotice from '../components/dashboard/MobileDashboardNotice';
 import SponsorBanner from '../components/marketing/SponsorBanner';
 
 import { LandProperty, ViewMode, SortConfig, Filters, Favorite } from '../types';
@@ -135,6 +136,8 @@ export default function App() {
   const { accessLevel } = useAuth();
   const isMobile = useIsMobile();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  // On phones the category chip row is collapsed by default so map controls stay compact.
+  const [mapChipsCollapsed, setMapChipsCollapsed] = useState(true);
   const [properties, setProperties] = useState<LandProperty[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -511,7 +514,7 @@ export default function App() {
                   </React.Suspense>
                 )}
 
-                <div className="mobile-map-controls pointer-events-none absolute inset-x-4 top-3 z-[760] flex flex-col gap-2">
+                <div className="mobile-map-controls pointer-events-none absolute inset-x-4 top-3 z-[760] flex flex-col gap-2" data-chips-collapsed={mapChipsCollapsed ? 'true' : 'false'}>
                   <div className="pointer-events-auto mx-auto flex w-full max-w-7xl items-center gap-2 overflow-x-auto rounded-[1.25rem] border border-white/10 bg-slate-950/72 px-3 py-2 shadow-2xl backdrop-blur-xl">
                     <div className="relative min-w-[240px] flex-1">
                       <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
@@ -526,6 +529,16 @@ export default function App() {
                     <span className="mobile-map-count-chip shrink-0 rounded-xl bg-black/35 px-3 py-2 text-xs font-black text-white"><strong className="text-emerald-300">{filteredProperties.length}</strong> visible</span>
                     <button type="button" onClick={() => setMobileFiltersOpen(true)} className="mobile-map-filter-btn shrink-0 rounded-2xl bg-emerald-400 px-3 py-2 text-xs font-black text-slate-950 shadow-[0_0_18px_rgba(52,211,153,0.35)]">
                       <SlidersHorizontal size={14} /> Filters
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMapChipsCollapsed((value) => !value)}
+                      className="mobile-map-chip-toggle shrink-0 rounded-2xl bg-white/10 px-3 py-2 text-xs font-black text-white/85 hover:bg-white/18"
+                      aria-expanded={!mapChipsCollapsed}
+                      aria-label={mapChipsCollapsed ? 'Show category filters' : 'Hide category filters'}
+                    >
+                      {mapChipsCollapsed ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
+                      <span className="mobile-map-chip-toggle__label">{mapChipsCollapsed ? 'More' : 'Less'}</span>
                     </button>
                     <button type="button" onClick={() => { setActiveTab('dashboard'); setViewMode('card'); }} className="mobile-map-list-btn shrink-0 rounded-2xl bg-white/10 px-3 py-2 text-xs font-black text-white/85 hover:bg-white/18">
                       <List size={14} /> List
@@ -1054,6 +1067,8 @@ export default function App() {
           onNoteChange={handleNoteChange}
         />
       )}
+
+      <MobileDashboardNotice />
 
       {mobileFiltersOpen && (
         <MobileFilterModal
