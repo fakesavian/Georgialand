@@ -4,6 +4,7 @@ import L from 'leaflet';
 import { AlertTriangle, BarChart3, Box, CheckCircle2, ChevronLeft, ChevronRight, ExternalLink, Heart, Layers, ListFilter, LocateFixed, Maximize2, Minimize2, MapPin, MousePointer2, Orbit, Search, SlidersHorizontal, Sparkles, X } from 'lucide-react';
 import { LandProperty } from '../../types';
 import { parseScore, parsePrice, parsePriceValue, formatPinPriceLabel, getFitScoreClass, getRiskScoreClass, displayValue, getSatelliteImageUrl, isValidUrl, parseParcelBoundaryGeoJSON } from '../../utils';
+import { validateBoundaryMatch, getBoundaryStatusMessage, BoundaryMatchResult } from '../../lib/boundaryValidation';
 import { AccessLevel } from '../../lib/authTypes';
 import { GIS_LAYER_CONFIGS, canAccessGisLayer, isLayerDataAvailable } from '../../lib/gisLayers';
 import MapLayerControl from './MapLayerControl';
@@ -438,6 +439,7 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
   );
   const [verifiedGisFeatures, setVerifiedGisFeatures] = React.useState<VerifiedGisFeature[]>([]);
   const [gisSourceError, setGisSourceError] = React.useState<string | undefined>();
+  const [boundaryMatchResult, setBoundaryMatchResult] = React.useState<BoundaryMatchResult | null>(null);
   const [countyBoundaryData, setCountyBoundaryData] = React.useState<BoundaryFeatureCollection | null>(null);
   const [cityBoundaryData, setCityBoundaryData] = React.useState<BoundaryFeatureCollection | null>(null);
   const [boundarySourceError, setBoundarySourceError] = React.useState<string | undefined>();
@@ -526,6 +528,7 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
     if (!shouldLoadVerifiedGis) {
       setVerifiedGisFeatures([]);
       setGisSourceError(undefined);
+      setBoundaryMatchResult(null);
       return;
     }
 
@@ -533,6 +536,7 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
     if (!selected) {
       setVerifiedGisFeatures([]);
       setGisSourceError(undefined);
+      setBoundaryMatchResult(null);
       return;
     }
 
@@ -580,8 +584,20 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
           }));
           setVerifiedGisFeatures(features);
           if (features.length) {
-            setGisSourceError(undefined);
+            // Validate that the returned polygon is consistent with the pin location.
+            // A parcel ID LIKE-match or an extent query may return a nearby/wrong parcel.
+            const pinLat = Number(selected.Latitude);
+            const pinLon = Number(selected.Longitude);
+            const firstPolygon = features.find((f) => f.rings && f.rings.length > 0);
+            const match = validateBoundaryMatch(firstPolygon?.rings, pinLat, pinLon);
+            setBoundaryMatchResult(match);
+            if (match.status === 'mismatch') {
+              setGisSourceError('Boundary found, but it does not match the selected pin location. Verify parcel ID/source before using.');
+            } else {
+              setGisSourceError(undefined);
+            }
           } else {
+            setBoundaryMatchResult(null);
             const errors = res.errors?.filter(Boolean).join('; ');
             setGisSourceError(errors || (canLookupByParcelId ? `No verified parcel boundary matched ${parcelId} in ${county} County GIS.` : `No official parcel boundary contained the selected coordinates in ${county} County GIS.`));
           }
@@ -651,9 +667,14 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
           <MapBaseTiles baseMapId={baseMapId} />
           {activeUnlockedLayerIds.has('county-boundaries') && countyBoundaryData && <LeafletGeoJSON key={`county-boundaries-${countyBoundaryData.features.length}`} data={countyBoundaryData as never} style={() => ({ color: '#dbeafe', weight: 2.2, opacity: 0.9, fillOpacity: 0, dashArray: '6 4' })} />}
           {activeUnlockedLayerIds.has('city-boundaries') && cityBoundaryData && <LeafletGeoJSON key={`city-boundaries-${cityBoundaryData.features.length}`} data={cityBoundaryData as never} style={() => ({ color: '#c4b5fd', weight: 1.8, opacity: 0.85, fillOpacity: 0, dashArray: '3 5' })} />}
-          {activeUnlockedLayerIds.has('parcel-boundaries') && verifiedParcelFeatures.map((feature) => (
-            feature.kind === 'polygon' ? feature.rings?.map((ring, ringIndex) => <Polygon key={`${feature.id}-ring-${ringIndex}`} positions={ring} pathOptions={{ color: '#ef4444', weight: 4, opacity: 1, fillColor: '#ef4444', fillOpacity: 0.08, className: 'verified-parcel-boundary-red' }} />) : feature.paths?.map((path, pathIndex) => <Polyline key={`${feature.id}-path-${pathIndex}`} positions={path} pathOptions={{ color: '#ef4444', weight: 4, opacity: 1, className: 'verified-parcel-boundary-red' }} />)
-          ))}
+          {activeUnlockedLayerIds.has('parcel-boundaries') && verifiedParcelFeatures.map((feature) => {
+            const isMismatch = boundaryMatchResult?.status === 'mismatch' || boundaryMatchResult?.status === 'near_match';
+            const strokeColor = isMismatch ? '#f59e0b' : '#ef4444';
+            const cssClass = isMismatch ? 'boundary-mismatch-amber' : 'verified-parcel-boundary-red';
+            return feature.kind === 'polygon'
+              ? feature.rings?.map((ring, ringIndex) => <Polygon key={`${feature.id}-ring-${ringIndex}`} positions={ring} pathOptions={{ color: strokeColor, weight: 4, opacity: 1, fillColor: strokeColor, fillOpacity: 0.08, className: cssClass }} />)
+              : feature.paths?.map((path, pathIndex) => <Polyline key={`${feature.id}-path-${pathIndex}`} positions={path} pathOptions={{ color: strokeColor, weight: 4, opacity: 1, className: cssClass }} />);
+          })}
           {/* Stored verified parcel geometry (from dataset backfill). Drawn for the
               selected pin always, and for all pins when the parcel-boundaries layer is on.
               These are real GeoJSON polygons in the overlay pane, so they persist across
@@ -685,7 +706,7 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
             const propertyBoundaryKey = getPropertyBoundaryKey(prop);
             const isBoundarySelected = selectedBoundaryKey === propertyBoundaryKey;
             const boundaryStatusText = isBoundarySelected
-              ? (verifiedParcelFeatures.length ? 'Verified red parcel boundary loaded.' : gisSourceError)
+              ? getBoundaryStatusMessage(boundaryMatchResult, verifiedParcelFeatures.length, gisSourceError)
               : '';
             return (
               <Marker key={idx} position={[+prop.Latitude, +prop.Longitude]} icon={createCustomIcon(prop, isHovered, pId)} eventHandlers={{
@@ -848,9 +869,9 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
                   <span className="rounded-lg bg-white/10 px-2 py-1 font-bold">{selectedForInsight.Estimated_Price_or_Min_Bid || 'Price N/A'}</span>
                   <span className="rounded-lg bg-white/10 px-2 py-1 font-bold">{selectedForInsight.Lot_Size_Acres || 'Acres N/A'}</span>
                 </div>
-                <div className={`mt-3 flex items-start gap-2 rounded-xl border px-3 py-2 text-[11px] font-semibold ${verifiedParcelFeatures.length ? 'border-red-400/40 bg-red-500/12 text-red-100' : 'border-amber-400/30 bg-amber-500/10 text-amber-100'}`}>
-                  {verifiedParcelFeatures.length ? <CheckCircle2 size={13} className="mt-0.5 shrink-0" /> : <AlertTriangle size={13} className="mt-0.5 shrink-0" />}
-                  <span>{verifiedParcelFeatures.length ? 'Verified red parcel boundary loaded for this selected property.' : (gisSourceError || 'Select a property with a verified parcel ID to load its red boundary.')}</span>
+                <div className={`mt-3 flex items-start gap-2 rounded-xl border px-3 py-2 text-[11px] font-semibold ${verifiedParcelFeatures.length && boundaryMatchResult?.status === 'matched' ? 'border-red-400/40 bg-red-500/12 text-red-100' : verifiedParcelFeatures.length ? 'border-amber-400/40 bg-amber-500/10 text-amber-100' : 'border-amber-400/30 bg-amber-500/10 text-amber-100'}`}>
+                  {verifiedParcelFeatures.length && boundaryMatchResult?.status === 'matched' ? <CheckCircle2 size={13} className="mt-0.5 shrink-0" /> : <AlertTriangle size={13} className="mt-0.5 shrink-0" />}
+                  <span>{getBoundaryStatusMessage(boundaryMatchResult, verifiedParcelFeatures.length, gisSourceError)}</span>
                 </div>
               </div>
             )}
