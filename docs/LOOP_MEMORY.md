@@ -9,6 +9,16 @@ Rolling, append-only log of what each closed loop changed and verified. Newest a
 
 ---
 
+## Loop A7 — Mobile Dashboard Redesign — 2026-06-17
+- **By:** Sonnet 4.6.
+- **Did:** Five targeted changes to the List tab (no architectural rewrite). (1) `DashboardPage.tsx`: hid inline `FilterPanel` on mobile (`{!isMobile && ...}`) — mobile already has `MobileFilterModal`. (2) Stats grid: 14 cards on desktop → 4 key cards on mobile (Total Listings, Under $50K, Alert Worthy, Avg Fit Score). (3) Metadata bar: hid Source File, date, stale/verification counts on mobile (`hidden sm:flex` / `hidden sm:inline`) — kept Total Rows always visible. (4) Hid Select All/None on mobile (`{!isMobile && ...}`). (5) Hid view mode toggle on mobile — card view is always active on mobile. `PropertyCard.tsx`: image height `h-28 sm:h-40` (shorter on mobile for scan-ability); pros/cons `hidden sm:grid`; recommended action `hidden sm:block`; URL buttons `hidden sm:flex` (all accessible in detail drawer). `MobileDashboardNotice.tsx`: replaced discouraging desktop-push copy with welcoming "browse, filter, save" copy; CTA changed from "Continue on mobile" to "Start exploring".
+- **Changed:** `src/pages/DashboardPage.tsx` (5 edits), `src/components/dashboard/PropertyCard.tsx` (4 edits), `src/components/dashboard/MobileDashboardNotice.tsx` (1 edit) | Production CSV untouched: ✓
+- **Verification:** typecheck ✓ · build ✓ (18.60s) | production CSV clean ✓
+- **Result:** List tab usable on phone — no raw table as primary experience, filters reachable via floating modal, cards scannable, details in drawer. Desktop experience unchanged.
+- **Next:** B1 (hero counts from real data) or B2 (decompose DashboardPage.tsx).
+
+---
+
 ## Loop A6.2 — Add Source Fields to Review Report — 2026-06-17
 - **By:** Haiku 4.5 (implemented by Sonnet 4.6 per model recommendation).
 - **Did:** Inspected enriched CSV headers — found `Source_Agency`, `Source_URL`, `Property_Page_URL` all present for all 16 candidates. Wrote `scripts/build-gold-review-summary.mjs` to enrich the existing JSON by looking up source fields from the enriched CSV by Listing_ID. Ran script — 16/16 rows got `Source_Name` and `Source_URL`. Updated `DataReviewPage.tsx`: added `Source_Name` / `Source_URL` to `ReviewRow` type, replaced static empty-state with live clickable link and `Source_Name` field. Also updated `reports/gold_candidates_human_review_queue.csv` (new `Source_Name`/`Source_URL` columns).

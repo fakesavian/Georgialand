@@ -55,11 +55,11 @@ export default function MobileDashboardNotice() {
           </button>
         </div>
         <p className="mobile-dashboard-notice__body">
-          This land research dashboard works on phone, but desktop or tablet gives the best map,
-          filters, and property-detail experience.
+          Browse the map, filter land leads, and save favorites — all from your phone. Tap a card
+          to see full details, or use the bottom nav to switch views.
         </p>
         <button type="button" onClick={handleDismiss} className="btn-primary h-12 w-full text-sm">
-          Continue on mobile
+          Start exploring
         </button>
       </div>
     </div>

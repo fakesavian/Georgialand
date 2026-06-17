@@ -622,23 +622,23 @@ export default function App() {
               </div>
             )}
 
-            {/* Metadata bar */}
+            {/* Metadata bar — secondary items hidden on mobile */}
             <div className="bg-olive-900/60 border border-surface-border rounded-xl px-4 py-3 flex flex-wrap items-center justify-between gap-4 text-xs">
-              <div className="flex items-center gap-3">
-                <span className="flex items-center gap-1 text-olive-400">
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="hidden sm:flex items-center gap-1 text-olive-400">
                   <FileText size={13} className="text-brand-500" />
                   Source File: <strong className="text-olive-100">{loadedFilename}</strong>
                 </span>
-                <span className="text-olive-600">|</span>
+                <span className="hidden sm:inline text-olive-600">|</span>
                 <span className="text-olive-400">
                   Total Rows: <strong className="text-brand-400 font-mono">{stats.total}</strong>
                 </span>
-                <span className="text-olive-600">|</span>
-                <span className="text-olive-400">
+                <span className="hidden sm:inline text-olive-600">|</span>
+                <span className="hidden sm:flex items-center gap-1 text-olive-400">
                   Latest Research Date: <strong className="text-olive-100 font-mono">{stats.latestResDate}</strong>
                 </span>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="hidden sm:flex items-center gap-4">
                 <span className="flex items-center gap-1.5 text-accent-warning">
                   <AlertTriangle size={13} />
                   Stale Sources: <strong className="font-mono">{stats.staleCount}</strong>
@@ -650,44 +650,50 @@ export default function App() {
               </div>
             </div>
 
-            {/* Summary Cards Grid */}
-            {viewMode !== 'map' && (
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-              {[
-                { label: 'Total Listings', value: stats.total, sub: 'Enriched' },
+            {/* Summary Cards Grid — 4 key cards on mobile, all 14 on desktop */}
+            {viewMode !== 'map' && (() => {
+              const allStatCards = [
+                { label: 'Total Listings', value: stats.total, sub: 'Enriched', key: true },
                 { label: 'Atlanta Core', value: stats.atlCore, sub: 'In-city' },
                 { label: 'Metro Atlanta', value: stats.metroAtl, sub: '10 Counties' },
                 { label: 'Georgia Land Banks', value: stats.lba, sub: 'LBA program' },
                 { label: 'Tax Sale', value: stats.taxSale, sub: 'Sheriff auction' },
                 { label: 'Surplus Lots', value: stats.surplus, sub: 'Gov owned' },
-                { label: 'Under $50K', value: stats.under50k, sub: 'Budget focus' },
+                { label: 'Under $50K', value: stats.under50k, sub: 'Budget focus', key: true },
                 { label: 'Ind. Eligible', value: stats.indAllowed, sub: 'General buyers' },
                 { label: 'Nonprofit Only', value: stats.npOnly, sub: 'Restricted' },
-                { label: 'Alert Worthy', value: stats.alertWorthy, sub: 'Hot Deals' },
-                { label: 'Avg Fit Score', value: `${stats.avgFit}%`, sub: 'Out of 100', highlight: 'text-brand-400' },
+                { label: 'Alert Worthy', value: stats.alertWorthy, sub: 'Hot Deals', key: true },
+                { label: 'Avg Fit Score', value: `${stats.avgFit}%`, sub: 'Out of 100', highlight: 'text-brand-400', key: true },
                 { label: 'Avg Risk Score', value: `${stats.avgRisk}%`, sub: 'Out of 100', highlight: 'text-accent-warning' },
                 { label: 'Avg Data Conf.', value: `${stats.avgConf}%`, sub: 'Out of 100', highlight: 'text-blue-400' },
                 { label: 'Avg Monetization', value: `${stats.avgMonet}%`, sub: 'Commercial value', highlight: 'text-purple-400' },
-              ].map((card, i) => (
-                <div key={i} className="bg-olive-900 border border-surface-border rounded-xl p-3 flex flex-col justify-between shadow-md">
-                  <div className="text-olive-500 text-[10px] uppercase font-bold tracking-wider">{card.label}</div>
-                  <div className="mt-2 flex items-baseline justify-between">
-                    <span className={`text-lg font-extrabold font-mono ${card.highlight || 'text-white'}`}>
-                      {card.value}
-                    </span>
-                    <span className="text-[9px] text-olive-600 truncate max-w-[50px]">{card.sub}</span>
-                  </div>
+              ];
+              const cards = isMobile ? allStatCards.filter(c => c.key) : allStatCards;
+              return (
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+                  {cards.map((card, i) => (
+                    <div key={i} className="bg-olive-900 border border-surface-border rounded-xl p-3 flex flex-col justify-between shadow-md">
+                      <div className="text-olive-500 text-[10px] uppercase font-bold tracking-wider">{card.label}</div>
+                      <div className="mt-2 flex items-baseline justify-between">
+                        <span className={`text-lg font-extrabold font-mono ${card.highlight || 'text-white'}`}>
+                          {card.value}
+                        </span>
+                        <span className="text-[9px] text-olive-600 truncate max-w-[50px]">{card.sub}</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            )}
+              );
+            })()}
 
-            {/* Filter panel */}
-            <FilterPanel
-              filters={filters}
-              onChange={setFilters}
-              properties={properties}
-            />
+            {/* Filter panel — hidden on mobile; mobile uses the floating modal instead */}
+            {!isMobile && (
+              <FilterPanel
+                filters={filters}
+                onChange={setFilters}
+                properties={properties}
+              />
+            )}
 
             {/* Sub-tabs horizontal scroll bar */}
             <div className="flex gap-1.5 border-b border-surface-border overflow-x-auto pb-1">
@@ -745,13 +751,13 @@ export default function App() {
               })}
             </div>
 
-            {/* View mode toggle */}
+            {/* Result count + view toggle — toggle hidden on mobile (card view always active) */}
             <div className="flex items-center justify-between gap-3">
               <p className="text-xs text-olive-500">
                 Showing <span className="text-brand-400 font-mono font-medium">{filteredProperties.length}</span>
                 {' '}of {subTabFilteredProperties.length} listings in category
               </p>
-              {currentSubTab !== 'monetization' && (
+              {!isMobile && currentSubTab !== 'monetization' && (
                 <div className="flex items-center gap-1 bg-olive-900 border border-surface-border rounded-lg p-1">
                   {[
                     { mode: 'table' as ViewMode, icon: <List size={13} />, label: 'Table' },
@@ -773,8 +779,8 @@ export default function App() {
               )}
             </div>
 
-            {/* Selection actions for export */}
-            {filteredProperties.length > 0 && (
+            {/* Selection actions for export — hidden on mobile */}
+            {!isMobile && filteredProperties.length > 0 && (
               <div className="flex justify-end gap-2 text-xs">
                 <button onClick={handleSelectAll} className="btn-ghost flex items-center gap-1 px-2.5 py-1 text-olive-400 hover:text-white border-surface-border hover:border-olive-700">
                   <CheckSquare size={13} /> Select All

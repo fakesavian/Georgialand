@@ -54,7 +54,7 @@ export default function PropertyCard({ property, onClick, isFavorite, onToggleFa
       }`}
     >
       {/* Image Header */}
-      <div className="w-full h-40 bg-olive-900 relative border-b border-surface-border shrink-0">
+      <div className="w-full h-28 sm:h-40 bg-olive-900 relative border-b border-surface-border shrink-0">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -136,9 +136,9 @@ export default function PropertyCard({ property, onClick, isFavorite, onToggleFa
         ))}
       </div>
 
-      {/* Pros & Cons */}
+      {/* Pros & Cons — hidden on mobile (visible in drawer) */}
       {(pros.length > 0 || cons.length > 0) && (
-        <div className="grid grid-cols-2 gap-2 text-xs">
+        <div className="hidden sm:grid grid-cols-2 gap-2 text-xs">
           {pros.length > 0 && (
             <div>
               <p className="text-brand-500 font-medium mb-1">Pros</p>
@@ -158,15 +158,15 @@ export default function PropertyCard({ property, onClick, isFavorite, onToggleFa
         </div>
       )}
 
-      {/* Recommended action */}
+      {/* Recommended action — hidden on mobile (visible in drawer) */}
       {property.Recommended_Next_Action && (
-        <p className="text-xs text-green-300/70 italic line-clamp-2">
+        <p className="hidden sm:block text-xs text-green-300/70 italic line-clamp-2">
           → {property.Recommended_Next_Action}
         </p>
       )}
 
-      {/* URL buttons */}
-      <div className="flex flex-wrap gap-1.5 pt-1 border-t border-surface-border/50">
+      {/* URL buttons — hidden on mobile (accessible in drawer) */}
+      <div className="hidden sm:flex flex-wrap gap-1.5 pt-1 border-t border-surface-border/50">
         <CardUrlBtn url={property.Source_URL} label="Source" />
         <CardUrlBtn url={property.Property_Page_URL} label="Property" />
         <CardUrlBtn url={property.Map_URL} label="Map" />

@@ -41,6 +41,9 @@ Ordered, bounded queue. The orchestrator takes the **top unblocked** item, dispa
 - ✅ **A6.2 · Loop A6.2 — Add Source Fields to Review Report.** (DONE — `scripts/build-gold-review-summary.mjs` written; 16/16 rows now have Source_Name + Source_URL; drawer shows clickable link; typecheck/build pass.)
   - Specialist: **builder**. Scope: `src/pages/DataReviewPage.tsx`, `src/App.tsx`, `src/pages/AdminPage.tsx`.
 
+- ✅ **A7 · Loop A7 — Mobile Dashboard Redesign.** (DONE — 5 DashboardPage changes + 4 PropertyCard changes + MobileDashboardNotice copy; typecheck/build pass. List tab fully mobile-usable; desktop unchanged.)
+  - Specialist: **builder**. Scope: `src/pages/DashboardPage.tsx`, `src/components/dashboard/PropertyCard.tsx`, `src/components/dashboard/MobileDashboardNotice.tsx`.
+
 - ⬜ **B1 — Compute hero/category counts from real data** (builder) — remove hardcoded counts (`src/components/marketing/GeorgiaLandSearchHero.tsx`, dashboard stats) using final gold dataset count from human review.
 - ⬜ **B2 — Decompose `DashboardPage.tsx`** (builder) — extract sub-tabs/stats/monetization into components.
 - ⬜ **B3 — Account-backed favorites/notes** (builder) — migrate from localStorage to Supabase.
