@@ -26,6 +26,7 @@ Things that cannot be completed by the model alone, or that are gated on externa
 
 ## Feature backend not yet provisioned (code ready, table/apply human-gated)
 
+- ⛔ **Admin account for `fakesavian@gmail.com` requires manual SQL.** `supabase/admin_bootstrap.sql` is ready. Run it in the Supabase SQL Editor AFTER the account signs up (trigger creates the profile row automatically). Without this, the admin test tier switcher and admin routes are inaccessible. **Unblock:** human signs up with `fakesavian@gmail.com`, then runs the bootstrap SQL.
 - 🟡 **Account-backed favorites need the `saved_listings` table.** Favorites/notes are device-scoped (localStorage) today via `src/lib/useFavorites.ts`. Live Supabase has only `profiles`, `subscriptions`, `alert_preferences` — no favorites table. Proposed migration written at `supabase/saved_listings_schema.sql` (NOT applied). **Unblock:** human reviews + applies the migration, then `useFavorites.ts` flips `isAccountBacked` and adds the remote read/write path (single seam). Do not apply the migration automatically.
 
 ## Known code/DB risks to address before selling the relevant feature

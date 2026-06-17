@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MapPin, Download, Heart, User, LogOut, Loader2 } from 'lucide-react';
+import { MapPin, Download, Heart, User, LogOut, Loader2, FlaskConical } from 'lucide-react';
 import { useAuth } from '../../lib/AuthContext';
 import { getTierLabel } from '../../lib/auth';
 import ThemeToggle from '../ThemeToggle';
@@ -26,7 +26,7 @@ export default function Header({
   activeTab,
   onTabChange,
 }: HeaderProps) {
-  const { user, profile, accessLevel, isLoading, signOut } = useAuth();
+  const { user, profile, accessLevel, realAccessLevel, isAdminTestMode, isLoading, signOut } = useAuth();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -103,13 +103,25 @@ export default function Header({
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
+                  {/* Admin test-mode badge — only visible when override is active */}
+                  {isAdminTestMode && (
+                    <Link
+                      to="/admin"
+                      className="hidden sm:flex items-center gap-1 rounded-lg border border-amber-500/50 bg-amber-500/10 px-2 py-1.5 text-[10px] font-bold uppercase tracking-wide text-amber-300"
+                      title="Admin test mode active — go to Admin to change tier"
+                    >
+                      <FlaskConical size={11} /> Test tier
+                    </Link>
+                  )}
                   <div className="hidden sm:flex items-center gap-2 rounded-lg border border-brand-500/30 bg-brand-500/10 px-3 py-1.5 text-xs font-bold text-brand-300">
                     <User size={13} />
                     <span className="uppercase tracking-wide">{getTierLabel(accessLevel)}</span>
                   </div>
-                  <Link to="/pricing" className="text-[11px] sm:text-xs font-semibold btn-primary py-1.5 px-2.5 sm:px-3">
-                    Upgrade
-                  </Link>
+                  {!isAdminTestMode && (
+                    <Link to="/pricing" className="text-[11px] sm:text-xs font-semibold btn-primary py-1.5 px-2.5 sm:px-3">
+                      Upgrade
+                    </Link>
+                  )}
 
                   {user ? (
                     <div className="relative group">
@@ -117,10 +129,22 @@ export default function Header({
                         <User size={14} />
                         <span className="hidden lg:inline max-w-[120px] truncate">{profile?.email || user.email}</span>
                       </button>
-                      <div className="absolute right-0 top-full mt-1 w-48 bg-olive-900 border border-olive-700 rounded-lg shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
-                        <div className="px-3 py-2 text-xs border-b border-olive-800 text-olive-400">
-                          Level: <span className="font-mono text-brand-400 font-bold">{accessLevel}</span>
-                        </div>
+                      <div className="absolute right-0 top-full mt-1 w-56 bg-olive-900 border border-olive-700 rounded-lg shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+                        {isAdminTestMode ? (
+                          <div className="px-3 py-2 text-xs border-b border-olive-800 space-y-0.5">
+                            <div className="text-olive-500">Real tier: <span className="font-mono text-olive-300">{realAccessLevel}</span></div>
+                            <div className="text-amber-400 font-bold">Test tier: <span className="font-mono">{accessLevel}</span></div>
+                          </div>
+                        ) : (
+                          <div className="px-3 py-2 text-xs border-b border-olive-800 text-olive-400">
+                            Level: <span className="font-mono text-brand-400 font-bold">{accessLevel}</span>
+                          </div>
+                        )}
+                        {realAccessLevel === 'admin' && (
+                          <Link to="/admin" className="block w-full text-left px-3 py-2 text-sm text-amber-300 hover:bg-olive-800 hover:text-amber-200">
+                            Admin Dashboard
+                          </Link>
+                        )}
                         <Link to="/account" className="block w-full text-left px-3 py-2 text-sm text-olive-200 hover:bg-olive-800 hover:text-white">
                           My Account
                         </Link>

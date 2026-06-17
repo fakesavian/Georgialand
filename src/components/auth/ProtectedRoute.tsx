@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 }
 
 export default function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
-  const { user, accessLevel, isLoading } = useAuth();
+  const { user, realAccessLevel, isLoading } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
@@ -20,11 +20,15 @@ export default function ProtectedRoute({ children, requireAdmin = false }: Prote
     );
   }
 
-  if (!user) {
+  const localDashboardBypass = import.meta.env.VITE_LOCAL_DASHBOARD_BYPASS === 'true';
+
+  if (!user && !localDashboardBypass) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (requireAdmin && accessLevel !== 'admin') {
+  // Use realAccessLevel (not the test-mode override) so an admin testing Free tier
+  // still keeps access to /admin routes.
+  if (requireAdmin && realAccessLevel !== 'admin' && !localDashboardBypass) {
     return <Navigate to="/dashboard" replace />;
   }
 

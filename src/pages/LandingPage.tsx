@@ -111,14 +111,14 @@ export default function LandingPage() {
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-brand-500 text-olive-950 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Popular</div>
               <h3 className="text-lg font-display font-bold text-white mb-2">Dashboard Pro</h3>
               <p className="text-3xl font-display font-bold text-white mb-4">$79 <span className="text-sm font-sans text-olive-500 font-normal">/ mo</span></p>
-              <p className="text-sm text-olive-400 mb-6 flex-grow">Exports, saved leads, notes, and lead cards.</p>
+              <p className="text-sm text-olive-400 mb-6 flex-grow">Full database, advanced filters, saved notes.</p>
               <Link to="/pricing" onClick={() => trackEvent('Marketing', 'pricing views', 'Dashboard Pro')} className="w-full btn-primary mt-auto">View Plans</Link>
             </div>
 
             <div className="card flex flex-col bg-olive-800/30 border-olive-700">
               <h3 className="text-lg font-display font-bold text-white mb-2">Dashboard Investor</h3>
               <p className="text-3xl font-display font-bold text-white mb-4">$149 <span className="text-sm font-sans text-olive-500 font-normal">/ mo</span></p>
-              <p className="text-sm text-olive-400 mb-6 flex-grow">Priority alerts, agency view, deal pipeline.</p>
+              <p className="text-sm text-olive-400 mb-6 flex-grow">Exports, bulk tools, deal pipeline, watchlists.</p>
               <Link to="/pricing" onClick={() => trackEvent('Marketing', 'pricing views', 'Dashboard Investor')} className="w-full btn-secondary border-surface-border bg-olive-800 mt-auto">View Plans</Link>
             </div>
 

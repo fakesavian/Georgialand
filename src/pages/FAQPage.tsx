@@ -48,7 +48,7 @@ const faqs = [
   {
     question: 'What is the difference between Starter, Pro, and Investor?',
     answer:
-      'Starter unlocks the full database with county boundaries and basic filters. Pro adds exports, saved notes, advanced filters, parcel boundaries (where available), and alert preferences. Investor is for high-volume sourcing with additional value scoring, deal pipeline, and agency contact workflows. Some advanced layers like FEMA, opportunity zones, and parcel-level off-market scoring are still being built.',
+      'Starter unlocks the full database with county boundaries and basic filters. Pro adds saved notes, advanced filters, parcel boundaries (where available), and alert preferences. Investor adds exports, bulk tools, deal pipeline, watchlists, and agency contact workflows for high-volume sourcing. Some advanced layers like FEMA, opportunity zones, and parcel-level off-market scoring are still being built.',
   },
   {
     question: 'Can I export leads?',

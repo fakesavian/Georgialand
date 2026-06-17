@@ -1,15 +1,26 @@
 import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Layers, Upload, Database, CheckCircle2, AlertTriangle, X, ClipboardList } from 'lucide-react';
+import { Layers, Upload, Database, CheckCircle2, AlertTriangle, X, ClipboardList, FlaskConical, RotateCcw } from 'lucide-react';
 import Papa from 'papaparse';
 import { generateDigest } from '../lib/alertDigest';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../lib/AuthContext';
+import { AccessLevel } from '../lib/authTypes';
+import { getTierLabel } from '../lib/auth';
 
 const PROTECTED_DATASET_BUCKET = 'protected-datasets';
 const MASTER_DATASET_FILENAME = 'georgia_low_cost_land_opportunities_enriched.csv';
 const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
 
+const TEST_TIER_OPTIONS: { level: AccessLevel; label: string; desc: string }[] = [
+  { level: 'free_preview', label: 'Free Tier', desc: '10-lead preview, limited filters' },
+  { level: 'dashboard_starter', label: 'Starter', desc: 'Full database, basic workflow' },
+  { level: 'dashboard_pro', label: 'Pro', desc: 'Notes, advanced filters, parcel layers' },
+  { level: 'dashboard_investor', label: 'Investor', desc: 'Exports, pipeline, bulk tools' },
+];
+
 export default function AdminPage() {
+  const { accessLevel, realAccessLevel, isAdminTestMode, setTestTierOverride } = useAuth();
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -269,7 +280,7 @@ export default function AdminPage() {
               <h3 className="text-xl font-display font-bold text-white mb-3">Sponsor Management</h3>
               <p className="text-sm text-olive-400 mb-6 leading-relaxed">Manage active sponsorships and resource partner links across the dashboard, reports, and alerts.</p>
               <div className="space-y-4">
-                <button 
+                <button
                   disabled
                   className="w-full text-left px-4 py-3 bg-olive-950/50 border border-surface-border rounded-lg text-sm text-olive-500 font-semibold cursor-not-allowed flex items-center justify-between"
                 >
@@ -279,6 +290,65 @@ export default function AdminPage() {
               </div>
             </div>
 
+          </div>
+
+          {/* Admin Test Tier Switcher — always last, full-width */}
+          <div className="mt-8 card border-amber-500/30 bg-amber-500/5">
+            <div className="flex items-center gap-3 mb-1">
+              <FlaskConical className="text-amber-400" size={20} />
+              <h3 className="text-xl font-display font-bold text-white">Test Tier Switcher</h3>
+            </div>
+            <p className="text-sm text-amber-300/70 mb-1">
+              Admin test mode — does not change Stripe billing or your actual subscription.
+            </p>
+            <p className="text-xs text-olive-500 mb-6">
+              Override the effective UI tier for this browser session only. The real tier ({' '}
+              <span className="font-mono text-olive-300">{realAccessLevel}</span>{' '}
+              ) is used for admin route access and billing. Override resets on browser close.
+            </p>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+              {TEST_TIER_OPTIONS.map(({ level, label, desc }) => {
+                const isActive = accessLevel === level && isAdminTestMode;
+                const isReal = realAccessLevel === level && !isAdminTestMode;
+                return (
+                  <button
+                    key={level}
+                    type="button"
+                    onClick={() => setTestTierOverride(level)}
+                    className={`text-left px-4 py-3 rounded-lg border text-sm font-semibold transition-all ${
+                      isActive
+                        ? 'border-amber-500 bg-amber-500/15 text-amber-200'
+                        : isReal
+                          ? 'border-brand-500/60 bg-brand-500/10 text-brand-200'
+                          : 'border-olive-700 bg-olive-950/60 text-olive-300 hover:border-olive-500 hover:text-white'
+                    }`}
+                  >
+                    <span className="block font-bold">{label}</span>
+                    <span className="block text-xs mt-0.5 font-normal opacity-70">{desc}</span>
+                    {isActive && <span className="block text-[10px] mt-1 font-black uppercase tracking-wide text-amber-400">Test active</span>}
+                    {isReal && !isAdminTestMode && <span className="block text-[10px] mt-1 font-black uppercase tracking-wide text-brand-400">Real tier</span>}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-olive-400">
+                {isAdminTestMode
+                  ? <>Effective: <span className="font-mono text-amber-300 font-bold">{getTierLabel(accessLevel)}</span> &nbsp;·&nbsp; Real: <span className="font-mono text-olive-300">{getTierLabel(realAccessLevel)}</span></>
+                  : <>Using real tier: <span className="font-mono text-brand-300 font-bold">{getTierLabel(realAccessLevel)}</span></>
+                }
+              </div>
+              <button
+                type="button"
+                onClick={() => setTestTierOverride(null)}
+                disabled={!isAdminTestMode}
+                className="flex items-center gap-2 text-xs px-3 py-2 rounded-lg border border-olive-700 bg-olive-900/60 text-olive-300 hover:border-olive-500 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition"
+              >
+                <RotateCcw size={12} /> Use real account tier
+              </button>
+            </div>
           </div>
         </div>
       </section>

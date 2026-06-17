@@ -58,6 +58,7 @@ Ordered, bounded queue. The orchestrator takes the **top unblocked** item, dispa
 - ✅ **A9 · Loop A9 — Map layer controls.** (DONE — map layer system already mature; added honest `dataStatus` (live/partial/coming_soon) to layer configs; coming-soon layers (FEMA flood, opportunity zones, land-bank/tax-sale layers, off-market) now disabled + "Coming soon" badge, and cannot render fabricated overlays. Typecheck/build pass.)
   - Specialist: **builder**. Scope: `src/types/gis.ts`, `src/lib/gisLayers.ts`, `MapLayerControl.tsx`, `MapView.tsx`.
 - ✅ **B4 — Honest coverage copy pass** (DONE — strikethrough coming_soon features, clarify parcel-boundary scoping, remove off-market/FEMA/opp-zone overstating.)
+- ✅ **B4.1 — Pricing tier consistency + admin testing** (DONE — exports moved to Investor; admin account SQL written; test tier switcher in AdminPage; Header shows test mode badge.)
 
 ## HUMAN-GATED — see `docs/BLOCKERS.md`
 - ⛔ Stripe end-to-end test · ⛔ Supabase/Google OAuth live verification · ⛔ `alert_preferences` unique(email) · ⛔ protected-dataset Storage object confirmation.

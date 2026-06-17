@@ -9,7 +9,7 @@ export function canViewFullDatabase(level: AccessLevel): boolean {
 }
 
 export function canExport(level: AccessLevel): boolean {
-  return PRO_PLUS.includes(level);
+  return INVESTOR_PLUS.includes(level);
 }
 
 export function canSaveNotes(level: AccessLevel): boolean {
@@ -25,7 +25,7 @@ export function canUseNotes(level: AccessLevel): boolean {
 }
 
 export function canExportLeadCards(level: AccessLevel): boolean {
-  return PRO_PLUS.includes(level);
+  return INVESTOR_PLUS.includes(level);
 }
 
 export function canViewAgencyContacts(level: AccessLevel): boolean {

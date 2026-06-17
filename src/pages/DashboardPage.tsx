@@ -215,7 +215,7 @@ export default function App() {
   // Lead Card Export
   const triggerLeadCardExport = (format: 'csv' | 'md' | 'html') => {
     if (!canExport(accessLevel)) {
-      alert("Exports are available on Dashboard Pro ($79/mo) and Dashboard Investor ($149/mo). Visit /pricing to upgrade.");
+      alert("Upgrade to Investor ($149/mo) to export data. Visit /pricing to upgrade.");
       return;
     }
     const selectedProps = properties.filter(p =>
@@ -234,17 +234,17 @@ export default function App() {
 
   // Exporters
   const handleExportAll = () => {
-    if (!canExport(accessLevel)) return alert("Exports require Dashboard Pro ($79/mo) or Dashboard Investor ($149/mo). Visit /pricing to upgrade.");
+    if (!canExport(accessLevel)) return alert("Upgrade to Investor ($149/mo) to export data. Visit /pricing to upgrade.");
     trackEvent('Engagement', 'export_click', 'All');
     exportToCSV(properties, 'georgia-land-all.csv');
   };
   const handleExportFiltered = () => {
-    if (!canExport(accessLevel)) return alert("Exports require Dashboard Pro ($79/mo) or Dashboard Investor ($149/mo). Visit /pricing to upgrade.");
+    if (!canExport(accessLevel)) return alert("Upgrade to Investor ($149/mo) to export data. Visit /pricing to upgrade.");
     trackEvent('Engagement', 'export_click', 'Filtered');
     exportToCSV(filteredProperties, 'georgia-land-filtered.csv');
   };
   const handleExportFavorites = () => {
-    if (!canExport(accessLevel)) return alert("Exports require Dashboard Pro ($79/mo) or Dashboard Investor ($149/mo). Visit /pricing to upgrade.");
+    if (!canExport(accessLevel)) return alert("Upgrade to Investor ($149/mo) to export data. Visit /pricing to upgrade.");
     trackEvent('Engagement', 'export_click', 'Favorites');
     const favIds = new Set(favorites.map(f => f.parcelId));
     const favProps = properties.filter(p => favIds.has(p.Parcel_ID || p.Property_Name_or_Address));
