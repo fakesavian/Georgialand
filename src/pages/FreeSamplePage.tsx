@@ -19,8 +19,8 @@ const buyerTypes = [
 
 const freeTierBenefits = [
   'Open the dashboard map immediately — no credit card required',
-  'Preview 10 curated Georgia land listings, parcels, and off-market opportunities',
-  'See source links, risk notes, and data confidence on each lead',
+  'Preview 10 curated Georgia land listings with source links',
+  'See risk notes, data confidence, and acquisition type on each lead',
   'Explore the full search and county filter before upgrading'
 ];
 
@@ -135,7 +135,7 @@ export default function FreeSamplePage() {
     <div className={`min-h-screen font-sans transition-colors duration-300 ${t.page}`} data-theme={theme}>
       <SEO
         title="Start Free | Georgia Land Finder"
-        description="Explore Georgia land intelligence free. Preview listings, parcels, and off-market opportunities on the Georgia Land Finder dashboard."
+        description="Explore Georgia land intelligence free. Preview 10 land listings with source links and risk notes on the Georgia Land Finder dashboard."
         canonicalUrl="https://georgialandfinder.com/free-tier"
       />
 
@@ -152,7 +152,7 @@ export default function FreeSamplePage() {
               Explore Georgia Land Intelligence — Free Preview
             </h1>
             <p className={`text-lg md:text-xl leading-relaxed max-w-2xl mb-8 ${t.body}`}>
-              A quick signup gate before the dashboard. No credit card. Use the free tier to preview the map, explore land listings, parcels, and off-market opportunities, and see how the workflow works before upgrading.
+              A quick signup gate before the dashboard. No credit card. Use the free tier to preview 10 curated land listings on the map with source links and risk notes, then upgrade for full database access and advanced tools.
             </p>
 
             <div className="grid sm:grid-cols-3 gap-4 mb-8">
@@ -169,7 +169,7 @@ export default function FreeSamplePage() {
               <div className={`rounded-2xl border p-4 ${t.featureCard}`}>
                 <CheckCircle2 className={`${t.icon} mb-3`} size={22} />
                 <p className={`text-sm font-bold ${t.featureTitle}`}>Upgrade path</p>
-                <p className={`text-xs mt-1 ${t.featureBody}`}>Unlock off-market layers and full filters when ready.</p>
+                <p className={`text-xs mt-1 ${t.featureBody}`}>Unlock full database access, exports, and advanced filters.</p>
               </div>
             </div>
 

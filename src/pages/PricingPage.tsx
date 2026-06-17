@@ -23,7 +23,7 @@ const PLANS = [
       'Basic search and county filter',
       'Map view with property pins',
       'Risk notes and source links',
-      'No exports, no saved searches, no off-market layer',
+      'No exports, no saved searches, no advanced filters',
     ],
     cta: 'Start Free Tier',
     annualCta: 'Start Free Tier',

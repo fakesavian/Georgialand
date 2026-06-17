@@ -12,9 +12,9 @@ export default function LandingPage() {
   const footerSponsors = sponsors.filter(s => s.active && s.placements.includes('footer'));
   return (
     <div className="min-h-screen bg-olive-950 text-olive-50 font-sans selection:bg-brand-500/30">
-      <SEO 
+      <SEO
         title="Georgia land intelligence for buyers, builders, and investors"
-        description="Map-based Georgia land intelligence for land-bank, surplus, tax-sale, GIS, and off-market property leads with value, risk, and data-confidence signals."
+        description="Map-based Georgia land intelligence for land-bank, surplus, tax-sale, and GIS property leads with value, risk, and data-confidence signals."
         canonicalUrl="https://georgialandfinder.com/"
         jsonLd={{
           "@context": "https://schema.org",
@@ -64,7 +64,7 @@ export default function LandingPage() {
             <div className="panel p-8">
               <Search className="text-brand-500 mb-6" size={32} />
               <h3 className="text-xl font-display font-bold text-white mb-3">Unified Search</h3>
-              <p className="text-olive-300 leading-relaxed">Filter across multiple acquisition types instantly. Find properties by exact parcel ID, price category, or zoning code without jumping between PDFs.</p>
+              <p className="text-olive-300 leading-relaxed">Filter across multiple acquisition types instantly. Find properties by exact parcel ID, price category, county, and source type without jumping between PDFs.</p>
             </div>
             <div className="panel p-8 relative overflow-hidden">
               <div className="absolute top-0 right-0 p-4 opacity-5">

@@ -32,7 +32,10 @@ Ordered, bounded queue. The orchestrator takes the **top unblocked** item, dispa
   - Specialist: **data** (+ human for `Human_Reviewed`). Set `Last_Checked_Date` / `Verification_Level` on pipeline-verified rows; assemble the human-review queue. Re-audit with `scripts/audit-gold-dataset-readiness.mjs` and refresh the plan snapshot.
 
 ## PRIMARY track status
-**All PRIMARY items complete.** 16 gold candidates ready for human sign-off. Next: human-reviewed promotion to production (out of scope for model loops) or SECONDARY track polish.
+**Complete.** 16 gold candidates ready for human sign-off. Human-reviewed promotion to production is out of scope for model loops.
+
+## SECONDARY track status
+**Complete.** All product/UX polish finished: dashboard components extracted (B2), favorites seam wired (B3), tier gating added (A8), honest map layers implemented (A9), copy audit passed (B4). App now honestly describes feature coverage and layer availability.
 
 ## SECONDARY track — product/UX polish (now unblocked)
 
@@ -54,7 +57,7 @@ Ordered, bounded queue. The orchestrator takes the **top unblocked** item, dispa
   - Specialist: **builder**. Scope: `src/components/dashboard/FilterPanel.tsx`, `MobileFilterModal.tsx`, `Header.tsx`, `src/pages/DashboardPage.tsx`.
 - ✅ **A9 · Loop A9 — Map layer controls.** (DONE — map layer system already mature; added honest `dataStatus` (live/partial/coming_soon) to layer configs; coming-soon layers (FEMA flood, opportunity zones, land-bank/tax-sale layers, off-market) now disabled + "Coming soon" badge, and cannot render fabricated overlays. Typecheck/build pass.)
   - Specialist: **builder**. Scope: `src/types/gis.ts`, `src/lib/gisLayers.ts`, `MapLayerControl.tsx`, `MapView.tsx`.
-- ⬜ **B4 — Honest coverage copy pass** (product-growth) — boundaries "available for verified-source records"; property vs program leads.
+- ✅ **B4 — Honest coverage copy pass** (DONE — strikethrough coming_soon features, clarify parcel-boundary scoping, remove off-market/FEMA/opp-zone overstating.)
 
 ## HUMAN-GATED — see `docs/BLOCKERS.md`
 - ⛔ Stripe end-to-end test · ⛔ Supabase/Google OAuth live verification · ⛔ `alert_preferences` unique(email) · ⛔ protected-dataset Storage object confirmation.

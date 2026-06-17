@@ -161,7 +161,7 @@ export default function GeorgiaLandSearchHero() {
           </h1>
           
           <p className={`text-lg md:text-xl leading-relaxed font-light ${isDay ? 'text-olive-700' : 'text-olive-300/90'}`}>
-            Search land-bank, surplus, tax-sale, GIS, and off-market leads with value, risk, and data-confidence signals built for field research.
+            Search land-bank, surplus, tax-sale, and GIS leads with value, risk, and data-confidence signals built for field research.
           </p>
 
           {/* Search Bar */}

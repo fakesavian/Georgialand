@@ -48,7 +48,7 @@ const faqs = [
   {
     question: 'What is the difference between Starter, Pro, and Investor?',
     answer:
-      'Starter is for core searchable database access. Pro is for users who need stronger workflow tools such as exports, saved leads, notes, and lead cards. Investor is for users who want priority alerts, agency/contact workflows, deeper GIS/off-market tooling, and a more active deal pipeline as those features are enabled.',
+      'Starter unlocks the full database with county boundaries and basic filters. Pro adds exports, saved notes, advanced filters, parcel boundaries (where available), and alert preferences. Investor is for high-volume sourcing with additional value scoring, deal pipeline, and agency contact workflows. Some advanced layers like FEMA, opportunity zones, and parcel-level off-market scoring are still being built.',
   },
   {
     question: 'Can I export leads?',
@@ -58,7 +58,7 @@ const faqs = [
   {
     question: 'Do you include parcel, zoning, flood, or GIS data?',
     answer:
-      'The map and GIS layer system is being expanded to support parcel boundaries, county/city boundaries, flood layers, zoning, tax sale areas, land bank records, surplus property, opportunity zones, and off-market indicators. Availability depends on source licensing, county data quality, and plan level.',
+      'Our GIS layer system includes county/city boundaries, parcel boundaries (where verified-source records exist), and zoning overlays (where county data is available). FEMA flood zones, opportunity zones, and off-market scoring are being built out. Parcel-level data quality and availability depend on county GIS sources and plan level.',
   },
   {
     question: 'Do you provide MLS or IDX listings?',

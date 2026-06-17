@@ -59,7 +59,7 @@ export default function Header({
                 <span className="hidden sm:inline">Georgia Land Intelligence</span>
               </h1>
               <p className="text-xs text-olive-500 hidden md:block">
-                Land-bank, surplus, tax-sale, GIS &amp; off-market research dashboard
+                Land-bank, surplus, tax-sale &amp; GIS research dashboard
               </p>
             </div>
           </Link>
