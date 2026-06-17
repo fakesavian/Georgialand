@@ -9,6 +9,16 @@ Rolling, append-only log of what each closed loop changed and verified. Newest a
 
 ---
 
+## Loop B2 — Decompose DashboardPage.tsx — 2026-06-18
+- **By:** Sonnet 4.6.
+- **Did:** Extracted 4 self-contained blocks from DashboardPage.tsx (1109 → 992 lines, −117). New files: `MobileDashboardNav.tsx` (49 lines), `MobileFilterModal.tsx` (33 lines), `DashboardStatsGrid.tsx` (60 lines — exports `DashboardStats` interface), `DashboardMetadataBar.tsx` (44 lines). Cleaned unused imports (`FileText`, `AlertTriangle`, `AlertCircle`, `BarChart3`, `Database`) from DashboardPage. Skipped sub-tabs, view controls, monetization table — too much state coupling for this loop.
+- **Changed:** `src/pages/DashboardPage.tsx` (imports updated, 4 blocks replaced with components), 4 new component files | Production CSV untouched: ✓
+- **Verification:** typecheck ✓ · build ✓ (22.19s) | production CSV clean ✓
+- **Result:** Dashboard file smaller and each extracted piece independently understandable. All A7 mobile fixes intact. No behavior changes.
+- **Next:** B3 (account-backed favorites) or B4 (coverage copy pass).
+
+---
+
 ## Loop B1 — Compute hero/category counts from real data — 2026-06-17
 - **By:** Sonnet 4.6.
 - **Did:** Replaced hardcoded counts in `GeorgiaLandSearchHero.tsx` with dynamic computation. Hero now loads `/local_dashboard_dataset.csv` on mount, parses it with PapaParse, and computes category counts (North Georgia, Vacant land, Farmland, Pasture, Wooded, Rural acreage, Infill lots) by matching County and Property_Type fields. Fallback: "See full database" if counts unavailable (honors unauthenticated users on landing page). Zero fabrication — counts reflect actual CSV data or show null state.

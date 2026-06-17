@@ -46,7 +46,8 @@ Ordered, bounded queue. The orchestrator takes the **top unblocked** item, dispa
 
 - ✅ **B1 · Loop B1 — Compute hero/category counts from real data.** (DONE — hero now loads `/local_dashboard_dataset.csv`, computes live category counts by County/Property_Type matching; graceful fallback. Counts: north-ga 17, vacant 40, rural 9, infill 36, others 0. Typecheck/build pass.)
   - Specialist: **builder**. Scope: `src/components/marketing/GeorgiaLandSearchHero.tsx`.
-- ⬜ **B2 — Decompose `DashboardPage.tsx`** (builder) — extract sub-tabs/stats/monetization into components.
+- ✅ **B2 · Loop B2 — Decompose `DashboardPage.tsx`.** (DONE — 1109 → 992 lines; 4 components extracted: MobileDashboardNav, MobileFilterModal, DashboardStatsGrid, DashboardMetadataBar. Sub-tabs/monetization table deferred — too coupled. Typecheck/build pass.)
+  - Specialist: **builder**. Scope: `src/pages/DashboardPage.tsx`, `src/components/dashboard/`.
 - ⬜ **B3 — Account-backed favorites/notes** (builder) — migrate from localStorage to Supabase.
 - ⬜ **B4 — Honest coverage copy pass** (product-growth) — boundaries "available for verified-source records"; property vs program leads.
 
