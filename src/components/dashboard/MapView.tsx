@@ -5,7 +5,7 @@ import { AlertTriangle, BarChart3, Box, CheckCircle2, ChevronLeft, ChevronRight,
 import { LandProperty } from '../../types';
 import { parseScore, parsePrice, parsePriceValue, formatPinPriceLabel, getFitScoreClass, getRiskScoreClass, displayValue, getSatelliteImageUrl, isValidUrl, parseParcelBoundaryGeoJSON } from '../../utils';
 import { AccessLevel } from '../../lib/authTypes';
-import { GIS_LAYER_CONFIGS, canAccessGisLayer } from '../../lib/gisLayers';
+import { GIS_LAYER_CONFIGS, canAccessGisLayer, isLayerDataAvailable } from '../../lib/gisLayers';
 import MapLayerControl from './MapLayerControl';
 import GisLayerLegend from './GisLayerLegend';
 import {
@@ -475,7 +475,9 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
     [withCoords]
   );
   const activeUnlockedLayerIds = React.useMemo(
-    () => new Set(GIS_LAYER_CONFIGS.filter((layer) => activeLayerIds.has(layer.id) && canAccessGisLayer(layer, accessLevel)).map((layer) => layer.id)),
+    // Only render layers that are active, tier-unlocked, AND backed by real data.
+    // 'coming_soon' layers must never render an overlay even if forced into activeLayerIds.
+    () => new Set(GIS_LAYER_CONFIGS.filter((layer) => activeLayerIds.has(layer.id) && canAccessGisLayer(layer, accessLevel) && isLayerDataAvailable(layer)).map((layer) => layer.id)),
     [activeLayerIds, accessLevel]
   );
   const shouldLoadVerifiedGis = activeUnlockedLayerIds.has('parcel-boundaries') || activeUnlockedLayerIds.has('zoning');

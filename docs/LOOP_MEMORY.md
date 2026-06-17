@@ -9,6 +9,16 @@ Rolling, append-only log of what each closed loop changed and verified. Newest a
 
 ---
 
+## Loop A9 — Map layer controls (honest data status) — 2026-06-18
+- **By:** Sonnet 4.6.
+- **Did:** Inspected map architecture — found it **clear and mature** (no Opus pause): `GIS_LAYER_CONFIGS` + `MapLayerControl` (collapsible, tier-aware, base maps + GIS overlays) + `MapView` (`activeLayerIds`/`handleToggleLayer`, per-layer conditional render, desktop right-panel + `MobileLayerSheet`). Real-rendering layers today: property pins, county/city boundaries (Census), parcel boundaries (verified county GIS / stored GeoJSON). **Honesty gap fixed:** several layers were tier-gated toggles but had NO real data — `fema-flood` drew only a placeholder bounding rectangle mislabeled "FEMA NFHL"; `opportunity-zones`/`land-bank`/`tax-sale` had no render path; `off-market` drew synthetic circles around every pin. Added `dataStatus` (`live`/`partial`/`coming_soon`) + `dataStatusNote` to `GisLayerConfig`; annotated all 10 layers honestly; added `isLayerDataAvailable()` helper. `MapLayerControl` now disables `coming_soon` toggles and shows a "Coming soon" badge + honest reason; `partial` layers (parcel/zoning) show a note. `MapView` defensively excludes `coming_soon` layers from `activeUnlockedLayerIds`, so the misleading FEMA rectangle and off-market circles can no longer render. Tier-lock behavior unchanged; mobile sheet + A7 map/list flow intact.
+- **Changed:** `src/types/gis.ts` (dataStatus types), `src/lib/gisLayers.ts` (annotations + `isLayerDataAvailable`), `src/components/dashboard/MapLayerControl.tsx` (coming-soon badge + disabled toggles), `src/components/dashboard/MapView.tsx` (render guard) | Production CSV untouched: ✓
+- **Verification:** typecheck ✓ · build ✓ (16.53s) | production CSV clean ✓
+- **Result:** Available layers (pins, county/city/parcel) toggle as before; unavailable layers are honestly labeled "Coming soon" and cannot be enabled — no fabricated overlays. Mobile + desktop map controls preserved.
+- **Next:** B4 (honest coverage copy pass) — sequence complete.
+
+---
+
 ## Loop A8 — Free / Pro / Investor gating — 2026-06-18
 - **By:** Sonnet 4.6.
 - **Did:** Audited existing tier gating — found it already mature: `src/lib/featureGates.ts` (typed helpers for every tier), `src/lib/gisLayers.ts` (per-layer `minAccessLevel` + `canAccessGisLayer`), and DashboardPage already gates row limit (`getMaxRowsAllowed`, free=10), exports (`canExport`, Pro+), favorites tab (Pro+), agency tab (Investor+). **Source of truth:** `profiles.access_level` from Supabase via `AuthContext`; defaults to `free_preview` for unknown/unauthenticated (conservative, no fake access). Local dev bypass via `VITE_LOCAL_DASHBOARD_BYPASS`+`VITE_LOCAL_ACCESS_LEVEL`. **Added** the two genuine gaps: (1) advanced FilterPanel section (dropdowns/ranges/price/source) now gated behind `canViewFullDatabase` (Starter+) — free tier keeps search + quick toggles, sees an honest "Advanced filters are a paid feature" teaser with Upgrade CTA; threaded `accessLevel` through DashboardPage → FilterPanel + MobileFilterModal. (2) Header tier pill now uses friendly `getTierLabel()` instead of raw enum string. No Stripe/webhook changes; no checkout changes.

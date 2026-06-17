@@ -52,7 +52,8 @@ Ordered, bounded queue. The orchestrator takes the **top unblocked** item, dispa
   - Specialist: **builder** (+ human to apply migration). Scope: `src/lib/useFavorites.ts`, `supabase/saved_listings_schema.sql`.
 - ✅ **A8 · Loop A8 — Free / Pro / Investor gating.** (DONE — gating infra already mature in featureGates.ts/gisLayers.ts; source of truth = `profiles.access_level`, defaults free_preview. Added advanced-filter gating (free = search + quick toggles + teaser) and friendly Header tier label. No Stripe/checkout changes. Typecheck/build pass.)
   - Specialist: **builder**. Scope: `src/components/dashboard/FilterPanel.tsx`, `MobileFilterModal.tsx`, `Header.tsx`, `src/pages/DashboardPage.tsx`.
-- ⬜ **A9 — Map layer controls** (builder) — toggle available layers; honestly label future/unavailable layers. See `src/lib/gisLayers.ts`, `MapLayerControl.tsx`, `MapView.tsx`.
+- ✅ **A9 · Loop A9 — Map layer controls.** (DONE — map layer system already mature; added honest `dataStatus` (live/partial/coming_soon) to layer configs; coming-soon layers (FEMA flood, opportunity zones, land-bank/tax-sale layers, off-market) now disabled + "Coming soon" badge, and cannot render fabricated overlays. Typecheck/build pass.)
+  - Specialist: **builder**. Scope: `src/types/gis.ts`, `src/lib/gisLayers.ts`, `MapLayerControl.tsx`, `MapView.tsx`.
 - ⬜ **B4 — Honest coverage copy pass** (product-growth) — boundaries "available for verified-source records"; property vs program leads.
 
 ## HUMAN-GATED — see `docs/BLOCKERS.md`

@@ -19,6 +19,14 @@ export type GisLayerType =
 
 export type GisEndpointType = 'static' | 'arcgis_rest' | 'geojson' | 'wms' | 'manual_portal';
 
+/**
+ * Whether a layer actually renders real data today.
+ *  - 'live'        — real data renders now (e.g. property pins, Census boundaries).
+ *  - 'partial'     — renders only for a verified subset (e.g. zoning for the selected parcel).
+ *  - 'coming_soon' — configured but no real data wired yet; must NOT be toggleable or rendered.
+ */
+export type GisLayerDataStatus = 'live' | 'partial' | 'coming_soon';
+
 export interface GisLayerConfig {
   id: string;
   name: string;
@@ -33,6 +41,10 @@ export interface GisLayerConfig {
   notes?: string;
   color: string;
   opacity?: number;
+  /** Defaults to 'live' when omitted. Honest signal for layers without real data yet. */
+  dataStatus?: GisLayerDataStatus;
+  /** Honest one-line reason shown when dataStatus is 'partial' or 'coming_soon'. */
+  dataStatusNote?: string;
 }
 
 export interface ParcelPreview {
