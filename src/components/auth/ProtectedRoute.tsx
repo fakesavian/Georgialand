@@ -23,7 +23,8 @@ export default function ProtectedRoute({ children, requireAdmin = false }: Prote
   const localDashboardBypass = import.meta.env.VITE_LOCAL_DASHBOARD_BYPASS === 'true';
 
   if (!user && !localDashboardBypass) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    const next = encodeURIComponent(location.pathname + location.search);
+    return <Navigate to={`/login?next=${next}`} replace />;
   }
 
   // Use realAccessLevel (not the test-mode override) so an admin testing Free tier
