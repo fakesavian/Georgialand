@@ -188,12 +188,25 @@ export default function GeorgiaLandSearchHero() {
 
         {/* Categories Carousel Container */}
         <div className="relative -mx-6 px-6 sm:mx-0 sm:px-0">
-          <div 
-            ref={carouselRef}
-            className="flex overflow-x-auto gap-4 pb-8 pt-4 snap-x snap-mandatory scrollbar-hide no-scrollbar"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
-            {categories.map((category) => (
+          {(() => {
+            const visibleCategories = categories.filter(c => c.count === null || c.count > 0);
+            const allZero = categories.every(c => c.count !== null && c.count === 0);
+
+            if (allZero) {
+              return (
+                <div className={`text-center py-12 ${isDay ? 'text-olive-600' : 'text-olive-400'}`}>
+                  <p className="text-lg font-light">Browse available Georgia land opportunities in the database.</p>
+                </div>
+              );
+            }
+
+            return (
+              <div
+                ref={carouselRef}
+                className="flex overflow-x-auto gap-4 pb-8 pt-4 snap-x snap-mandatory scrollbar-hide no-scrollbar"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                {visibleCategories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => handleCategoryClick(category.id)}
@@ -225,13 +238,15 @@ export default function GeorgiaLandSearchHero() {
                     </div>
                   </div>
                 </div>
-              </button>
-            ))}
-            
-            {/* Spacer for right padding on mobile */}
-            <div className="flex-none w-2 sm:hidden"></div>
-          </div>
-          
+                </button>
+                ))}
+
+                {/* Spacer for right padding on mobile */}
+                <div className="flex-none w-2 sm:hidden"></div>
+              </div>
+            );
+          })()}
+
           {/* Custom Scrollbar Styles to hide default scrollbar */}
           <style dangerouslySetInnerHTML={{__html: `
             .no-scrollbar::-webkit-scrollbar {
