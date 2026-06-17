@@ -1,5 +1,6 @@
 import FilterPanel from './FilterPanel';
 import { Filters, LandProperty } from '../../types';
+import { AccessLevel } from '../../lib/authTypes';
 
 interface MobileFilterModalProps {
   filters: Filters;
@@ -7,9 +8,10 @@ interface MobileFilterModalProps {
   properties: LandProperty[];
   resultCount: number;
   onClose: () => void;
+  accessLevel?: AccessLevel;
 }
 
-export default function MobileFilterModal({ filters, onChange, properties, resultCount, onClose }: MobileFilterModalProps) {
+export default function MobileFilterModal({ filters, onChange, properties, resultCount, onClose, accessLevel }: MobileFilterModalProps) {
   return (
     <div className="mobile-filter-modal" role="dialog" aria-modal="true" aria-label="Filter land leads">
       <button type="button" className="mobile-filter-modal__backdrop" onClick={onClose} aria-label="Close filters" />
@@ -21,6 +23,7 @@ export default function MobileFilterModal({ filters, onChange, properties, resul
           variant="sheet"
           resultCount={resultCount}
           onClose={onClose}
+          accessLevel={accessLevel}
         />
         <div className="mobile-filter-modal__apply">
           <button type="button" onClick={onClose} className="btn-primary h-12 w-full text-sm">

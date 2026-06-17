@@ -527,6 +527,7 @@ export default function App() {
                 filters={filters}
                 onChange={setFilters}
                 properties={properties}
+                accessLevel={accessLevel}
               />
             )}
 
@@ -919,6 +920,7 @@ export default function App() {
           properties={properties}
           resultCount={filteredProperties.length}
           onClose={() => setMobileFiltersOpen(false)}
+          accessLevel={accessLevel}
         />
       )}
 

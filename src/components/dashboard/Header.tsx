@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MapPin, Download, Heart, User, LogOut, Loader2 } from 'lucide-react';
 import { useAuth } from '../../lib/AuthContext';
+import { getTierLabel } from '../../lib/auth';
 import ThemeToggle from '../ThemeToggle';
 
 interface HeaderProps {
@@ -104,7 +105,7 @@ export default function Header({
                 <div className="flex items-center gap-2">
                   <div className="hidden sm:flex items-center gap-2 rounded-lg border border-brand-500/30 bg-brand-500/10 px-3 py-1.5 text-xs font-bold text-brand-300">
                     <User size={13} />
-                    <span className="uppercase tracking-wide">{accessLevel.replace(/_/g, ' ')}</span>
+                    <span className="uppercase tracking-wide">{getTierLabel(accessLevel)}</span>
                   </div>
                   <Link to="/pricing" className="text-[11px] sm:text-xs font-semibold btn-primary py-1.5 px-2.5 sm:px-3">
                     Upgrade

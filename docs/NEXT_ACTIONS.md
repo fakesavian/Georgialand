@@ -50,6 +50,9 @@ Ordered, bounded queue. The orchestrator takes the **top unblocked** item, dispa
   - Specialist: **builder**. Scope: `src/pages/DashboardPage.tsx`, `src/components/dashboard/`.
 - 🟡 **B3 · Loop B3 — Account-backed favorites/notes.** (SEAM DONE — extracted `src/lib/useFavorites.ts` (single storage seam, `isAccountBacked` flag), honest "saved on this device" notice, proposed `supabase/saved_listings_schema.sql` migration. localStorage retained as working impl. Remaining: human applies migration, then flip `isAccountBacked` + add remote read/write — see `docs/BLOCKERS.md`.)
   - Specialist: **builder** (+ human to apply migration). Scope: `src/lib/useFavorites.ts`, `supabase/saved_listings_schema.sql`.
+- ✅ **A8 · Loop A8 — Free / Pro / Investor gating.** (DONE — gating infra already mature in featureGates.ts/gisLayers.ts; source of truth = `profiles.access_level`, defaults free_preview. Added advanced-filter gating (free = search + quick toggles + teaser) and friendly Header tier label. No Stripe/checkout changes. Typecheck/build pass.)
+  - Specialist: **builder**. Scope: `src/components/dashboard/FilterPanel.tsx`, `MobileFilterModal.tsx`, `Header.tsx`, `src/pages/DashboardPage.tsx`.
+- ⬜ **A9 — Map layer controls** (builder) — toggle available layers; honestly label future/unavailable layers. See `src/lib/gisLayers.ts`, `MapLayerControl.tsx`, `MapView.tsx`.
 - ⬜ **B4 — Honest coverage copy pass** (product-growth) — boundaries "available for verified-source records"; property vs program leads.
 
 ## HUMAN-GATED — see `docs/BLOCKERS.md`

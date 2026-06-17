@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { Search, SlidersHorizontal, X, ChevronDown } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Search, SlidersHorizontal, X, ChevronDown, Lock } from 'lucide-react';
 import { Filters, LandProperty } from '../../types';
 import { getUniqueValues } from '../../utils';
 import { trackEvent } from '../../lib/analytics';
+import { AccessLevel } from '../../lib/authTypes';
+import { canViewFullDatabase } from '../../lib/auth';
 
 interface FilterPanelProps {
   filters: Filters;
@@ -11,11 +14,15 @@ interface FilterPanelProps {
   variant?: 'panel' | 'sheet';
   resultCount?: number;
   onClose?: () => void;
+  /** Drives advanced-filter gating. Defaults to free preview when omitted. */
+  accessLevel?: AccessLevel;
 }
 
-export default function FilterPanel({ filters, onChange, properties, variant = 'panel', resultCount, onClose }: FilterPanelProps) {
+export default function FilterPanel({ filters, onChange, properties, variant = 'panel', resultCount, onClose, accessLevel = 'free_preview' }: FilterPanelProps) {
   const isSheet = variant === 'sheet';
   const [expanded, setExpanded] = useState(isSheet);
+  // Free tier gets search + quick toggles only; advanced dropdowns/ranges unlock with a paid plan.
+  const canUseAdvancedFilters = canViewFullDatabase(accessLevel);
 
   const cities = getUniqueValues(properties, 'City');
   const counties = getUniqueValues(properties, 'County');
@@ -168,8 +175,33 @@ export default function FilterPanel({ filters, onChange, properties, variant = '
         ))}
       </div>
 
+      {/* Expanded filters — gated: free tier sees an upgrade teaser instead of advanced filters */}
+      {detailsOpen && !canUseAdvancedFilters && (
+        <div className={`${isSheet ? 'px-4 pb-28 pt-1' : 'border-t border-surface-border p-4'} animate-fade-in`}>
+          <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-brand-700/50 bg-brand-950/10 px-4 py-8 text-center">
+            <div className="grid h-11 w-11 place-items-center rounded-full border border-brand-700/40 bg-brand-900/30 text-brand-400">
+              <Lock size={18} />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-white">Advanced filters are a paid feature</p>
+              <p className="mt-1 text-xs text-olive-400 max-w-sm">
+                Search and quick filters are free. County, deal-type, score ranges, price/acre,
+                and source filters unlock with a paid plan — alongside the full lead database.
+              </p>
+            </div>
+            <Link
+              to="/pricing"
+              onClick={() => trackEvent('Sales', 'upgrade_click', 'Advanced Filters Teaser')}
+              className="btn-primary text-xs px-4 py-2"
+            >
+              Upgrade to unlock
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Expanded filters */}
-      {detailsOpen && (
+      {detailsOpen && canUseAdvancedFilters && (
         <div className={`${isSheet ? 'px-4 pb-28 pt-1' : 'border-t border-surface-border p-4'} space-y-4 animate-fade-in`}>
           {/* Dropdowns Grid */}
           <div className={`grid ${isSheet ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'} gap-3`}>

@@ -9,6 +9,16 @@ Rolling, append-only log of what each closed loop changed and verified. Newest a
 
 ---
 
+## Loop A8 — Free / Pro / Investor gating — 2026-06-18
+- **By:** Sonnet 4.6.
+- **Did:** Audited existing tier gating — found it already mature: `src/lib/featureGates.ts` (typed helpers for every tier), `src/lib/gisLayers.ts` (per-layer `minAccessLevel` + `canAccessGisLayer`), and DashboardPage already gates row limit (`getMaxRowsAllowed`, free=10), exports (`canExport`, Pro+), favorites tab (Pro+), agency tab (Investor+). **Source of truth:** `profiles.access_level` from Supabase via `AuthContext`; defaults to `free_preview` for unknown/unauthenticated (conservative, no fake access). Local dev bypass via `VITE_LOCAL_DASHBOARD_BYPASS`+`VITE_LOCAL_ACCESS_LEVEL`. **Added** the two genuine gaps: (1) advanced FilterPanel section (dropdowns/ranges/price/source) now gated behind `canViewFullDatabase` (Starter+) — free tier keeps search + quick toggles, sees an honest "Advanced filters are a paid feature" teaser with Upgrade CTA; threaded `accessLevel` through DashboardPage → FilterPanel + MobileFilterModal. (2) Header tier pill now uses friendly `getTierLabel()` instead of raw enum string. No Stripe/webhook changes; no checkout changes.
+- **Changed:** `src/components/dashboard/FilterPanel.tsx` (accessLevel prop + advanced-filter teaser), `src/components/dashboard/MobileFilterModal.tsx` (forward accessLevel), `src/components/dashboard/Header.tsx` (getTierLabel), `src/pages/DashboardPage.tsx` (pass accessLevel to both filter surfaces) | Production CSV untouched: ✓
+- **Verification:** typecheck ✓ · build ✓ (16.35s) | production CSV clean ✓ | no secrets touched ✓
+- **Result:** Honest gating — free users get a useful but limited dashboard (10 rows, search + quick filters, teaser map layers); paid features are visibly locked with upgrade paths; unknown state never grants paid access.
+- **Next:** A9 (map layer controls).
+
+---
+
 ## Loop B3 — Account-backed favorites (seam + proposal) — 2026-06-18
 - **By:** Sonnet 4.6.
 - **Did:** Inspected favorites storage + Supabase. Finding: favorites/notes live in localStorage (`glf_favorites`/`glf_notes`), inline in DashboardPage; live Supabase (`mzrfwrgvjmodiozpllpu`) has only `profiles`/`subscriptions`/`alert_preferences` — **no favorites table**. Per honesty rules, did NOT query a missing table or invent a schema. Instead: (1) extracted all favorites/notes logic into `src/lib/useFavorites.ts` — the single seam where account-backing drops in later; exposes `isAccountBacked` (currently always `false`). (2) Wired DashboardPage to the hook (behavior identical — still localStorage). (3) Added honest "saved on this device only — cross-device sync coming soon" banner to FavoritesView (driven by `isAccountBacked`). (4) Wrote `supabase/saved_listings_schema.sql` as a **proposal** (table + RLS, NOT applied). (5) Logged blocker.
