@@ -91,7 +91,7 @@ export function classifyRowType(row) {
   return 'research_placeholder';
 }
 
-function pct(n, d) { return d === 0 ? 0 : Math.round((n / d) * 100); }
+function pct(n, d) { return d === 0 ? 0 : Math.min(100, Math.round((n / d) * 100)); }
 
 /** Score one row across the 10 standard dimensions; decide gold status. */
 export function scoreRow(row) {
@@ -183,6 +183,14 @@ export function scoreRow(row) {
   const nearReady = !eligible && rowType !== 'research_placeholder' && overall >= 60;
   const quarantined = rowType === 'research_placeholder' || (!hasUsableParcelId(row.Parcel_ID) && !isHttpUrl(row.Source_URL));
   const goldStatus = eligible ? 'eligible' : quarantined ? 'quarantined' : nearReady ? 'near_ready' : 'not_ready';
+
+  // Make the exact gold-gate failures explicit so the blockers report is actionable.
+  if (!eligible) {
+    if (rowType !== 'parcel_lead' && !blockers.includes('parcel_id') && !blockers.includes('lat_lon')) blockers.push('not_parcel_specific');
+    if (priceScore < 80 && pBucket !== 'blank') blockers.push('price_not_numeric');
+    if (sourceScore < 67) blockers.push('source_under_4of6');
+    if (overall < 80) blockers.push('overall_below_80');
+  }
 
   return { dimensions, overall, boundaryReadiness, rowType, goldStatus, blockers, acqInfer, priceBucket: pBucket, priceLabel: formatPinPriceLabel(row.Estimated_Price_or_Min_Bid), priceNormalized: parsePriceValue(row.Estimated_Price_or_Min_Bid) };
 }

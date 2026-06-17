@@ -1,101 +1,101 @@
 Listing_ID,Property,County,Row_Type,Gold_Status,Readiness,Boundary_Readiness,Price_Label,Parcel_ID,Blockers
-GA-042,Athens-Clarke County Tax Sale (First Tuesday Auction),Clarke,parcel_lead,near_ready,104,0,$4.5K,162B1 E005,boundary_geojson
-GA-043,Chatham County Tax Sale (First Tuesday Auction),Chatham,parcel_lead,near_ready,104,0,$5.5K,2-0074-12-014,boundary_geojson
-GA-031,512 Mercer Ave,Dougherty,parcel_lead,near_ready,100,0,$1.5K,0024/0002/021,boundary_geojson
-GA-032,714 W 39th St,Chatham,parcel_lead,near_ready,100,0,$5K,2-0048-18-005,boundary_geojson
-GA-033,1540 Wrightsboro Rd,Richmond,parcel_lead,near_ready,100,0,$3.5K,046-2-120-00-0,boundary_geojson
-GA-034,884 Walnut St,Bibb,parcel_lead,near_ready,100,0,$2.5K,Q073-0245,boundary_geojson
-GA-035,112 Rocksprings St,Clarke,parcel_lead,near_ready,100,0,$4K,122C2 B014,boundary_geojson
-GA-036,415 River St,Lowndes,parcel_lead,near_ready,100,0,$2K,0112 045,boundary_geojson
-GA-037,1410 Carter St,Bartow,parcel_lead,near_ready,100,0,$6K,C022-0004-012,boundary_geojson
-GA-038,312 W Solomon St,Spalding,parcel_lead,near_ready,100,0,$3K,006 01004,boundary_geojson
-GA-039,215 Oak Ave,Houston,parcel_lead,near_ready,100,0,$3.5K,0W49B0 041000,boundary_geojson
-GA-040,802 Lee St,Glynn,parcel_lead,near_ready,100,0,$4.5K,01-02391,boundary_geojson
-GA-041,712 Jackson St,Sumter,parcel_lead,near_ready,100,0,$1.2K,2214-04-12,boundary_geojson
-GA-044,Fulton County Repository Listing - Vacant Infill Lot,Fulton,parcel_lead,near_ready,100,0,$3.5K,14 01150002014,boundary_geojson
-GA-045,GovDeals Surplus Land (City of Augusta Surplus Lot),Richmond,parcel_lead,near_ready,100,0,$5K,037-3-042-00-0,boundary_geojson
-GA-046,Rome-Floyd County Land Bank Lot,Floyd,parcel_lead,near_ready,100,0,$2K,I14W 120,boundary_geojson
-GA-003,"0 Crescendo Dr NW, Atlanta, GA 30318",Fulton,parcel_lead,near_ready,98,0,$500+,14 020900020883,boundary_geojson
-GA-007,"2718 Windrock Ct, DeKalb County, GA",DeKalb,parcel_lead,near_ready,96,0,$1.5K+,15 009 01 033,boundary_geojson
-GA-012,"0 Keels Ln, South Fulton, GA 30349",Fulton,parcel_lead,near_ready,94,0,Bid,13 016000020296,boundary_geojson
-GA-002,Metro Atlanta Land Bank – Residential Vacant Lot (Pittsburgh/Mechanicsville),Fulton,program_lead,near_ready,90,0,$1K+,Needs verification,parcel_id|boundary_geojson
-GA-017,MALB – Vacant Lot (Westside Atlanta / English Avenue Area),Fulton,program_lead,near_ready,90,0,$1K+,Needs verification,parcel_id|boundary_geojson
-GA-018,MALB – Vacant Lot (Bankhead/West Atlanta),Fulton,program_lead,near_ready,90,0,$1K+,Needs verification,parcel_id|boundary_geojson
-GA-022,MALB – Vacant Lot (South Atlanta / Adair Park),Fulton,program_lead,near_ready,90,0,$1K+,Needs verification,parcel_id|boundary_geojson
-GA-024,MALB – Vacant Lot (Grant Park / Ormewood Park Adjacent),Fulton,program_lead,near_ready,90,0,$15K+,Needs verification,parcel_id|boundary_geojson
-GA-026,MALB – Vacant Lot (Mozley Park / West End),Fulton,program_lead,near_ready,90,0,$1K+,Needs verification,parcel_id|boundary_geojson
-GA-029,MALB – Vacant Lot (Oakland City / Browns Mill Area),Fulton,program_lead,near_ready,90,0,$1K+,Needs verification,parcel_id|boundary_geojson
-GA-004,DeKalb Regional Land Bank – Residential Vacant Lot (Decatur/East DeKalb),DeKalb,program_lead,near_ready,85,0,Ask,Needs verification,parcel_id|boundary_geojson
-GA-009,Clayton County Land Bank Authority – Residential Lot,Clayton,program_lead,near_ready,85,0,Ask,Needs verification,parcel_id|boundary_geojson
-GA-016,Columbus Land Bank Authority – Residential Vacant Lot,Muscogee,program_lead,near_ready,85,0,Ask,Needs verification,parcel_id|boundary_geojson
-GA-021,DRLBA – Side Lot Program (Adjacent Owner DeKalb County),DeKalb,program_lead,near_ready,85,0,Ask,Needs verification,parcel_id|boundary_geojson
-GA-001,Metro Atlanta Land Bank – Residential Vacant Lot (Vine City Area),Fulton,program_lead,near_ready,84,0,$500+,Needs verification,parcel_id|boundary_geojson
-GA-005,DeKalb Regional Land Bank – Community-Inspired Development Lot (Lithonia Area),DeKalb,program_lead,near_ready,84,0,Ask,Needs verification,parcel_id|boundary_geojson
-GA-014,Augusta Georgia Land Bank Authority – Residential Vacant Lot,Richmond,program_lead,near_ready,84,0,Ask,Needs verification,parcel_id|boundary_geojson
-GA-015,Chatham-Savannah Land Bank – Residential Vacant Lot,Chatham,program_lead,near_ready,84,0,Ask,Needs verification,parcel_id|boundary_geojson
-GA-013,Macon-Bibb County Land Bank – Residential Vacant Lot,Bibb,program_lead,near_ready,83,0,$500+,Needs verification,parcel_id|gis_or_assessor_link|boundary_geojson
-GA-019,DeKalb Tax Sale – Vacant Lot (Candler Park / East Atlanta Adjacent),DeKalb,program_lead,quarantined,80,0,$983,Published 4 weeks prior in The Champion,parcel_id|lat_lon|boundary_geojson|source_url
-GA-028,DeKalb County Tax Sale – Larger Suburban Lot (Stone Mountain / Lithonia Area),DeKalb,program_lead,quarantined,80,0,$983,Published in The Champion 4 weeks prior,parcel_id|lat_lon|boundary_geojson|source_url
-GA-006,Fulton County Tax Sale – Vacant Residential Lot (First Tuesday Monthly Auction),Fulton,program_lead,near_ready,78,0,$2K+,Published in sale list prior to auction,parcel_id|lat_lon|boundary_geojson
-GA-054,1415 Wrightsboro Rd,Richmond,program_lead,near_ready,75,0,TBD,046-3-217-00-0,lat_lon|boundary_geojson
-GA-055,946 Wrightsboro Rd,Richmond,program_lead,near_ready,75,0,TBD,059-2-695-00-0,lat_lon|boundary_geojson
-GA-056,1355 Wrightsboro Rd,Richmond,program_lead,near_ready,75,0,TBD,059-1-093-00-0,lat_lon|boundary_geojson
-GA-057,1374 Wrightsboro Rd,Richmond,program_lead,near_ready,75,0,TBD,059-1-250-00-0,lat_lon|boundary_geojson
-GA-008,Clayton County Tax Sale – Vacant Residential Lot (Jonesboro Courthouse),Clayton,program_lead,quarantined,73,0,TBD,Published 4 weeks prior in local legal organ,parcel_id|lat_lon|boundary_geojson|source_url
-GA-010,Cobb County Tax Sale – Vacant Residential Lot (Marietta Courthouse),Cobb,program_lead,quarantined,73,0,TBD,Published in Marietta Daily Journal 4 weeks prior,parcel_id|lat_lon|boundary_geojson|source_url
-GA-011,Gwinnett County Tax Sale – Vacant Residential Lot (Lawrenceville),Gwinnett,program_lead,quarantined,73,0,TBD,Published in Gwinnett Daily Post 4 weeks prior,parcel_id|lat_lon|boundary_geojson|source_url
-GA-020,Fulton County Tax Sale – Vacant Lot (College Park/East Point Area),Fulton,program_lead,quarantined,73,0,TBD,Published in South Fulton Neighbor 4 weeks prior,parcel_id|lat_lon|boundary_geojson|source_url
-GA-023,Fulton County Tax Sale – Vacant Lot (South Fulton / Union City Area),Fulton,program_lead,quarantined,73,0,TBD,Published in South Fulton Neighbor 4 weeks prior,parcel_id|lat_lon|boundary_geojson|source_url
-GA-025,Clayton County Tax Sale – Larger Lot (Forest Park / Riverdale Area),Clayton,program_lead,quarantined,73,0,TBD,Published 4 weeks prior in local legal organ,parcel_id|lat_lon|boundary_geojson|source_url
-GA-027,GovDeals – City of Atlanta or Metro Government Auction Property,Fulton,program_lead,near_ready,73,0,Bid,Needs verification,parcel_id|lat_lon|boundary_geojson
-GA-030,Fulton County Tax Sale – Intown Atlanta Vacant Lot (Off-Cycle Opportunity),Fulton,program_lead,quarantined,73,0,TBD,Published in South Fulton Neighbor 4 weeks prior,parcel_id|lat_lon|boundary_geojson|source_url
-GA-047,1206 Kent St.,Richmond,program_lead,near_ready,71,0,TBD,058-4-416-00-0,lat_lon|boundary_geojson|human_reviewed
-GA-048,2417 Wimberly Dr,Richmond,program_lead,near_ready,71,0,TBD,086-4-147-01-0,lat_lon|boundary_geojson|human_reviewed
-GA-053,WA0607 220 Bailey Street,Ware,program_lead,near_ready,64,0,TBD,Unknown,parcel_id|lat_lon|boundary_geojson
-GA-058,WA1902 010 Marion Street,Ware,program_lead,near_ready,64,0,TBD,Unknown,parcel_id|lat_lon|boundary_geojson
-GA-049,1330 Mary Street,Ware,program_lead,not_ready,52,0,TBD,Unknown,parcel_id|lat_lon|gis_or_assessor_link|boundary_geojson|human_reviewed
-GA-050,1530 Roosevelt,Ware,program_lead,not_ready,52,0,TBD,Unknown,parcel_id|lat_lon|gis_or_assessor_link|boundary_geojson|human_reviewed
-GA-051,911 Jane Street,Ware,program_lead,not_ready,52,0,TBD,Unknown,parcel_id|lat_lon|gis_or_assessor_link|boundary_geojson|human_reviewed
-GA-052,1416 Rockefeller,Ware,program_lead,not_ready,52,0,TBD,Unknown,parcel_id|lat_lon|gis_or_assessor_link|boundary_geojson|human_reviewed
-DEKALB-2,Parcel 12 228 01 021,DeKalb,parcel_lead,not_ready,36,0,$345K,12 228 01 021,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-3,Parcel 12 228 01 022,DeKalb,parcel_lead,not_ready,36,0,$359K,12 228 01 022,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-4,Parcel 12 228 01 041,DeKalb,parcel_lead,not_ready,36,0,$341K,12 228 01 041,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-8,Parcel 12 229 01 014,DeKalb,parcel_lead,not_ready,36,0,$228K,12 229 01 014,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-9,Parcel 12 229 02 010,DeKalb,parcel_lead,not_ready,36,0,$235K,12 229 02 010,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-11,Parcel 12 229 02 046,DeKalb,parcel_lead,not_ready,36,0,$231K,12 229 02 046,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-12,Parcel 12 229 02 050,DeKalb,parcel_lead,not_ready,36,0,$241K,12 229 02 050,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-13,Parcel 12 229 02 058,DeKalb,parcel_lead,not_ready,36,0,$232K,12 229 02 058,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-16,Parcel 12 252 02 057,DeKalb,parcel_lead,not_ready,36,0,$241K,12 252 02 057,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-17,Parcel 12 252 03 071,DeKalb,parcel_lead,not_ready,36,0,$250K,12 252 03 071,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-19,Parcel 12 229 06 032,DeKalb,parcel_lead,not_ready,36,0,$212K,12 229 06 032,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-20,Parcel 12 229 06 037,DeKalb,parcel_lead,not_ready,36,0,$226K,12 229 06 037,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-21,Parcel 12 229 06 034,DeKalb,parcel_lead,not_ready,36,0,$228K,12 229 06 034,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-22,Parcel 12 229 02 084,DeKalb,parcel_lead,not_ready,36,0,$139K,12 229 02 084,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-23,Parcel 12 252 01 041,DeKalb,parcel_lead,not_ready,36,0,$304K,12 252 01 041,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-24,Parcel 12 252 01 052,DeKalb,parcel_lead,not_ready,36,0,$252K,12 252 01 052,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-25,Parcel 12 252 01 053,DeKalb,parcel_lead,not_ready,36,0,$215K,12 252 01 053,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-26,Parcel 12 252 01 065,DeKalb,parcel_lead,not_ready,36,0,$319K,12 252 01 065,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-27,Parcel 12 252 01 114,DeKalb,parcel_lead,not_ready,36,0,$361K,12 252 01 114,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-29,Parcel 12 252 01 125,DeKalb,parcel_lead,not_ready,36,0,$357K,12 252 01 125,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-30,Parcel 12 229 02 071,DeKalb,parcel_lead,not_ready,36,0,$232K,12 229 02 071,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-32,Parcel 12 229 04 002,DeKalb,parcel_lead,not_ready,36,0,$350K,12 229 04 002,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-33,Parcel 12 229 06 005,DeKalb,parcel_lead,not_ready,36,0,$40K,12 229 06 005,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-34,Parcel 12 229 06 006,DeKalb,parcel_lead,not_ready,36,0,$162K,12 229 06 006,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-35,Parcel 12 229 06 019,DeKalb,parcel_lead,not_ready,36,0,$221K,12 229 06 019,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-36,Parcel 12 229 06 021,DeKalb,parcel_lead,not_ready,36,0,$231K,12 229 06 021,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-39,Parcel 12 252 06 006,DeKalb,parcel_lead,not_ready,36,0,$386K,12 252 06 006,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-40,Parcel 12 253 02 062,DeKalb,parcel_lead,not_ready,36,0,$443K,12 253 02 062,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-41,Parcel 12 253 02 086,DeKalb,parcel_lead,not_ready,36,0,$279K,12 253 02 086,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-42,Parcel 12 253 02 089,DeKalb,parcel_lead,not_ready,36,0,$303K,12 253 02 089,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-44,Parcel 12 252 07 006,DeKalb,parcel_lead,not_ready,36,0,$386K,12 252 07 006,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-45,Parcel 12 253 02 056,DeKalb,parcel_lead,not_ready,36,0,$488K,12 253 02 056,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-46,Parcel 12 253 02 061,DeKalb,parcel_lead,not_ready,36,0,$385K,12 253 02 061,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-47,Parcel 12 253 02 075,DeKalb,parcel_lead,not_ready,36,0,$266K,12 253 02 075,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-48,Parcel 12 253 02 103,DeKalb,parcel_lead,not_ready,36,0,$305K,12 253 02 103,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-49,Parcel 12 253 02 106,DeKalb,parcel_lead,not_ready,36,0,$348K,12 253 02 106,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-51,Parcel 12 253 03 014,DeKalb,parcel_lead,not_ready,36,0,$263K,12 253 03 014,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-52,Parcel 12 253 04 002,DeKalb,parcel_lead,not_ready,36,0,$252K,12 253 04 002,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-53,Parcel 12 252 01 002,DeKalb,parcel_lead,not_ready,36,0,$102K,12 252 01 002,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-54,Parcel 12 252 01 086,DeKalb,parcel_lead,not_ready,36,0,$22.5K,12 252 01 086,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-55,Parcel 12 253 03 022,DeKalb,parcel_lead,not_ready,36,0,$243K,12 253 03 022,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
-DEKALB-58,Parcel 12 229 02 052,DeKalb,parcel_lead,not_ready,36,0,$236K,12 229 02 052,acquisition_type|gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed
+GA-031,512 Mercer Ave,Dougherty,parcel_lead,near_ready,86,0,$1.5K,0024/0002/021,boundary_geojson
+GA-032,714 W 39th St,Chatham,parcel_lead,near_ready,86,0,$5K,2-0048-18-005,boundary_geojson
+GA-033,1540 Wrightsboro Rd,Richmond,parcel_lead,near_ready,86,0,$3.5K,046-2-120-00-0,boundary_geojson
+GA-034,884 Walnut St,Bibb,parcel_lead,near_ready,86,0,$2.5K,Q073-0245,boundary_geojson
+GA-035,112 Rocksprings St,Clarke,parcel_lead,near_ready,86,0,$4K,122C2 B014,boundary_geojson
+GA-036,415 River St,Lowndes,parcel_lead,near_ready,86,0,$2K,0112 045,boundary_geojson
+GA-037,1410 Carter St,Bartow,parcel_lead,near_ready,86,0,$6K,C022-0004-012,boundary_geojson
+GA-038,312 W Solomon St,Spalding,parcel_lead,near_ready,86,0,$3K,006 01004,boundary_geojson
+GA-039,215 Oak Ave,Houston,parcel_lead,near_ready,86,0,$3.5K,0W49B0 041000,boundary_geojson
+GA-040,802 Lee St,Glynn,parcel_lead,near_ready,86,0,$4.5K,01-02391,boundary_geojson
+GA-041,712 Jackson St,Sumter,parcel_lead,near_ready,86,0,$1.2K,2214-04-12,boundary_geojson
+GA-042,Athens-Clarke County Tax Sale (First Tuesday Auction),Clarke,parcel_lead,near_ready,86,0,$4.5K,162B1 E005,boundary_geojson
+GA-043,Chatham County Tax Sale (First Tuesday Auction),Chatham,parcel_lead,near_ready,86,0,$5.5K,2-0074-12-014,boundary_geojson
+GA-044,Fulton County Repository Listing - Vacant Infill Lot,Fulton,parcel_lead,near_ready,86,0,$3.5K,14 01150002014,boundary_geojson
+GA-045,GovDeals Surplus Land (City of Augusta Surplus Lot),Richmond,parcel_lead,near_ready,86,0,$5K,037-3-042-00-0,boundary_geojson
+GA-046,Rome-Floyd County Land Bank Lot,Floyd,parcel_lead,near_ready,86,0,$2K,I14W 120,boundary_geojson
+GA-003,"0 Crescendo Dr NW, Atlanta, GA 30318",Fulton,parcel_lead,near_ready,84,0,$500+,14 020900020883,boundary_geojson
+GA-012,"0 Keels Ln, South Fulton, GA 30349",Fulton,parcel_lead,near_ready,79,0,Bid,13 016000020296,boundary_geojson|price_not_numeric|overall_below_80
+GA-007,"2718 Windrock Ct, DeKalb County, GA",DeKalb,parcel_lead,near_ready,78,0,$1.5K+,15 009 01 033,boundary_geojson|overall_below_80
+GA-002,Metro Atlanta Land Bank – Residential Vacant Lot (Pittsburgh/Mechanicsville),Fulton,program_lead,near_ready,75,0,$1K+,Needs verification,parcel_id|boundary_geojson|overall_below_80
+GA-017,MALB – Vacant Lot (Westside Atlanta / English Avenue Area),Fulton,program_lead,near_ready,75,0,$1K+,Needs verification,parcel_id|boundary_geojson|overall_below_80
+GA-018,MALB – Vacant Lot (Bankhead/West Atlanta),Fulton,program_lead,near_ready,75,0,$1K+,Needs verification,parcel_id|boundary_geojson|overall_below_80
+GA-022,MALB – Vacant Lot (South Atlanta / Adair Park),Fulton,program_lead,near_ready,75,0,$1K+,Needs verification,parcel_id|boundary_geojson|overall_below_80
+GA-024,MALB – Vacant Lot (Grant Park / Ormewood Park Adjacent),Fulton,program_lead,near_ready,75,0,$15K+,Needs verification,parcel_id|boundary_geojson|overall_below_80
+GA-026,MALB – Vacant Lot (Mozley Park / West End),Fulton,program_lead,near_ready,75,0,$1K+,Needs verification,parcel_id|boundary_geojson|overall_below_80
+GA-029,MALB – Vacant Lot (Oakland City / Browns Mill Area),Fulton,program_lead,near_ready,75,0,$1K+,Needs verification,parcel_id|boundary_geojson|overall_below_80
+GA-004,DeKalb Regional Land Bank – Residential Vacant Lot (Decatur/East DeKalb),DeKalb,program_lead,near_ready,71,0,Ask,Needs verification,parcel_id|boundary_geojson|price_not_numeric|overall_below_80
+GA-009,Clayton County Land Bank Authority – Residential Lot,Clayton,program_lead,near_ready,71,0,Ask,Needs verification,parcel_id|boundary_geojson|price_not_numeric|overall_below_80
+GA-016,Columbus Land Bank Authority – Residential Vacant Lot,Muscogee,program_lead,near_ready,71,0,Ask,Needs verification,parcel_id|boundary_geojson|price_not_numeric|overall_below_80
+GA-021,DRLBA – Side Lot Program (Adjacent Owner DeKalb County),DeKalb,program_lead,near_ready,71,0,Ask,Needs verification,parcel_id|boundary_geojson|price_not_numeric|overall_below_80
+GA-001,Metro Atlanta Land Bank – Residential Vacant Lot (Vine City Area),Fulton,program_lead,near_ready,70,0,$500+,Needs verification,parcel_id|boundary_geojson|overall_below_80
+GA-005,DeKalb Regional Land Bank – Community-Inspired Development Lot (Lithonia Area),DeKalb,program_lead,near_ready,69,0,Ask,Needs verification,parcel_id|boundary_geojson|price_not_numeric|overall_below_80
+GA-013,Macon-Bibb County Land Bank – Residential Vacant Lot,Bibb,program_lead,near_ready,69,0,$500+,Needs verification,parcel_id|gis_or_assessor_link|boundary_geojson|overall_below_80
+GA-014,Augusta Georgia Land Bank Authority – Residential Vacant Lot,Richmond,program_lead,near_ready,69,0,Ask,Needs verification,parcel_id|boundary_geojson|price_not_numeric|overall_below_80
+GA-015,Chatham-Savannah Land Bank – Residential Vacant Lot,Chatham,program_lead,near_ready,69,0,Ask,Needs verification,parcel_id|boundary_geojson|price_not_numeric|overall_below_80
+GA-019,DeKalb Tax Sale – Vacant Lot (Candler Park / East Atlanta Adjacent),DeKalb,program_lead,quarantined,69,0,$983,Published 4 weeks prior in The Champion,parcel_id|lat_lon|boundary_geojson|source_url|source_under_4of6|overall_below_80
+GA-028,DeKalb County Tax Sale – Larger Suburban Lot (Stone Mountain / Lithonia Area),DeKalb,program_lead,quarantined,69,0,$983,Published in The Champion 4 weeks prior,parcel_id|lat_lon|boundary_geojson|source_url|source_under_4of6|overall_below_80
+GA-047,1206 Kent St.,Richmond,program_lead,near_ready,64,0,TBD,058-4-416-00-0,lat_lon|boundary_geojson|human_reviewed|price_not_numeric|overall_below_80
+GA-048,2417 Wimberly Dr,Richmond,program_lead,near_ready,64,0,TBD,086-4-147-01-0,lat_lon|boundary_geojson|human_reviewed|price_not_numeric|overall_below_80
+GA-054,1415 Wrightsboro Rd,Richmond,program_lead,near_ready,64,0,TBD,046-3-217-00-0,lat_lon|boundary_geojson|price_not_numeric|overall_below_80
+GA-055,946 Wrightsboro Rd,Richmond,program_lead,near_ready,64,0,TBD,059-2-695-00-0,lat_lon|boundary_geojson|price_not_numeric|overall_below_80
+GA-056,1355 Wrightsboro Rd,Richmond,program_lead,near_ready,64,0,TBD,059-1-093-00-0,lat_lon|boundary_geojson|price_not_numeric|overall_below_80
+GA-057,1374 Wrightsboro Rd,Richmond,program_lead,near_ready,64,0,TBD,059-1-250-00-0,lat_lon|boundary_geojson|price_not_numeric|overall_below_80
+GA-008,Clayton County Tax Sale – Vacant Residential Lot (Jonesboro Courthouse),Clayton,program_lead,quarantined,63,0,TBD,Published 4 weeks prior in local legal organ,parcel_id|lat_lon|boundary_geojson|source_url|price_not_numeric|source_under_4of6|overall_below_80
+GA-010,Cobb County Tax Sale – Vacant Residential Lot (Marietta Courthouse),Cobb,program_lead,quarantined,63,0,TBD,Published in Marietta Daily Journal 4 weeks prior,parcel_id|lat_lon|boundary_geojson|source_url|price_not_numeric|source_under_4of6|overall_below_80
+GA-011,Gwinnett County Tax Sale – Vacant Residential Lot (Lawrenceville),Gwinnett,program_lead,quarantined,63,0,TBD,Published in Gwinnett Daily Post 4 weeks prior,parcel_id|lat_lon|boundary_geojson|source_url|price_not_numeric|source_under_4of6|overall_below_80
+GA-020,Fulton County Tax Sale – Vacant Lot (College Park/East Point Area),Fulton,program_lead,quarantined,63,0,TBD,Published in South Fulton Neighbor 4 weeks prior,parcel_id|lat_lon|boundary_geojson|source_url|price_not_numeric|source_under_4of6|overall_below_80
+GA-023,Fulton County Tax Sale – Vacant Lot (South Fulton / Union City Area),Fulton,program_lead,quarantined,63,0,TBD,Published in South Fulton Neighbor 4 weeks prior,parcel_id|lat_lon|boundary_geojson|source_url|price_not_numeric|source_under_4of6|overall_below_80
+GA-025,Clayton County Tax Sale – Larger Lot (Forest Park / Riverdale Area),Clayton,program_lead,quarantined,63,0,TBD,Published 4 weeks prior in local legal organ,parcel_id|lat_lon|boundary_geojson|source_url|price_not_numeric|source_under_4of6|overall_below_80
+GA-030,Fulton County Tax Sale – Intown Atlanta Vacant Lot (Off-Cycle Opportunity),Fulton,program_lead,quarantined,63,0,TBD,Published in South Fulton Neighbor 4 weeks prior,parcel_id|lat_lon|boundary_geojson|source_url|price_not_numeric|source_under_4of6|overall_below_80
+GA-006,Fulton County Tax Sale – Vacant Residential Lot (First Tuesday Monthly Auction),Fulton,program_lead,near_ready,60,0,$2K+,Published in sale list prior to auction,parcel_id|lat_lon|boundary_geojson|source_under_4of6|overall_below_80
+GA-027,GovDeals – City of Atlanta or Metro Government Auction Property,Fulton,program_lead,not_ready,59,0,Bid,Needs verification,parcel_id|lat_lon|boundary_geojson|price_not_numeric|source_under_4of6|overall_below_80
+GA-053,WA0607 220 Bailey Street,Ware,program_lead,not_ready,54,0,TBD,Unknown,parcel_id|lat_lon|boundary_geojson|price_not_numeric|overall_below_80
+GA-058,WA1902 010 Marion Street,Ware,program_lead,not_ready,54,0,TBD,Unknown,parcel_id|lat_lon|boundary_geojson|price_not_numeric|overall_below_80
+GA-049,1330 Mary Street,Ware,program_lead,not_ready,45,0,TBD,Unknown,parcel_id|lat_lon|gis_or_assessor_link|boundary_geojson|human_reviewed|price_not_numeric|source_under_4of6|overall_below_80
+GA-050,1530 Roosevelt,Ware,program_lead,not_ready,45,0,TBD,Unknown,parcel_id|lat_lon|gis_or_assessor_link|boundary_geojson|human_reviewed|price_not_numeric|source_under_4of6|overall_below_80
+GA-051,911 Jane Street,Ware,program_lead,not_ready,45,0,TBD,Unknown,parcel_id|lat_lon|gis_or_assessor_link|boundary_geojson|human_reviewed|price_not_numeric|source_under_4of6|overall_below_80
+GA-052,1416 Rockefeller,Ware,program_lead,not_ready,45,0,TBD,Unknown,parcel_id|lat_lon|gis_or_assessor_link|boundary_geojson|human_reviewed|price_not_numeric|source_under_4of6|overall_below_80
+DEKALB-2,Parcel 12 228 01 021,DeKalb,parcel_lead,not_ready,38,0,$345K,12 228 01 021,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-3,Parcel 12 228 01 022,DeKalb,parcel_lead,not_ready,38,0,$359K,12 228 01 022,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-4,Parcel 12 228 01 041,DeKalb,parcel_lead,not_ready,38,0,$341K,12 228 01 041,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-8,Parcel 12 229 01 014,DeKalb,parcel_lead,not_ready,38,0,$228K,12 229 01 014,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-9,Parcel 12 229 02 010,DeKalb,parcel_lead,not_ready,38,0,$235K,12 229 02 010,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-11,Parcel 12 229 02 046,DeKalb,parcel_lead,not_ready,38,0,$231K,12 229 02 046,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-12,Parcel 12 229 02 050,DeKalb,parcel_lead,not_ready,38,0,$241K,12 229 02 050,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-13,Parcel 12 229 02 058,DeKalb,parcel_lead,not_ready,38,0,$232K,12 229 02 058,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-16,Parcel 12 252 02 057,DeKalb,parcel_lead,not_ready,38,0,$241K,12 252 02 057,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-17,Parcel 12 252 03 071,DeKalb,parcel_lead,not_ready,38,0,$250K,12 252 03 071,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-19,Parcel 12 229 06 032,DeKalb,parcel_lead,not_ready,38,0,$212K,12 229 06 032,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-20,Parcel 12 229 06 037,DeKalb,parcel_lead,not_ready,38,0,$226K,12 229 06 037,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-21,Parcel 12 229 06 034,DeKalb,parcel_lead,not_ready,38,0,$228K,12 229 06 034,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-22,Parcel 12 229 02 084,DeKalb,parcel_lead,not_ready,38,0,$139K,12 229 02 084,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-23,Parcel 12 252 01 041,DeKalb,parcel_lead,not_ready,38,0,$304K,12 252 01 041,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-24,Parcel 12 252 01 052,DeKalb,parcel_lead,not_ready,38,0,$252K,12 252 01 052,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-25,Parcel 12 252 01 053,DeKalb,parcel_lead,not_ready,38,0,$215K,12 252 01 053,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-26,Parcel 12 252 01 065,DeKalb,parcel_lead,not_ready,38,0,$319K,12 252 01 065,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-27,Parcel 12 252 01 114,DeKalb,parcel_lead,not_ready,38,0,$361K,12 252 01 114,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-29,Parcel 12 252 01 125,DeKalb,parcel_lead,not_ready,38,0,$357K,12 252 01 125,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-30,Parcel 12 229 02 071,DeKalb,parcel_lead,not_ready,38,0,$232K,12 229 02 071,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-32,Parcel 12 229 04 002,DeKalb,parcel_lead,not_ready,38,0,$350K,12 229 04 002,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-33,Parcel 12 229 06 005,DeKalb,parcel_lead,not_ready,38,0,$40K,12 229 06 005,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-34,Parcel 12 229 06 006,DeKalb,parcel_lead,not_ready,38,0,$162K,12 229 06 006,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-35,Parcel 12 229 06 019,DeKalb,parcel_lead,not_ready,38,0,$221K,12 229 06 019,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-36,Parcel 12 229 06 021,DeKalb,parcel_lead,not_ready,38,0,$231K,12 229 06 021,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-39,Parcel 12 252 06 006,DeKalb,parcel_lead,not_ready,38,0,$386K,12 252 06 006,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-40,Parcel 12 253 02 062,DeKalb,parcel_lead,not_ready,38,0,$443K,12 253 02 062,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-41,Parcel 12 253 02 086,DeKalb,parcel_lead,not_ready,38,0,$279K,12 253 02 086,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-42,Parcel 12 253 02 089,DeKalb,parcel_lead,not_ready,38,0,$303K,12 253 02 089,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-44,Parcel 12 252 07 006,DeKalb,parcel_lead,not_ready,38,0,$386K,12 252 07 006,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-45,Parcel 12 253 02 056,DeKalb,parcel_lead,not_ready,38,0,$488K,12 253 02 056,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-46,Parcel 12 253 02 061,DeKalb,parcel_lead,not_ready,38,0,$385K,12 253 02 061,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-47,Parcel 12 253 02 075,DeKalb,parcel_lead,not_ready,38,0,$266K,12 253 02 075,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-48,Parcel 12 253 02 103,DeKalb,parcel_lead,not_ready,38,0,$305K,12 253 02 103,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-49,Parcel 12 253 02 106,DeKalb,parcel_lead,not_ready,38,0,$348K,12 253 02 106,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-51,Parcel 12 253 03 014,DeKalb,parcel_lead,not_ready,38,0,$263K,12 253 03 014,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-52,Parcel 12 253 04 002,DeKalb,parcel_lead,not_ready,38,0,$252K,12 253 04 002,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-53,Parcel 12 252 01 002,DeKalb,parcel_lead,not_ready,38,0,$102K,12 252 01 002,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-54,Parcel 12 252 01 086,DeKalb,parcel_lead,not_ready,38,0,$22.5K,12 252 01 086,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-55,Parcel 12 253 03 022,DeKalb,parcel_lead,not_ready,38,0,$243K,12 253 03 022,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80
+DEKALB-58,Parcel 12 229 02 052,DeKalb,parcel_lead,not_ready,38,0,$236K,12 229 02 052,gis_or_assessor_link|boundary_geojson|title_redemption_risk|source_url|last_checked_date|human_reviewed|source_under_4of6|overall_below_80

@@ -1,0 +1,11 @@
+Listing_ID,Current_Status,Property_Type,Source_Agency,Data_Source_Type,Acquisition_Type_Current,Acquisition_Type_Inference_Status,Acquisition_Type_Suggestion,Justification
+DEKALB-1,Off-Market,,GIS-Parcel,(blank),suggested_needs_review,Off-Market Research,Current_Status matches off-market pattern
+DEKALB-2,Off-Market,,GIS-Parcel,(blank),suggested_needs_review,Off-Market Research,Current_Status matches off-market pattern
+DEKALB-3,Off-Market,,GIS-Parcel,(blank),suggested_needs_review,Off-Market Research,Current_Status matches off-market pattern
+DEKALB-4,Off-Market,,GIS-Parcel,(blank),suggested_needs_review,Off-Market Research,Current_Status matches off-market pattern
+DEKALB-5,Off-Market,,GIS-Parcel,(blank),suggested_needs_review,Off-Market Research,Current_Status matches off-market pattern
+GA-001,Available – Active Inventory,Residential Vacant Land,Metro Atlanta Land Bank (MALB),Needs verification,Land Bank,present,Land Bank,Source_Agency matches land bank pattern
+GA-002,Available – Active Inventory,Residential Vacant Land,Metro Atlanta Land Bank (MALB),2026-05-29,Land Bank,present,Land Bank,Source_Agency matches land bank pattern
+GA-003,Available (Rolling Program),Residential Vacant Land – Side Lot,Metro Atlanta Land Bank (MALB),No,Land Bank,present,Land Bank,Source_Agency matches land bank pattern
+GA-006,Scheduled for auction (First Tuesday monthly),Residential Vacant Land – Tax Delinquent,Fulton County Sheriff's Office,Unknown,Sheriff Sale,present,Sheriff Sale,Source_Agency and Current_Status match sheriff sale pattern
+GA-007,Scheduled for auction (First Tuesday monthly),Residential Vacant Land – Tax Delinquent,DeKalb County Tax Commissioner,Sale list published in The Champion Newspaper (DeKalb legal organ). Pre-registration available online at dekalbtax.org. Auction held at DeKalb County Courthouse steps in Decatur. | Location black spot 2026-06-07: Program-level DeKalb tax sale row; requires published sale parcel/address before trusted geocode.,Sheriff Sale,present,Sheriff Sale,Current_Status and Data_Source_Type match tax sale pattern

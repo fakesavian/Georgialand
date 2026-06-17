@@ -10,6 +10,7 @@ import FAQPage from './pages/FAQPage';
 import ReportPage from './pages/ReportPage';
 import AlertsPage from './pages/AlertsPage';
 import AdminPage from './pages/AdminPage';
+import DataReviewPage from './pages/DataReviewPage';
 import AccountPage from './pages/AccountPage';
 
 import DisclaimerPage from './pages/DisclaimerPage';
@@ -73,6 +74,7 @@ export default function App() {
           <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
           <Route path="/account" element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute requireAdmin><AdminPage /></ProtectedRoute>} />
+          <Route path="/admin/review" element={<ProtectedRoute requireAdmin><DataReviewPage /></ProtectedRoute>} />
 
           {/* Public Routes */}
           <Route path="/pricing" element={<PricingPage />} />

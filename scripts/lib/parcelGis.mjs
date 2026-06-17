@@ -25,12 +25,13 @@ export const COUNTY_CONFIG = {
   cherokee: { serviceUrl: 'https://gis.cherokeega.com/arcgis/rest/services/MainLayers/MapServer/1', parcelIdField: 'PARID', status: 'researched' },
   cobb:     { serviceUrl: 'https://gis.cobbcounty.org/gisserver/rest/services/tax/taxassessorsdaily/MapServer/0', parcelIdField: 'PIN', status: 'researched' },
   clayton:  { serviceUrl: 'https://weba.co.clayton.ga.us:5443/server/rest/services/TaxAssessor/Parcels/MapServer/0', parcelIdField: 'PARID', status: 'researched' },
+  richmond: { serviceUrl: 'https://gismap.augustaga.gov/arcgis/rest/services/Map_LayersTS/MapServer/451', parcelIdField: 'PARID', status: 'researched' },
 };
 
 // Counties present in the dataset but only placeholder/portal sources — flag, never guess.
 export const PLACEHOLDER_COUNTIES = new Set([
-  'richmond', 'bibb', 'chatham', 'douglas', 'henry', 'rockdale',
-  'muscogee', 'dougherty', 'lowndes', 'glynn', 'fayette',
+  'bibb', 'chatham', 'douglas', 'henry', 'rockdale',
+  'muscogee', 'dougherty', 'lowndes', 'glynn', 'fayette', 'clarke',
 ]);
 
 const GA_BOUNDS = { minLon: -86.0, maxLon: -80.5, minLat: 30.0, maxLat: 35.3 };

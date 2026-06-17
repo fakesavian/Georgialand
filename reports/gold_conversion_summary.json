@@ -1,0 +1,515 @@
+{
+  "generatedAt": "2026-06-17T10:52:12.436Z",
+  "nearReady": 42,
+  "geometryVerified": 14,
+  "flippedToGold": 4,
+  "stillNearOrBlocked": 38,
+  "byMethod": {
+    "point_in_polygon": 13,
+    "none": 15,
+    "no_gis_connector": 13,
+    "parcel_id_match": 1
+  },
+  "results": [
+    {
+      "Listing_ID": "GA-001",
+      "County": "Fulton",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 81,
+      "note": "geometry point_in_polygon (80)",
+      "blockers": [
+        "parcel_id"
+      ]
+    },
+    {
+      "Listing_ID": "GA-002",
+      "County": "Fulton",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 87,
+      "note": "geometry point_in_polygon (80)",
+      "blockers": [
+        "parcel_id"
+      ]
+    },
+    {
+      "Listing_ID": "GA-003",
+      "County": "Fulton",
+      "before": "near_ready",
+      "after": "eligible",
+      "overall": 97,
+      "note": "geometry point_in_polygon (96)",
+      "blockers": []
+    },
+    {
+      "Listing_ID": "GA-004",
+      "County": "DeKalb",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 71,
+      "note": "geometry failed: No single official DeKalb County parcel polygon contained the listing point.",
+      "blockers": [
+        "parcel_id",
+        "boundary_geojson",
+        "price_not_numeric",
+        "overall_below_80"
+      ]
+    },
+    {
+      "Listing_ID": "GA-005",
+      "County": "DeKalb",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 81,
+      "note": "geometry point_in_polygon (80)",
+      "blockers": [
+        "parcel_id",
+        "price_not_numeric"
+      ]
+    },
+    {
+      "Listing_ID": "GA-006",
+      "County": "Fulton",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 60,
+      "note": "geometry failed: No usable parcel ID or coordinates to verify a Fulton County parcel boundary.",
+      "blockers": [
+        "parcel_id",
+        "lat_lon",
+        "boundary_geojson",
+        "source_under_4of6",
+        "overall_below_80"
+      ]
+    },
+    {
+      "Listing_ID": "GA-007",
+      "County": "DeKalb",
+      "before": "near_ready",
+      "after": "eligible",
+      "overall": 92,
+      "note": "geometry point_in_polygon (96)",
+      "blockers": []
+    },
+    {
+      "Listing_ID": "GA-009",
+      "County": "Clayton",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 71,
+      "note": "geometry failed: No single official Clayton County parcel polygon contained the listing point.",
+      "blockers": [
+        "parcel_id",
+        "boundary_geojson",
+        "price_not_numeric",
+        "overall_below_80"
+      ]
+    },
+    {
+      "Listing_ID": "GA-012",
+      "County": "Fulton",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 93,
+      "note": "geometry point_in_polygon (96)",
+      "blockers": [
+        "price_not_numeric"
+      ]
+    },
+    {
+      "Listing_ID": "GA-013",
+      "County": "Bibb",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 69,
+      "note": "no GIS connector (placeholder county)",
+      "blockers": [
+        "parcel_id",
+        "gis_or_assessor_link",
+        "boundary_geojson",
+        "overall_below_80"
+      ]
+    },
+    {
+      "Listing_ID": "GA-014",
+      "County": "Richmond",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 69,
+      "note": "geometry failed: No single official Richmond County parcel polygon contained the listing point.",
+      "blockers": [
+        "parcel_id",
+        "boundary_geojson",
+        "price_not_numeric",
+        "overall_below_80"
+      ]
+    },
+    {
+      "Listing_ID": "GA-015",
+      "County": "Chatham",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 69,
+      "note": "no GIS connector (placeholder county)",
+      "blockers": [
+        "parcel_id",
+        "boundary_geojson",
+        "price_not_numeric",
+        "overall_below_80"
+      ]
+    },
+    {
+      "Listing_ID": "GA-016",
+      "County": "Muscogee",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 71,
+      "note": "no GIS connector (placeholder county)",
+      "blockers": [
+        "parcel_id",
+        "boundary_geojson",
+        "price_not_numeric",
+        "overall_below_80"
+      ]
+    },
+    {
+      "Listing_ID": "GA-017",
+      "County": "Fulton",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 87,
+      "note": "geometry point_in_polygon (80)",
+      "blockers": [
+        "parcel_id"
+      ]
+    },
+    {
+      "Listing_ID": "GA-018",
+      "County": "Fulton",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 87,
+      "note": "geometry point_in_polygon (80)",
+      "blockers": [
+        "parcel_id"
+      ]
+    },
+    {
+      "Listing_ID": "GA-021",
+      "County": "DeKalb",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 71,
+      "note": "geometry failed: No single official DeKalb County parcel polygon contained the listing point.",
+      "blockers": [
+        "parcel_id",
+        "boundary_geojson",
+        "price_not_numeric",
+        "overall_below_80"
+      ]
+    },
+    {
+      "Listing_ID": "GA-022",
+      "County": "Fulton",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 87,
+      "note": "geometry point_in_polygon (80)",
+      "blockers": [
+        "parcel_id"
+      ]
+    },
+    {
+      "Listing_ID": "GA-024",
+      "County": "Fulton",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 87,
+      "note": "geometry point_in_polygon (80)",
+      "blockers": [
+        "parcel_id"
+      ]
+    },
+    {
+      "Listing_ID": "GA-026",
+      "County": "Fulton",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 87,
+      "note": "geometry point_in_polygon (80)",
+      "blockers": [
+        "parcel_id"
+      ]
+    },
+    {
+      "Listing_ID": "GA-029",
+      "County": "Fulton",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 87,
+      "note": "geometry point_in_polygon (80)",
+      "blockers": [
+        "parcel_id"
+      ]
+    },
+    {
+      "Listing_ID": "GA-031",
+      "County": "Dougherty",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 86,
+      "note": "no GIS connector (placeholder county)",
+      "blockers": [
+        "boundary_geojson"
+      ]
+    },
+    {
+      "Listing_ID": "GA-032",
+      "County": "Chatham",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 86,
+      "note": "no GIS connector (placeholder county)",
+      "blockers": [
+        "boundary_geojson"
+      ]
+    },
+    {
+      "Listing_ID": "GA-033",
+      "County": "Richmond",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 86,
+      "note": "geometry failed: GIS query failed for Richmond: fetch failed",
+      "blockers": [
+        "boundary_geojson"
+      ]
+    },
+    {
+      "Listing_ID": "GA-034",
+      "County": "Bibb",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 86,
+      "note": "no GIS connector (placeholder county)",
+      "blockers": [
+        "boundary_geojson"
+      ]
+    },
+    {
+      "Listing_ID": "GA-035",
+      "County": "Clarke",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 86,
+      "note": "geometry failed: GIS query failed for Clarke: HTTP 400",
+      "blockers": [
+        "boundary_geojson"
+      ]
+    },
+    {
+      "Listing_ID": "GA-036",
+      "County": "Lowndes",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 86,
+      "note": "no GIS connector (placeholder county)",
+      "blockers": [
+        "boundary_geojson"
+      ]
+    },
+    {
+      "Listing_ID": "GA-037",
+      "County": "Bartow",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 86,
+      "note": "no GIS connector (placeholder county)",
+      "blockers": [
+        "boundary_geojson"
+      ]
+    },
+    {
+      "Listing_ID": "GA-038",
+      "County": "Spalding",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 86,
+      "note": "no GIS connector (placeholder county)",
+      "blockers": [
+        "boundary_geojson"
+      ]
+    },
+    {
+      "Listing_ID": "GA-039",
+      "County": "Houston",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 86,
+      "note": "no GIS connector (placeholder county)",
+      "blockers": [
+        "boundary_geojson"
+      ]
+    },
+    {
+      "Listing_ID": "GA-040",
+      "County": "Glynn",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 86,
+      "note": "no GIS connector (placeholder county)",
+      "blockers": [
+        "boundary_geojson"
+      ]
+    },
+    {
+      "Listing_ID": "GA-041",
+      "County": "Sumter",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 86,
+      "note": "no GIS connector (placeholder county)",
+      "blockers": [
+        "boundary_geojson"
+      ]
+    },
+    {
+      "Listing_ID": "GA-042",
+      "County": "Clarke",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 86,
+      "note": "geometry failed: GIS query failed for Clarke: HTTP 400",
+      "blockers": [
+        "boundary_geojson"
+      ]
+    },
+    {
+      "Listing_ID": "GA-043",
+      "County": "Chatham",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 86,
+      "note": "no GIS connector (placeholder county)",
+      "blockers": [
+        "boundary_geojson"
+      ]
+    },
+    {
+      "Listing_ID": "GA-044",
+      "County": "Fulton",
+      "before": "near_ready",
+      "after": "eligible",
+      "overall": 97,
+      "note": "geometry point_in_polygon (80)",
+      "blockers": []
+    },
+    {
+      "Listing_ID": "GA-045",
+      "County": "Richmond",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 86,
+      "note": "geometry failed: GIS query failed for Richmond: fetch failed",
+      "blockers": [
+        "boundary_geojson"
+      ]
+    },
+    {
+      "Listing_ID": "GA-046",
+      "County": "Floyd",
+      "before": "near_ready",
+      "after": "eligible",
+      "overall": 99,
+      "note": "geometry parcel_id_match (90)",
+      "blockers": []
+    },
+    {
+      "Listing_ID": "GA-047",
+      "County": "Richmond",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 64,
+      "note": "geometry failed: GIS query failed for Richmond: fetch failed",
+      "blockers": [
+        "lat_lon",
+        "boundary_geojson",
+        "human_reviewed",
+        "price_not_numeric",
+        "overall_below_80"
+      ]
+    },
+    {
+      "Listing_ID": "GA-048",
+      "County": "Richmond",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 64,
+      "note": "geometry failed: GIS query failed for Richmond: fetch failed",
+      "blockers": [
+        "lat_lon",
+        "boundary_geojson",
+        "human_reviewed",
+        "price_not_numeric",
+        "overall_below_80"
+      ]
+    },
+    {
+      "Listing_ID": "GA-054",
+      "County": "Richmond",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 64,
+      "note": "geometry failed: GIS query failed for Richmond: fetch failed",
+      "blockers": [
+        "lat_lon",
+        "boundary_geojson",
+        "price_not_numeric",
+        "overall_below_80"
+      ]
+    },
+    {
+      "Listing_ID": "GA-055",
+      "County": "Richmond",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 64,
+      "note": "geometry failed: GIS query failed for Richmond: fetch failed",
+      "blockers": [
+        "lat_lon",
+        "boundary_geojson",
+        "price_not_numeric",
+        "overall_below_80"
+      ]
+    },
+    {
+      "Listing_ID": "GA-056",
+      "County": "Richmond",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 64,
+      "note": "geometry failed: GIS query failed for Richmond: fetch failed",
+      "blockers": [
+        "lat_lon",
+        "boundary_geojson",
+        "price_not_numeric",
+        "overall_below_80"
+      ]
+    },
+    {
+      "Listing_ID": "GA-057",
+      "County": "Richmond",
+      "before": "near_ready",
+      "after": "near_ready",
+      "overall": 64,
+      "note": "geometry failed: GIS query failed for Richmond: fetch failed",
+      "blockers": [
+        "lat_lon",
+        "boundary_geojson",
+        "price_not_numeric",
+        "overall_below_80"
+      ]
+    }
+  ]
+}

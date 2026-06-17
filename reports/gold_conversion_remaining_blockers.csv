@@ -1,0 +1,39 @@
+Listing_ID,Property,County,Readiness,GIS_Queryable,Remaining_Blockers,Note
+GA-001,Metro Atlanta Land Bank – Residential Vacant Lot (Vine City Area),Fulton,81,true,parcel_id,geometry point_in_polygon (80)
+GA-002,Metro Atlanta Land Bank – Residential Vacant Lot (Pittsburgh/Mechanicsville),Fulton,87,true,parcel_id,geometry point_in_polygon (80)
+GA-004,DeKalb Regional Land Bank – Residential Vacant Lot (Decatur/East DeKalb),DeKalb,71,true,parcel_id|boundary_geojson|price_not_numeric|overall_below_80,geometry failed: No single official DeKalb County parcel polygon contained the listing point.
+GA-005,DeKalb Regional Land Bank – Community-Inspired Development Lot (Lithonia Area),DeKalb,81,true,parcel_id|price_not_numeric,geometry point_in_polygon (80)
+GA-006,Fulton County Tax Sale – Vacant Residential Lot (First Tuesday Monthly Auction),Fulton,60,true,parcel_id|lat_lon|boundary_geojson|source_under_4of6|overall_below_80,geometry failed: No usable parcel ID or coordinates to verify a Fulton County parcel boundary.
+GA-009,Clayton County Land Bank Authority – Residential Lot,Clayton,71,true,parcel_id|boundary_geojson|price_not_numeric|overall_below_80,geometry failed: No single official Clayton County parcel polygon contained the listing point.
+GA-012,"0 Keels Ln, South Fulton, GA 30349",Fulton,93,true,price_not_numeric,geometry point_in_polygon (96)
+GA-013,Macon-Bibb County Land Bank – Residential Vacant Lot,Bibb,69,false,parcel_id|gis_or_assessor_link|boundary_geojson|overall_below_80,no GIS connector (placeholder county)
+GA-014,Augusta Georgia Land Bank Authority – Residential Vacant Lot,Richmond,69,true,parcel_id|boundary_geojson|price_not_numeric|overall_below_80,geometry failed: No single official Richmond County parcel polygon contained the listing point.
+GA-015,Chatham-Savannah Land Bank – Residential Vacant Lot,Chatham,69,false,parcel_id|boundary_geojson|price_not_numeric|overall_below_80,no GIS connector (placeholder county)
+GA-016,Columbus Land Bank Authority – Residential Vacant Lot,Muscogee,71,false,parcel_id|boundary_geojson|price_not_numeric|overall_below_80,no GIS connector (placeholder county)
+GA-017,MALB – Vacant Lot (Westside Atlanta / English Avenue Area),Fulton,87,true,parcel_id,geometry point_in_polygon (80)
+GA-018,MALB – Vacant Lot (Bankhead/West Atlanta),Fulton,87,true,parcel_id,geometry point_in_polygon (80)
+GA-021,DRLBA – Side Lot Program (Adjacent Owner DeKalb County),DeKalb,71,true,parcel_id|boundary_geojson|price_not_numeric|overall_below_80,geometry failed: No single official DeKalb County parcel polygon contained the listing point.
+GA-022,MALB – Vacant Lot (South Atlanta / Adair Park),Fulton,87,true,parcel_id,geometry point_in_polygon (80)
+GA-024,MALB – Vacant Lot (Grant Park / Ormewood Park Adjacent),Fulton,87,true,parcel_id,geometry point_in_polygon (80)
+GA-026,MALB – Vacant Lot (Mozley Park / West End),Fulton,87,true,parcel_id,geometry point_in_polygon (80)
+GA-029,MALB – Vacant Lot (Oakland City / Browns Mill Area),Fulton,87,true,parcel_id,geometry point_in_polygon (80)
+GA-031,512 Mercer Ave,Dougherty,86,false,boundary_geojson,no GIS connector (placeholder county)
+GA-032,714 W 39th St,Chatham,86,false,boundary_geojson,no GIS connector (placeholder county)
+GA-033,1540 Wrightsboro Rd,Richmond,86,true,boundary_geojson,geometry failed: GIS query failed for Richmond: fetch failed
+GA-034,884 Walnut St,Bibb,86,false,boundary_geojson,no GIS connector (placeholder county)
+GA-035,112 Rocksprings St,Clarke,86,true,boundary_geojson,geometry failed: GIS query failed for Clarke: HTTP 400
+GA-036,415 River St,Lowndes,86,false,boundary_geojson,no GIS connector (placeholder county)
+GA-037,1410 Carter St,Bartow,86,false,boundary_geojson,no GIS connector (placeholder county)
+GA-038,312 W Solomon St,Spalding,86,false,boundary_geojson,no GIS connector (placeholder county)
+GA-039,215 Oak Ave,Houston,86,false,boundary_geojson,no GIS connector (placeholder county)
+GA-040,802 Lee St,Glynn,86,false,boundary_geojson,no GIS connector (placeholder county)
+GA-041,712 Jackson St,Sumter,86,false,boundary_geojson,no GIS connector (placeholder county)
+GA-042,Athens-Clarke County Tax Sale (First Tuesday Auction),Clarke,86,true,boundary_geojson,geometry failed: GIS query failed for Clarke: HTTP 400
+GA-043,Chatham County Tax Sale (First Tuesday Auction),Chatham,86,false,boundary_geojson,no GIS connector (placeholder county)
+GA-045,GovDeals Surplus Land (City of Augusta Surplus Lot),Richmond,86,true,boundary_geojson,geometry failed: GIS query failed for Richmond: fetch failed
+GA-047,1206 Kent St.,Richmond,64,true,lat_lon|boundary_geojson|human_reviewed|price_not_numeric|overall_below_80,geometry failed: GIS query failed for Richmond: fetch failed
+GA-048,2417 Wimberly Dr,Richmond,64,true,lat_lon|boundary_geojson|human_reviewed|price_not_numeric|overall_below_80,geometry failed: GIS query failed for Richmond: fetch failed
+GA-054,1415 Wrightsboro Rd,Richmond,64,true,lat_lon|boundary_geojson|price_not_numeric|overall_below_80,geometry failed: GIS query failed for Richmond: fetch failed
+GA-055,946 Wrightsboro Rd,Richmond,64,true,lat_lon|boundary_geojson|price_not_numeric|overall_below_80,geometry failed: GIS query failed for Richmond: fetch failed
+GA-056,1355 Wrightsboro Rd,Richmond,64,true,lat_lon|boundary_geojson|price_not_numeric|overall_below_80,geometry failed: GIS query failed for Richmond: fetch failed
+GA-057,1374 Wrightsboro Rd,Richmond,64,true,lat_lon|boundary_geojson|price_not_numeric|overall_below_80,geometry failed: GIS query failed for Richmond: fetch failed

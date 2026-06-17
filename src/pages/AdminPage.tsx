@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Layers, Upload, Database, CheckCircle2, AlertTriangle, X } from 'lucide-react';
+import { Layers, Upload, Database, CheckCircle2, AlertTriangle, X, ClipboardList } from 'lucide-react';
 import Papa from 'papaparse';
 import { generateDigest } from '../lib/alertDigest';
 import { supabase } from '../lib/supabase';
@@ -156,6 +156,7 @@ export default function AdminPage() {
             <span className="font-display font-bold text-lg text-olive-400 tracking-tight">Admin Dashboard</span>
           </Link>
           <div className="flex items-center gap-6 text-sm font-semibold">
+            <Link to="/admin/review" className="text-olive-300 hover:text-white transition-colors">Dataset Review</Link>
             <Link to="/dashboard" className="text-olive-300 hover:text-white transition-colors">Return to App</Link>
           </div>
         </div>
@@ -249,6 +250,19 @@ export default function AdminPage() {
                   </button>
                 </div>
               </div>
+            </div>
+
+            <div className="card">
+              <h3 className="text-xl font-display font-bold text-white mb-3">Gold Dataset Review</h3>
+              <p className="text-sm text-olive-400 mb-6 leading-relaxed">
+                Inspect the 16 gold candidates from the enriched pipeline. View readiness scores, verification levels, and per-row blockers before promoting to production.
+              </p>
+              <Link
+                to="/admin/review"
+                className="w-full btn-primary py-3 justify-center flex items-center gap-2"
+              >
+                <ClipboardList size={18} /> Open Dataset Review
+              </Link>
             </div>
 
             <div className="card">
