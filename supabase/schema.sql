@@ -54,6 +54,9 @@ create table if not exists public.alert_preferences (
   updated_at timestamptz not null default now()
 );
 
+create unique index if not exists alert_preferences_email_unique
+  on public.alert_preferences (email);
+
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql

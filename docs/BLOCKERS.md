@@ -32,7 +32,7 @@ Things that cannot be completed by the model alone, or that are gated on externa
 
 ## Known code/DB risks to address before selling the relevant feature
 
-- 🟡 **`alert_preferences` upsert needs `unique(email)`.** `api/save-alert-preferences.ts` upserts `onConflict:'email'` but the schema lacks the unique constraint → add the index or change logic before selling alerts. (builder + Supabase migration; migration apply is human-gated.)
+- 🟡 **`alert_preferences` upsert needs `unique(email)`.** `api/save-alert-preferences.ts` upserts `onConflict:'email'` but the live DB lacks the unique index → apply `supabase/alert_preferences_email_unique.sql` in the Supabase SQL Editor before selling alerts. Index added to `supabase/schema.sql` for clean deploys. (migration apply is human-gated.)
 - 🟡 **`@types/react-router-dom` v5 vs `react-router-dom` v7** mismatch — typecheck passes today; future type-conflict risk.
 - 🟡 **Repo hygiene:** `georgia_land_opportunities_enriched_BACKUP_20260607.csv` is committed at repo root — review whether a paid/private dataset is exposed. (human decision on git history.)
 - 🟡 **No automated test suite** beyond `tsc`/build — smoke tests for auth redirect, data load, checkout gate, map popup are "good to have."
