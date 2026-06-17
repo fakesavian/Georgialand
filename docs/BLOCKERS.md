@@ -8,7 +8,7 @@ Things that cannot be completed by the model alone, or that are gated on externa
 
 ## Human / live-environment gated (cannot verify from repo)
 
-- ⛔ **Stripe end-to-end checkout → entitlement.** Needs live Vercel env (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`, `SITE_URL`/`VITE_SITE_URL`, all six `STRIPE_DASHBOARD_*_PRICE_ID`) + one real test checkout confirming `profiles.access_level` upgrades. **Unblock:** human runs the test in the deployed env.
+- ⛔ **Stripe end-to-end checkout → entitlement.** Needs live Vercel env (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`, `SITE_URL`/`VITE_SITE_URL`, all six `STRIPE_DASHBOARD_*_PRICE_ID`) + one real test checkout confirming `profiles.access_level` upgrades. **Unblock:** human runs the test in the deployed env — step-by-step in `docs/STRIPE_TEST_CHECKLIST.md` (A11). Code reviewed + hardened in A11: webhook no longer overwrites `admin` access on any billing event.
 - ⛔ **Supabase Auth + Google OAuth live verification.** Site URL, redirect allow-list, Google Cloud OAuth client, and provider enablement can't be proven from code. Prior incident: Google external-code exchange failure. **Unblock:** human verifies dashboard settings + one real Google login.
 - ⛔ **Protected-dataset Storage object.** Confirm `protected-datasets/georgia_low_cost_land_opportunities_enriched.csv` exists with correct RLS. **Unblock:** human checks Supabase Storage.
 - ⛔ **Promotion of enriched dataset → production.** Copying `data/output/georgia_land_gold_enriched.csv` over `public/local_dashboard_dataset.csv` (and uploading to Storage) is a deliberate human-reviewed step. The pipeline must never do this automatically.

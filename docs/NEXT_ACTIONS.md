@@ -62,9 +62,10 @@ Ordered, bounded queue. The orchestrator takes the **top unblocked** item, dispa
 - ✅ **A9.1 — Verify parcel boundary map rendering** (DONE — root cause: production CSV has no `Parcel_Boundary_GeoJSON` column; stored geometry is a no-op in production. Boundaries load on demand via live county GIS on pin-click only. Fixed: updated `dataStatusNote` in `gisLayers.ts` to "click any pin / no pre-stored polygons"; added canvas hint in `MapView.tsx` when layer is active but no pin selected. Typecheck/build pass.)
 - ✅ **A9.2 — Fix Boundary/Pin Mismatch Validation.** (DONE — added `src/lib/boundaryValidation.ts` with point-in-polygon + centroid-distance check; MapView now shows amber outline + honest mismatch message when polygon centroid is >250m from pin; "Verified" only for `matched` status; GA-046 flagged in BLOCKERS. Typecheck/build pass.)
 - ✅ **A10 — Auth + Protected Dashboard Production Verification.** (DONE — found and fixed post-login redirect bug: ProtectedRoute was passing `state.from` but LoginPage reads `?next=` query param. Changed ProtectedRoute to use `?next=`. All other flows verified sound: admin guard uses realAccessLevel, test tier cleared on sign-out, free 10-row cap enforced. Typecheck/build pass.)
+- ✅ **A11 — Stripe Checkout to Subscription Access Sync.** (DONE — full payment surface audited; tier mapping/signature verification/idempotency all sound. Fixed real bug: webhook overwrote `admin` access on subscribe/cancel/downgrade — added admin-preserve guard in `syncSubscriptionToSupabase`. Wrote `docs/STRIPE_TEST_CHECKLIST.md`. Live run human-gated. Typecheck/build pass.)
 
 ## HUMAN-GATED — see `docs/BLOCKERS.md`
-- ⛔ Stripe end-to-end test · ⛔ Supabase/Google OAuth live verification · ⛔ `alert_preferences` unique(email) · ⛔ protected-dataset Storage object confirmation.
+- ⛔ Stripe end-to-end test (checklist: `docs/STRIPE_TEST_CHECKLIST.md`) · ⛔ Supabase/Google OAuth live verification · ⛔ `alert_preferences` unique(email) · ⛔ protected-dataset Storage object confirmation.
 
 ---
 **Rule:** finish and verify the current loop before starting the next. Re-sort this list after every loop.

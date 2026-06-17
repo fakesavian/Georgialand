@@ -175,6 +175,21 @@ async function syncSubscriptionToSupabase(stripe: any, supabase: any, subscripti
     throw new Error(`No Supabase user found for subscription ${subscription.id}`);
   }
 
+  // Admin access is granted out-of-band (supabase/admin_bootstrap.sql) and must
+  // survive every billing event. Never let a subscribe / cancel / downgrade event
+  // overwrite an admin's access_level — only billing fields are recorded for them.
+  const { data: currentProfile, error: currentProfileError } = await supabase
+    .from('profiles')
+    .select('access_level')
+    .eq('id', userId)
+    .maybeSingle();
+
+  if (currentProfileError) {
+    throw new Error(`Profile access-level lookup failed for ${userId}: ${currentProfileError.message}`);
+  }
+
+  const isAdminProfile = currentProfile?.access_level === 'admin';
+
   const accessLevel = await resolveAccessLevelFromSubscription(stripe, subscription);
   const price = getFirstSubscriptionPrice(subscription);
   const product = typeof price?.product === 'object' ? price.product : null;
@@ -197,17 +212,30 @@ async function syncSubscriptionToSupabase(stripe: any, supabase: any, subscripti
   );
 
   if (ACTIVE_SUBSCRIPTION_STATUSES.has(status)) {
+    const upgradeFields: Record<string, unknown> = { stripe_customer_id: customerId };
+    if (!isAdminProfile) {
+      upgradeFields.access_level = accessLevel;
+    }
     await requireSupabaseOk(
       await supabase
         .from('profiles')
-        .update({
-          access_level: accessLevel,
-          stripe_customer_id: customerId,
-        })
+        .update(upgradeFields)
         .eq('id', userId),
       `Profile upgrade for ${userId}`
     );
   } else if (DOWNGRADE_SUBSCRIPTION_STATUSES.has(status)) {
+    if (isAdminProfile) {
+      // Record the billing customer but preserve admin access.
+      await requireSupabaseOk(
+        await supabase
+          .from('profiles')
+          .update({ stripe_customer_id: customerId })
+          .eq('id', userId),
+        `Profile billing-customer update for admin ${userId}`
+      );
+      return;
+    }
+
     const { data: activeSubscriptions, error: activeSubscriptionsError } = await supabase
       .from('subscriptions')
       .select('id')
