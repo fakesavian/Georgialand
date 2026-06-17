@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, Trash2, ExternalLink } from 'lucide-react';
+import { Heart, Trash2, ExternalLink, Laptop } from 'lucide-react';
 import { LandProperty, Favorite } from '../../types';
 import { getFitScoreClass, getRiskScoreClass, parseScore, displayValue, isValidUrl, exportToCSV } from '../../utils';
 
@@ -9,10 +9,12 @@ interface FavoritesViewProps {
   notes: Record<string, string>;
   onRowClick: (p: LandProperty) => void;
   onRemoveFavorite: (id: string) => void;
+  /** True when favorites sync to the account; false when device-scoped (localStorage). */
+  isAccountBacked?: boolean;
 }
 
 export default function FavoritesView({
-  properties, favorites, notes, onRowClick, onRemoveFavorite,
+  properties, favorites, notes, onRowClick, onRemoveFavorite, isAccountBacked = false,
 }: FavoritesViewProps) {
   const favoriteIds = new Set(favorites.map(f => f.parcelId));
   const favProperties = properties.filter(p => {
@@ -46,6 +48,16 @@ export default function FavoritesView({
           <ExternalLink size={13} /> Export Favorites CSV
         </button>
       </div>
+
+      {!isAccountBacked && (
+        <div className="flex items-start gap-2 rounded-lg border border-surface-border bg-olive-900/40 px-3 py-2 text-xs text-olive-400">
+          <Laptop size={14} className="mt-0.5 shrink-0 text-olive-500" />
+          <span>
+            Favorites are saved on <strong className="text-olive-200">this device</strong> only.
+            Cross-device account sync is coming soon.
+          </span>
+        </div>
+      )}
 
       <div className="card p-0 overflow-hidden">
         <table className="w-full text-xs">

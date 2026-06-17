@@ -24,6 +24,10 @@ Things that cannot be completed by the model alone, or that are gated on externa
 - ⛔ **Rows missing coordinates AND parcel ID** (e.g. several Richmond rows GA-047/048/054–057). No point-in-polygon and no ID match possible → blocked until a usable coordinate or parcel ID is sourced.
 - ⛔ **Regrid / licensed provider decision.** Per `docs/PROVIDER_FIT_DECISION_MATRIX.md`: open a free Regrid trial only for gap counties; answer the 4 licensing questions (derivative works, entry price, export boundary, tile caching) **before** any paid contract. Token stays server-only.
 
+## Feature backend not yet provisioned (code ready, table/apply human-gated)
+
+- 🟡 **Account-backed favorites need the `saved_listings` table.** Favorites/notes are device-scoped (localStorage) today via `src/lib/useFavorites.ts`. Live Supabase has only `profiles`, `subscriptions`, `alert_preferences` — no favorites table. Proposed migration written at `supabase/saved_listings_schema.sql` (NOT applied). **Unblock:** human reviews + applies the migration, then `useFavorites.ts` flips `isAccountBacked` and adds the remote read/write path (single seam). Do not apply the migration automatically.
+
 ## Known code/DB risks to address before selling the relevant feature
 
 - 🟡 **`alert_preferences` upsert needs `unique(email)`.** `api/save-alert-preferences.ts` upserts `onConflict:'email'` but the schema lacks the unique constraint → add the index or change logic before selling alerts. (builder + Supabase migration; migration apply is human-gated.)

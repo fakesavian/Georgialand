@@ -9,6 +9,16 @@ Rolling, append-only log of what each closed loop changed and verified. Newest a
 
 ---
 
+## Loop B3 — Account-backed favorites (seam + proposal) — 2026-06-18
+- **By:** Sonnet 4.6.
+- **Did:** Inspected favorites storage + Supabase. Finding: favorites/notes live in localStorage (`glf_favorites`/`glf_notes`), inline in DashboardPage; live Supabase (`mzrfwrgvjmodiozpllpu`) has only `profiles`/`subscriptions`/`alert_preferences` — **no favorites table**. Per honesty rules, did NOT query a missing table or invent a schema. Instead: (1) extracted all favorites/notes logic into `src/lib/useFavorites.ts` — the single seam where account-backing drops in later; exposes `isAccountBacked` (currently always `false`). (2) Wired DashboardPage to the hook (behavior identical — still localStorage). (3) Added honest "saved on this device only — cross-device sync coming soon" banner to FavoritesView (driven by `isAccountBacked`). (4) Wrote `supabase/saved_listings_schema.sql` as a **proposal** (table + RLS, NOT applied). (5) Logged blocker.
+- **Changed:** `src/lib/useFavorites.ts` (new), `src/pages/DashboardPage.tsx` (use hook, removed inline LS helpers/handlers + unused `Favorite` import), `src/components/dashboard/FavoritesView.tsx` (isAccountBacked prop + device notice), `supabase/saved_listings_schema.sql` (new proposal), `docs/BLOCKERS.md` | Production CSV untouched: ✓ | No migration applied: ✓
+- **Verification:** typecheck ✓ · build ✓ (18.68s) | production CSV clean ✓ | live Supabase unchanged (read-only list_tables only) ✓
+- **Result:** Favorites behavior unchanged for users; code now has a clean account-backing seam + reviewed migration proposal. No fake table assumptions, no crash for any user.
+- **Next:** A8 (tier gating) — already started in this sequence.
+
+---
+
 ## Loop B2 — Decompose DashboardPage.tsx — 2026-06-18
 - **By:** Sonnet 4.6.
 - **Did:** Extracted 4 self-contained blocks from DashboardPage.tsx (1109 → 992 lines, −117). New files: `MobileDashboardNav.tsx` (49 lines), `MobileFilterModal.tsx` (33 lines), `DashboardStatsGrid.tsx` (60 lines — exports `DashboardStats` interface), `DashboardMetadataBar.tsx` (44 lines). Cleaned unused imports (`FileText`, `AlertTriangle`, `AlertCircle`, `BarChart3`, `Database`) from DashboardPage. Skipped sub-tabs, view controls, monetization table — too much state coupling for this loop.

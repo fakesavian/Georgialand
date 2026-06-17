@@ -18,10 +18,11 @@ import DashboardStatsGrid from '../components/dashboard/DashboardStatsGrid';
 import DashboardMetadataBar from '../components/dashboard/DashboardMetadataBar';
 import SponsorBanner from '../components/marketing/SponsorBanner';
 
-import { LandProperty, ViewMode, SortConfig, Filters, Favorite } from '../types';
+import { LandProperty, ViewMode, SortConfig, Filters } from '../types';
 import { filterProperties, sortProperties, exportToCSV, exportToMarkdown, exportToHTML, getPropertyWarnings, parsePrice, parseScore } from '../utils';
 import { canExport, canViewFullDatabase, getMaxRowsAllowed, canViewAgencyContacts, canUseFavorites, canUseNotes, canExportLeadCards, canUseInvestorTools } from '../lib/auth';
 import { useAuth } from '../lib/AuthContext';
+import { useFavorites } from '../lib/useFavorites';
 import { fetchDashboardData } from '../lib/dataFetcher';
 import { trackEvent } from '../lib/analytics';
 import SEO from '../components/SEO';
@@ -51,24 +52,6 @@ const DEFAULT_FILTERS: Filters = {
   gisAvailableOnly: false,
 };
 
-const LS_FAVORITES = 'glf_favorites';
-const LS_NOTES = 'glf_notes';
-
-function loadFromLS<T>(key: string, fallback: T): T {
-  try {
-    const v = localStorage.getItem(key);
-    return v ? JSON.parse(v) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function saveToLS(key: string, value: unknown) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch { /* ignore */ }
-}
-
 // Lazy-load MapView to avoid SSR/bundle issues
 const MapView = React.lazy(() => import('../components/dashboard/MapView'));
 
@@ -87,8 +70,15 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('map');
   const [currentSubTab, setCurrentSubTab] = useState('all');
   const [selectedProperty, setSelectedProperty] = useState<LandProperty | null>(null);
-  const [favorites, setFavorites] = useState<Favorite[]>(() => loadFromLS(LS_FAVORITES, []));
-  const [notes, setNotes] = useState<Record<string, string>>(() => loadFromLS(LS_NOTES, {}));
+  const {
+    favorites,
+    notes,
+    favoriteIds,
+    toggleFavorite: handleToggleFavorite,
+    removeFavorite: handleRemoveFavorite,
+    setNote: handleNoteChange,
+    isAccountBacked: favoritesAccountBacked,
+  } = useFavorites();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [loadedFilename, setLoadedFilename] = useState('');
 
@@ -201,44 +191,6 @@ export default function App() {
       direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc',
     }));
   };
-
-  // Favorites
-  const favoriteIds = useMemo(() => new Set(favorites.map(f => f.parcelId)), [favorites]);
-
-  const handleToggleFavorite = useCallback((prop: LandProperty) => {
-    const id = prop.Parcel_ID || prop.Property_Name_or_Address;
-    setFavorites(prev => {
-      const exists = prev.find(f => f.parcelId === id);
-      const next = exists
-        ? prev.filter(f => f.parcelId !== id)
-        : [...prev, {
-          parcelId: id,
-          address: prop.Property_Name_or_Address,
-          notes: '',
-          addedAt: new Date().toISOString(),
-        }];
-      if (!exists) trackEvent('Engagement', 'favorite_saved', prop.Property_Name_or_Address);
-      saveToLS(LS_FAVORITES, next);
-      return next;
-    });
-  }, []);
-
-  const handleRemoveFavorite = useCallback((id: string) => {
-    setFavorites(prev => {
-      const next = prev.filter(f => f.parcelId !== id);
-      saveToLS(LS_FAVORITES, next);
-      return next;
-    });
-  }, []);
-
-  // Notes
-  const handleNoteChange = useCallback((id: string, text: string) => {
-    setNotes(prev => {
-      const next = { ...prev, [id]: text };
-      saveToLS(LS_NOTES, next);
-      return next;
-    });
-  }, []);
 
   // Selection toggling for lead cards
   const handleToggleSelect = (p: LandProperty) => {
@@ -914,6 +866,7 @@ export default function App() {
                 notes={notes}
                 onRowClick={setSelectedProperty}
                 onRemoveFavorite={handleRemoveFavorite}
+                isAccountBacked={favoritesAccountBacked}
               />
             )}
           </div>

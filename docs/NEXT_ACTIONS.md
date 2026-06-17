@@ -48,7 +48,8 @@ Ordered, bounded queue. The orchestrator takes the **top unblocked** item, dispa
   - Specialist: **builder**. Scope: `src/components/marketing/GeorgiaLandSearchHero.tsx`.
 - ✅ **B2 · Loop B2 — Decompose `DashboardPage.tsx`.** (DONE — 1109 → 992 lines; 4 components extracted: MobileDashboardNav, MobileFilterModal, DashboardStatsGrid, DashboardMetadataBar. Sub-tabs/monetization table deferred — too coupled. Typecheck/build pass.)
   - Specialist: **builder**. Scope: `src/pages/DashboardPage.tsx`, `src/components/dashboard/`.
-- ⬜ **B3 — Account-backed favorites/notes** (builder) — migrate from localStorage to Supabase.
+- 🟡 **B3 · Loop B3 — Account-backed favorites/notes.** (SEAM DONE — extracted `src/lib/useFavorites.ts` (single storage seam, `isAccountBacked` flag), honest "saved on this device" notice, proposed `supabase/saved_listings_schema.sql` migration. localStorage retained as working impl. Remaining: human applies migration, then flip `isAccountBacked` + add remote read/write — see `docs/BLOCKERS.md`.)
+  - Specialist: **builder** (+ human to apply migration). Scope: `src/lib/useFavorites.ts`, `supabase/saved_listings_schema.sql`.
 - ⬜ **B4 — Honest coverage copy pass** (product-growth) — boundaries "available for verified-source records"; property vs program leads.
 
 ## HUMAN-GATED — see `docs/BLOCKERS.md`
