@@ -828,6 +828,12 @@ export default function MapView({ properties, onPropertyClick, favoriteIds, onTo
                 ].map(({ label, icon: Icon }) => <button key={label} type="button" className="flex flex-col items-center gap-1 rounded-xl border border-slate-200 bg-white py-2 shadow-sm transition hover:border-blue-300 hover:text-blue-700"><Icon size={14}/>{label}</button>)}
               </div>
             </div>
+            {activeUnlockedLayerIds.has('parcel-boundaries') && !selectedForInsight && (
+              <div className="flex items-start gap-2 rounded-2xl border border-cyan-400/25 bg-cyan-900/70 px-3 py-2.5 text-[11px] font-semibold text-cyan-100 shadow-xl backdrop-blur">
+                <Layers size={13} className="mt-0.5 shrink-0 text-cyan-300" />
+                <span>Parcel boundaries active — click any pin to load its county boundary on demand.</span>
+              </div>
+            )}
             {selectedForInsight && (
               <div className="rounded-2xl border border-white/14 bg-slate-950/86 p-4 text-white shadow-2xl backdrop-blur-xl">
                 <div className="mb-2 flex items-center justify-between gap-3">

@@ -56,9 +56,10 @@ export const GIS_LAYER_CONFIGS: GisLayerConfig[] = [
     attribution: 'Verified source required: Ware County ArcGIS prototype / county GIS / paid parcel vendor',
     color: '#ef4444',
     opacity: 0.9,
-    // Real verified geometry, but only for parcels in GIS-enabled counties / with stored geometry.
+    // Boundaries load on demand (live county GIS lookup) when a pin is clicked.
+    // The current public dataset has no pre-stored Parcel_Boundary_GeoJSON polygons.
     dataStatus: 'partial',
-    dataStatusNote: 'Draws verified red boundaries where a county GIS source or stored geometry exists.',
+    dataStatusNote: 'Click any pin to load its county boundary on demand. No pre-stored polygons in the current public dataset.',
   },
   {
     id: 'fema-flood',
