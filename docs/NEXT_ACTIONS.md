@@ -60,7 +60,7 @@ Ordered, bounded queue. The orchestrator takes the **top unblocked** item, dispa
 - ✅ **B4 — Honest coverage copy pass** (DONE — strikethrough coming_soon features, clarify parcel-boundary scoping, remove off-market/FEMA/opp-zone overstating.)
 - ✅ **B4.1 — Pricing tier consistency + admin testing** (DONE — exports moved to Investor; admin account SQL written; test tier switcher in AdminPage; Header shows test mode badge.)
 - ✅ **A9.1 — Verify parcel boundary map rendering** (DONE — root cause: production CSV has no `Parcel_Boundary_GeoJSON` column; stored geometry is a no-op in production. Boundaries load on demand via live county GIS on pin-click only. Fixed: updated `dataStatusNote` in `gisLayers.ts` to "click any pin / no pre-stored polygons"; added canvas hint in `MapView.tsx` when layer is active but no pin selected. Typecheck/build pass.)
-- ⬜ **A10 — Auth + Protected Dashboard Production Verification.** Harden unauthenticated redirects, admin route behavior, test tier behavior, free user gating.
+- ✅ **A10 — Auth + Protected Dashboard Production Verification.** (DONE — found and fixed post-login redirect bug: ProtectedRoute was passing `state.from` but LoginPage reads `?next=` query param. Changed ProtectedRoute to use `?next=`. All other flows verified sound: admin guard uses realAccessLevel, test tier cleared on sign-out, free 10-row cap enforced. Typecheck/build pass.)
 
 ## HUMAN-GATED — see `docs/BLOCKERS.md`
 - ⛔ Stripe end-to-end test · ⛔ Supabase/Google OAuth live verification · ⛔ `alert_preferences` unique(email) · ⛔ protected-dataset Storage object confirmation.

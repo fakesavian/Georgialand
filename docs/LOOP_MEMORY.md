@@ -9,6 +9,16 @@ Rolling, append-only log of what each closed loop changed and verified. Newest a
 
 ---
 
+## Loop A10 — Auth + Protected Dashboard Production Verification — 2026-06-18
+- **By:** Haiku 4.5.
+- **Did:** Audited full auth flow: `ProtectedRoute`, `LoginPage`, `AuthCallbackPage`, `SignupPage`, `CheckoutSuccessPage`, `AuthContext`, `App.tsx`. Found one real bug: `ProtectedRoute` was passing `state={{ from: location }}` (React Router location state) but `LoginPage.buildDestination()` reads `?next=` from the URL query string — two different mechanisms that never talked to each other. Effect: unauthenticated users visiting `/account` or `/admin` get redirected to `/login`, but after successful login are silently dropped onto `/dashboard` instead of their original destination. Fixed by changing `ProtectedRoute` to encode the intended path as `?next=encodeURIComponent(location.pathname + location.search)`. All three login flows (password, Google OAuth, magic link) correctly pass `?next=` through to `AuthCallbackPage`. Open-redirect protection (`getSafeNext` in `LoginPage`) verified: blocks `//`-prefixed and non-`/` values. Everything else verified and sound: admin route guard uses `realAccessLevel` ✓ · test tier cleared on sign-out ✓ · non-admin can't activate test mode ✓ · free users get 10-row cap enforced in `DashboardPage` ✓ · loading spinner prevents flash ✓.
+- **Changed:** `src/components/auth/ProtectedRoute.tsx` (redirect mechanism) | Production CSV untouched: ✓ | No secrets touched: ✓
+- **Verification:** typecheck ✓ · build ✓ (16.60s)
+- **Result:** Auth flows are consistent end-to-end. Post-login destination is preserved for all protected routes.
+- **Next:** No model-loops remain unblocked. All tracks complete. Remaining work is human-gated (Stripe test, OAuth live verify, admin_bootstrap.sql, saved_listings migration).
+
+---
+
 ## Loop A9.1 — Verify Parcel Boundary Map Rendering — 2026-06-18
 - **By:** Haiku 4.5.
 - **Did:** Investigated why parcel boundaries are not rendering on the map canvas. Root cause: `public/local_dashboard_dataset.csv` has no `Parcel_Boundary_GeoJSON` column — only `Parcel_ID`. All stored-geometry rendering is therefore a no-op in production. The enriched CSV (`data/output/georgia_land_gold_enriched.csv`) DOES have full boundary columns, but production promotion is human-gated. The only boundary that renders in production is the **live county GIS lookup** triggered when a user clicks a pin (`setSelectedBoundaryProperty`), and only for counties with working ArcGIS endpoints. Fixed: (1) updated `dataStatusNote` in `gisLayers.ts` for `parcel-boundaries` layer from misleading "stored geometry exists" language to accurate "click any pin to load on demand — no pre-stored polygons in the current public dataset"; (2) added a cyan canvas hint in `MapView.tsx` when parcel-boundaries is active but no pin is selected, directing users to click a pin. `parseParcelBoundaryGeoJSON(undefined)` returns null safely — no crash risk.
