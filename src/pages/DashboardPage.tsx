@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Papa from 'papaparse';
-import { LayoutGrid, List, Map, Loader2, AlertCircle, FileText, CheckSquare, Square, AlertTriangle, Coins, Star, Users, SlidersHorizontal, Search, BarChart3, Database, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { LayoutGrid, List, Map, Loader2, AlertCircle, CheckSquare, Square, Coins, Star, Users, SlidersHorizontal, Search, X, ChevronDown, ChevronUp } from 'lucide-react';
 
 import Header from '../components/dashboard/Header';
 import FilterPanel from '../components/dashboard/FilterPanel';
@@ -12,6 +12,10 @@ import DataQuality from '../components/dashboard/DataQuality';
 import FavoritesView from '../components/dashboard/FavoritesView';
 import AgencyContacts from '../components/dashboard/AgencyContacts';
 import MobileDashboardNotice from '../components/dashboard/MobileDashboardNotice';
+import MobileDashboardNav from '../components/dashboard/MobileDashboardNav';
+import MobileFilterModal from '../components/dashboard/MobileFilterModal';
+import DashboardStatsGrid from '../components/dashboard/DashboardStatsGrid';
+import DashboardMetadataBar from '../components/dashboard/DashboardMetadataBar';
 import SponsorBanner from '../components/marketing/SponsorBanner';
 
 import { LandProperty, ViewMode, SortConfig, Filters, Favorite } from '../types';
@@ -67,70 +71,6 @@ function saveToLS(key: string, value: unknown) {
 
 // Lazy-load MapView to avoid SSR/bundle issues
 const MapView = React.lazy(() => import('../components/dashboard/MapView'));
-
-type MobileNavItem = {
-  id: string;
-  label: string;
-  icon: React.ReactNode;
-  count?: number;
-};
-
-function MobileDashboardNav({ activeTab, onTabChange, favoritesCount }: { activeTab: string; onTabChange: (tab: string) => void; favoritesCount: number }) {
-  const items: MobileNavItem[] = [
-    { id: 'map', label: 'Map', icon: <Map size={18} /> },
-    { id: 'dashboard', label: 'List', icon: <List size={18} /> },
-    { id: 'analytics', label: 'Stats', icon: <BarChart3 size={18} /> },
-    { id: 'data-quality', label: 'Quality', icon: <Database size={18} /> },
-    { id: 'favorites', label: 'Saved', icon: <Star size={18} />, count: favoritesCount },
-  ];
-
-  return (
-    <nav className="mobile-dashboard-nav" aria-label="Dashboard sections">
-      {items.map((item) => (
-        <button
-          key={item.id}
-          type="button"
-          onClick={() => onTabChange(item.id)}
-          className={`mobile-dashboard-nav__item ${activeTab === item.id ? 'is-active' : ''}`}
-          aria-current={activeTab === item.id ? 'page' : undefined}
-        >
-          <span className="relative">
-            {item.icon}
-            {typeof item.count === 'number' && item.count > 0 && (
-              <span className="absolute -right-2 -top-2 grid h-4 min-w-4 place-items-center rounded-full bg-red-500 px-1 text-[9px] font-black text-white">
-                {item.count > 9 ? '9+' : item.count}
-              </span>
-            )}
-          </span>
-          <span>{item.label}</span>
-        </button>
-      ))}
-    </nav>
-  );
-}
-
-function MobileFilterModal({ filters, onChange, properties, resultCount, onClose }: { filters: Filters; onChange: (filters: Filters) => void; properties: LandProperty[]; resultCount: number; onClose: () => void }) {
-  return (
-    <div className="mobile-filter-modal" role="dialog" aria-modal="true" aria-label="Filter land leads">
-      <button type="button" className="mobile-filter-modal__backdrop" onClick={onClose} aria-label="Close filters" />
-      <div className="mobile-filter-modal__sheet">
-        <FilterPanel
-          filters={filters}
-          onChange={onChange}
-          properties={properties}
-          variant="sheet"
-          resultCount={resultCount}
-          onClose={onClose}
-        />
-        <div className="mobile-filter-modal__apply">
-          <button type="button" onClick={onClose} className="btn-primary h-12 w-full text-sm">
-            Show {resultCount} land leads
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function App() {
   const { accessLevel } = useAuth();
@@ -622,69 +562,12 @@ export default function App() {
               </div>
             )}
 
-            {/* Metadata bar — secondary items hidden on mobile */}
-            <div className="bg-olive-900/60 border border-surface-border rounded-xl px-4 py-3 flex flex-wrap items-center justify-between gap-4 text-xs">
-              <div className="flex items-center gap-3 flex-wrap">
-                <span className="hidden sm:flex items-center gap-1 text-olive-400">
-                  <FileText size={13} className="text-brand-500" />
-                  Source File: <strong className="text-olive-100">{loadedFilename}</strong>
-                </span>
-                <span className="hidden sm:inline text-olive-600">|</span>
-                <span className="text-olive-400">
-                  Total Rows: <strong className="text-brand-400 font-mono">{stats.total}</strong>
-                </span>
-                <span className="hidden sm:inline text-olive-600">|</span>
-                <span className="hidden sm:flex items-center gap-1 text-olive-400">
-                  Latest Research Date: <strong className="text-olive-100 font-mono">{stats.latestResDate}</strong>
-                </span>
-              </div>
-              <div className="hidden sm:flex items-center gap-4">
-                <span className="flex items-center gap-1.5 text-accent-warning">
-                  <AlertTriangle size={13} />
-                  Stale Sources: <strong className="font-mono">{stats.staleCount}</strong>
-                </span>
-                <span className="flex items-center gap-1.5 text-orange-400">
-                  <AlertCircle size={13} />
-                  Needs Verification: <strong className="font-mono">{stats.verifiedCount}</strong>
-                </span>
-              </div>
-            </div>
+            <DashboardMetadataBar loadedFilename={loadedFilename} stats={stats} />
 
             {/* Summary Cards Grid — 4 key cards on mobile, all 14 on desktop */}
-            {viewMode !== 'map' && (() => {
-              const allStatCards = [
-                { label: 'Total Listings', value: stats.total, sub: 'Enriched', key: true },
-                { label: 'Atlanta Core', value: stats.atlCore, sub: 'In-city' },
-                { label: 'Metro Atlanta', value: stats.metroAtl, sub: '10 Counties' },
-                { label: 'Georgia Land Banks', value: stats.lba, sub: 'LBA program' },
-                { label: 'Tax Sale', value: stats.taxSale, sub: 'Sheriff auction' },
-                { label: 'Surplus Lots', value: stats.surplus, sub: 'Gov owned' },
-                { label: 'Under $50K', value: stats.under50k, sub: 'Budget focus', key: true },
-                { label: 'Ind. Eligible', value: stats.indAllowed, sub: 'General buyers' },
-                { label: 'Nonprofit Only', value: stats.npOnly, sub: 'Restricted' },
-                { label: 'Alert Worthy', value: stats.alertWorthy, sub: 'Hot Deals', key: true },
-                { label: 'Avg Fit Score', value: `${stats.avgFit}%`, sub: 'Out of 100', highlight: 'text-brand-400', key: true },
-                { label: 'Avg Risk Score', value: `${stats.avgRisk}%`, sub: 'Out of 100', highlight: 'text-accent-warning' },
-                { label: 'Avg Data Conf.', value: `${stats.avgConf}%`, sub: 'Out of 100', highlight: 'text-blue-400' },
-                { label: 'Avg Monetization', value: `${stats.avgMonet}%`, sub: 'Commercial value', highlight: 'text-purple-400' },
-              ];
-              const cards = isMobile ? allStatCards.filter(c => c.key) : allStatCards;
-              return (
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-                  {cards.map((card, i) => (
-                    <div key={i} className="bg-olive-900 border border-surface-border rounded-xl p-3 flex flex-col justify-between shadow-md">
-                      <div className="text-olive-500 text-[10px] uppercase font-bold tracking-wider">{card.label}</div>
-                      <div className="mt-2 flex items-baseline justify-between">
-                        <span className={`text-lg font-extrabold font-mono ${card.highlight || 'text-white'}`}>
-                          {card.value}
-                        </span>
-                        <span className="text-[9px] text-olive-600 truncate max-w-[50px]">{card.sub}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              );
-            })()}
+            {viewMode !== 'map' && (
+              <DashboardStatsGrid stats={stats} isMobile={isMobile} />
+            )}
 
             {/* Filter panel — hidden on mobile; mobile uses the floating modal instead */}
             {!isMobile && (
