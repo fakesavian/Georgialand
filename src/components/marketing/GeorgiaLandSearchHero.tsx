@@ -1,65 +1,116 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Search, Map, ChevronRight, Trees, Mountain, Layout, Sprout, Tractor, Waves, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../lib/ThemeContext';
+import Papa from 'papaparse';
 
-const CATEGORIES = [
+interface Category {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  image: string;
+  count: number | null;
+}
+
+const CATEGORY_CONFIG: Omit<Category, 'count'>[] = [
   {
     id: 'north-ga',
     label: 'North Georgia acreage',
     icon: <Mountain size={20} />,
     image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=600&h=400',
-    count: '24'
   },
   {
     id: 'vacant',
     label: 'Vacant land',
     icon: <Layout size={20} />,
     image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=600&h=400',
-    count: '86'
   },
   {
     id: 'farmland',
     label: 'Georgia farmland',
     icon: <Tractor size={20} />,
     image: 'https://images.unsplash.com/photo-1500076656116-558758c991c1?auto=format&fit=crop&q=80&w=600&h=400',
-    count: '15'
   },
   {
     id: 'pasture',
     label: 'Pasture & ranch land',
     icon: <Sprout size={20} />,
     image: 'https://images.unsplash.com/photo-1516253593875-bd7ba052fbc5?auto=format&fit=crop&q=80&w=600&h=400',
-    count: '31'
   },
   {
     id: 'wooded',
     label: 'Wooded tracts',
     icon: <Trees size={20} />,
     image: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&q=80&w=600&h=400',
-    count: '42'
   },
   {
     id: 'rural',
     label: 'Rural acreage',
     icon: <Map size={20} />,
     image: 'https://images.unsplash.com/photo-1533460004989-cef01064af7e?auto=format&fit=crop&q=80&w=600&h=400',
-    count: '55'
   },
   {
     id: 'infill',
     label: 'Infill lots',
     icon: <Layout size={20} />,
     image: 'https://images.unsplash.com/photo-1513161455079-7dc1de15ef3e?auto=format&fit=crop&q=80&w=600&h=400',
-    count: '112'
   }
 ];
 
+function computeCategories(csvText: string): Category[] {
+  const parseAcres = (val: string | undefined) => {
+    if (!val) return 0;
+    const match = String(val).match(/[\d.]+/);
+    return match ? parseFloat(match[0]) : 0;
+  };
+
+  const { data: props } = Papa.parse<Record<string, string>>(csvText, { header: true, skipEmptyLines: true });
+
+  const counts: Record<string, number> = {
+    'north-ga': 0, vacant: 0, farmland: 0, pasture: 0, wooded: 0, rural: 0, infill: 0
+  };
+
+  props.forEach(p => {
+    const type = (p.Property_Type || '').toLowerCase();
+    const county = (p.County || '').toLowerCase();
+    const acres = parseAcres(p.Lot_Size_Acres);
+
+    if (['fulton', 'dekalb', 'gwinnett', 'forsyth', 'cherokee', 'cobb', 'marietta'].includes(county)) {
+      counts['north-ga']++;
+    }
+    if (type.includes('vacant') && !type.includes('bank')) counts['vacant']++;
+    if (type.includes('farm')) counts['farmland']++;
+    if (type.includes('pasture') || type.includes('ranch')) counts['pasture']++;
+    if (type.includes('wooded') || type.includes('timber')) counts['wooded']++;
+    if (county.includes('rural') && acres > 0.5) counts['rural']++;
+    if (acres > 0 && acres < 0.5) counts['infill']++;
+  });
+
+  return CATEGORY_CONFIG.map(cat => ({ ...cat, count: counts[cat.id] || null }));
+}
+
 export default function GeorgiaLandSearchHero() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [categories, setCategories] = useState<Category[]>(CATEGORY_CONFIG.map(c => ({ ...c, count: null })));
   const navigate = useNavigate();
   const carouselRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
+
+  useEffect(() => {
+    async function loadCategoryCounts() {
+      try {
+        const res = await fetch('/local_dashboard_dataset.csv');
+        if (res.ok) {
+          const csv = await res.text();
+          setCategories(computeCategories(csv));
+        }
+      } catch (err) {
+        console.warn('Failed to load category counts:', err);
+        setCategories(CATEGORY_CONFIG.map(c => ({ ...c, count: null })));
+      }
+    }
+    loadCategoryCounts();
+  }, []);
   const isDay = theme === 'day';
 
   const handleSearch = (e: React.FormEvent) => {
@@ -142,7 +193,7 @@ export default function GeorgiaLandSearchHero() {
             className="flex overflow-x-auto gap-4 pb-8 pt-4 snap-x snap-mandatory scrollbar-hide no-scrollbar"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {CATEGORIES.map((category) => (
+            {categories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => handleCategoryClick(category.id)}
@@ -168,7 +219,9 @@ export default function GeorgiaLandSearchHero() {
                     </div>
                     <div>
                       <h3 className={`text-lg font-semibold tracking-tight transition-colors ${isDay ? 'text-olive-950 group-hover:text-brand-800' : 'text-white group-hover:text-brand-100'}`}>{category.label}</h3>
-                      <p className={`mt-1 text-sm font-medium ${isDay ? 'text-olive-600' : 'text-olive-400'}`}>{category.count} listings</p>
+                      <p className={`mt-1 text-sm font-medium ${isDay ? 'text-olive-600' : 'text-olive-400'}`}>
+                        {category.count !== null ? `${category.count} listings` : 'See full database'}
+                      </p>
                     </div>
                   </div>
                 </div>

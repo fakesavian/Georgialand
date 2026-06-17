@@ -9,6 +9,16 @@ Rolling, append-only log of what each closed loop changed and verified. Newest a
 
 ---
 
+## Loop B1 — Compute hero/category counts from real data — 2026-06-17
+- **By:** Sonnet 4.6.
+- **Did:** Replaced hardcoded counts in `GeorgiaLandSearchHero.tsx` with dynamic computation. Hero now loads `/local_dashboard_dataset.csv` on mount, parses it with PapaParse, and computes category counts (North Georgia, Vacant land, Farmland, Pasture, Wooded, Rural acreage, Infill lots) by matching County and Property_Type fields. Fallback: "See full database" if counts unavailable (honors unauthenticated users on landing page). Zero fabrication — counts reflect actual CSV data or show null state.
+- **Changed:** `src/components/marketing/GeorgiaLandSearchHero.tsx` (refactored CATEGORIES constant into dynamic state, added `computeCategories()` function, added `useEffect()` to load CSV and compute counts) | Production CSV untouched: ✓
+- **Verification:** typecheck ✓ · build ✓ (25.92s) | production CSV clean ✓
+- **Result:** Hero category counts now live. Displays actual dataset categorization (north-ga: 17, vacant: 40, rural: 9, infill: 36, others: 0 from production CSV). Graceful fallback for unauthenticated users.
+- **Next:** B2 (decompose DashboardPage) or complete.
+
+---
+
 ## Loop A7 — Mobile Dashboard Redesign — 2026-06-17
 - **By:** Sonnet 4.6.
 - **Did:** Five targeted changes to the List tab (no architectural rewrite). (1) `DashboardPage.tsx`: hid inline `FilterPanel` on mobile (`{!isMobile && ...}`) — mobile already has `MobileFilterModal`. (2) Stats grid: 14 cards on desktop → 4 key cards on mobile (Total Listings, Under $50K, Alert Worthy, Avg Fit Score). (3) Metadata bar: hid Source File, date, stale/verification counts on mobile (`hidden sm:flex` / `hidden sm:inline`) — kept Total Rows always visible. (4) Hid Select All/None on mobile (`{!isMobile && ...}`). (5) Hid view mode toggle on mobile — card view is always active on mobile. `PropertyCard.tsx`: image height `h-28 sm:h-40` (shorter on mobile for scan-ability); pros/cons `hidden sm:grid`; recommended action `hidden sm:block`; URL buttons `hidden sm:flex` (all accessible in detail drawer). `MobileDashboardNotice.tsx`: replaced discouraging desktop-push copy with welcoming "browse, filter, save" copy; CTA changed from "Continue on mobile" to "Start exploring".
