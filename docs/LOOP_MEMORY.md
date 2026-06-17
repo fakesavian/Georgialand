@@ -9,6 +9,16 @@ Rolling, append-only log of what each closed loop changed and verified. Newest a
 
 ---
 
+## Loop A9.1 — Verify Parcel Boundary Map Rendering — 2026-06-18
+- **By:** Haiku 4.5.
+- **Did:** Investigated why parcel boundaries are not rendering on the map canvas. Root cause: `public/local_dashboard_dataset.csv` has no `Parcel_Boundary_GeoJSON` column — only `Parcel_ID`. All stored-geometry rendering is therefore a no-op in production. The enriched CSV (`data/output/georgia_land_gold_enriched.csv`) DOES have full boundary columns, but production promotion is human-gated. The only boundary that renders in production is the **live county GIS lookup** triggered when a user clicks a pin (`setSelectedBoundaryProperty`), and only for counties with working ArcGIS endpoints. Fixed: (1) updated `dataStatusNote` in `gisLayers.ts` for `parcel-boundaries` layer from misleading "stored geometry exists" language to accurate "click any pin to load on demand — no pre-stored polygons in the current public dataset"; (2) added a cyan canvas hint in `MapView.tsx` when parcel-boundaries is active but no pin is selected, directing users to click a pin. `parseParcelBoundaryGeoJSON(undefined)` returns null safely — no crash risk.
+- **Changed:** `src/lib/gisLayers.ts` (dataStatusNote), `src/components/dashboard/MapView.tsx` (canvas hint) | Production CSV untouched: ✓ | No geometry fabricated: ✓ | Tier gating unchanged: ✓
+- **Verification:** typecheck ✓ · build ✓ (27.07s) | production CSV clean ✓
+- **Result:** Parcel boundary layer is honest: the UI now tells Pro+ users to click a pin; the layer control note explains on-demand loading and absence of pre-stored polygons.
+- **Next:** A10 — Auth + Protected Dashboard Production Verification.
+
+---
+
 ## Loop B4.1 — Pricing Tier Consistency + Admin Testing Setup — 2026-06-18
 - **By:** Sonnet 4.6.
 - **Did:** (1) **Export gating**: moved `canExport()` and `canExportLeadCards()` from `PRO_PLUS` → `INVESTOR_PLUS` in `featureGates.ts`. Removed "CSV exports" from Pro features list and added to Investor. Fixed 4 export alert messages in DashboardPage to say "Upgrade to Investor to export data." (2) **Admin account setup**: `access_level = 'admin'` already exists in schema and `UserProfile`. `/admin` route already protected by `ProtectedRoute requireAdmin`. Wrote idempotent `supabase/admin_bootstrap.sql` — run manually in Supabase SQL Editor after `fakesavian@gmail.com` signs up. No code change needed beyond the migration. (3) **Admin tier switcher**: Added `realAccessLevel`, `isAdminTestMode`, `setTestTierOverride` to `AuthContext`. `accessLevel` (used for all gating) = test override if admin + override set, else profile value. `realAccessLevel` = true profile tier (never overridden). Updated `ProtectedRoute` to use `realAccessLevel` for admin-route check so admin testing Free tier can't lock themselves out. Override is session-backed (`sessionStorage`), cleared on sign-out, ignored entirely for non-admin users. Added admin test-mode card to `AdminPage` (tier buttons for Free/Starter/Pro/Investor + reset, labeled "Admin test mode — does not change Stripe billing"). Added amber "Test tier" badge in `Header` with dropdown showing "Real: X / Test: Y".

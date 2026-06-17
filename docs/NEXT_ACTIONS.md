@@ -59,6 +59,8 @@ Ordered, bounded queue. The orchestrator takes the **top unblocked** item, dispa
   - Specialist: **builder**. Scope: `src/types/gis.ts`, `src/lib/gisLayers.ts`, `MapLayerControl.tsx`, `MapView.tsx`.
 - ✅ **B4 — Honest coverage copy pass** (DONE — strikethrough coming_soon features, clarify parcel-boundary scoping, remove off-market/FEMA/opp-zone overstating.)
 - ✅ **B4.1 — Pricing tier consistency + admin testing** (DONE — exports moved to Investor; admin account SQL written; test tier switcher in AdminPage; Header shows test mode badge.)
+- ✅ **A9.1 — Verify parcel boundary map rendering** (DONE — root cause: production CSV has no `Parcel_Boundary_GeoJSON` column; stored geometry is a no-op in production. Boundaries load on demand via live county GIS on pin-click only. Fixed: updated `dataStatusNote` in `gisLayers.ts` to "click any pin / no pre-stored polygons"; added canvas hint in `MapView.tsx` when layer is active but no pin selected. Typecheck/build pass.)
+- ⬜ **A10 — Auth + Protected Dashboard Production Verification.** Harden unauthenticated redirects, admin route behavior, test tier behavior, free user gating.
 
 ## HUMAN-GATED — see `docs/BLOCKERS.md`
 - ⛔ Stripe end-to-end test · ⛔ Supabase/Google OAuth live verification · ⛔ `alert_preferences` unique(email) · ⛔ protected-dataset Storage object confirmation.
